@@ -61,7 +61,7 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Cartdim_get                
 - [ ] MPI_Close_port                 
 - [ ] MPI_Comm_accept                
-~~- [ ] MPI_Comm_c2f~~                   
+- [ ] ~~MPI_Comm_c2f~~                   
 - [ ] MPI_Comm_call_errhandler       
 - [ ] MPI_Comm_compare               
 - [ ] MPI_Comm_connect               
@@ -73,7 +73,7 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Comm_disconnect            
 - [ ] MPI_Comm_dup                   
 - [ ] MPI_Comm_dup_with_info         
-~~- [ ] MPI_Comm_f2c~~                   
+- [ ] ~~MPI_Comm_f2c~~                   
 - [ ] MPI_Comm_free                  
 - [ ] MPI_Comm_free_keyval           
 - [ ] MPI_Comm_get_attr              
@@ -111,12 +111,12 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Error_string               
 - [ ] MPI_Exscan                     
 - [ ] MPI_Fetch_and_op               
-~~- [ ] MPI_File_c2f~~
+- [ ] ~~MPI_File_c2f~~
 - [ ] MPI_File_call_errhandler     
 - [ ] MPI_File_close               
 - [ ] MPI_File_create_errhandler   
 - [ ] MPI_File_delete              
-~~- [ ] MPI_File_f2c~~                 
+- [ ] ~~MPI_File_f2c~~                 
 - [ ] MPI_File_get_amode           
 - [ ] MPI_File_get_atomicity       
 - [ ] MPI_File_get_byte_offset     
@@ -194,11 +194,11 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Graphdims_get            
 - [ ] MPI_Grequest_complete        
 - [ ] MPI_Grequest_start           
-~~- [ ] MPI_Group_c2f~~                
+- [ ] ~~MPI_Group_c2f~~                
 - [x] MPI_Group_compare            
 - [x] MPI_Group_difference         
 - [x] MPI_Group_excl               
-~~- [ ] MPI_Group_f2c~~                
+- [ ] ~~MPI_Group_f2c~~                
 - [x] MPI_Group_free               
 - [x] MPI_Group_incl               
 - [x] MPI_Group_intersection       
@@ -227,12 +227,12 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Ineighbor_alltoall        
 - [ ] MPI_Ineighbor_alltoallv       
 - [ ] MPI_Ineighbor_alltoallw       
-~~- [ ] MPI_Info_c2f~~                  
+- ~~[ ] MPI_Info_c2f~~                  
 - [ ] MPI_Info_create               
 - [ ] MPI_Info_delete               
 - [ ] MPI_Info_dup                  
 - [ ] MPI_Info_env                  
-~~- [ ] MPI_Info_f2c~~                  
+- ~~[ ] MPI_Info_f2c~~                  
 - [ ] MPI_Info_free                 
 - [ ] MPI_Info_get                  
 - [ ] MPI_Info_get_nkeys            
@@ -259,8 +259,8 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Keyval_create             
 - [ ] MPI_Keyval_free               
 - [ ] MPI_Lookup_name               
-~~- [ ] MPI_Message_c2f~~               
-~~- [ ] MPI_Message_f2c~~               
+- ~~[ ] MPI_Message_c2f~~               
+- ~~[ ] MPI_Message_f2c~~               
 - [ ] MPI_Mprobe                    
 - [ ] MPI_Mrecv                     
 - [ ] MPI_Neighbor_allgather        
@@ -268,10 +268,10 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Neighbor_alltoall         
 - [ ] MPI_Neighbor_alltoallv        
 - [ ] MPI_Neighbor_alltoallw        
-~~- [ ] MPI_Op_c2f~~                    
+- ~~[ ] MPI_Op_c2f~~                    
 - [ ] MPI_Op_commutative            
 - [ ] MPI_Op_create                 
-~~- [ ] MPI_Op_f2c~~                    
+- ~~[ ] MPI_Op_f2c~~                    
 - [ ] MPI_Op_free                   
 - [ ] MPI_Open_port                 
 - [ ] MPI_Pack                      
@@ -291,8 +291,8 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Reduce_scatter            
 - [ ] MPI_Reduce_scatter_block      
 - [ ] MPI_Register_datarep          
-~~- [ ] MPI_Request_c2f~~               
-~~- [ ] MPI_Request_f2c~~               
+- ~~[ ] MPI_Request_c2f~~               
+- ~~[ ] MPI_Request_f2c~~               
 - [ ] MPI_Request_free              
 - [ ] MPI_Request_get_status        
 - [ ] MPI_Rget                      
@@ -312,8 +312,8 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Ssend_init                
 - [ ] MPI_Start                     
 - [ ] MPI_Startall                  
-~~- [ ] MPI_Status_c2f~~                
-~~- [ ] MPI_Status_f2c~~                
+- ~~[ ] MPI_Status_c2f~~                
+- ~~[ ] MPI_Status_f2c~~                
 - [ ] MPI_Status_set_cancelled      
 - [ ] MPI_Status_set_elements       
 - [ ] MPI_Status_set_elements_x     
@@ -351,7 +351,7 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Testany
 - [ ] MPI_Testsome
 - [ ] MPI_Topo_test
-~~- [ ] MPI_Type_c2f~~
+- ~~[ ] MPI_Type_c2f~~
 - [ ] MPI_Type_commit
 - [ ] MPI_Type_contiguous
 - [ ] MPI_Type_create_darray
@@ -369,7 +369,7 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Type_delete_attr
 - [ ] MPI_Type_dup
 - [ ] MPI_Type_extent
-~~- [ ] MPI_Type_f2c~~
+- ~~[ ] MPI_Type_f2c~~
 - [ ] MPI_Type_free
 - [ ] MPI_Type_free_keyval
 - [ ] MPI_Type_get_attr
@@ -402,7 +402,7 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Win_allocate
 - [ ] MPI_Win_allocate_shared
 - [ ] MPI_Win_attach
-~~- [ ] MPI_Win_c2f~~
+- [ ] ~~MPI_Win_c2f~~
 - [ ] MPI_Win_call_errhandler
 - [ ] MPI_Win_complete
 - [ ] MPI_Win_create
@@ -411,7 +411,7 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Win_create_keyval
 - [ ] MPI_Win_delete_attr
 - [ ] MPI_Win_detach
-~~- [ ] MPI_Win_f2c~~
+- [ ] ~~MPI_Win_f2c~~
 - [ ] MPI_Win_fence
 - [ ] MPI_Win_flush
 - [ ] MPI_Win_flush_all
@@ -441,7 +441,7 @@ Modern C++20 MPI wrapper.
 - [ ] MPI_Wtick
 - [ ] MPI_Wtime
 - [ ] OMPI_Affinity_str
-~~- [ ] OpenMPI~~
+- [ ] ~~OpenMPI~~
 
 ### Future Work
 - Tests.
