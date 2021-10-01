@@ -10,25 +10,36 @@ namespace mpi
 class environment
 {
 public:
-  environment           (std::int32_t* argc, char*** argv)
-  : should_finalize_(MPI_Init(argc, argv) == MPI_SUCCESS)
+  explicit environment  (std::int32_t* argc = nullptr, char*** argv = nullptr)
   {
-
+    managed_ = MPI_Init(argc, argv) == MPI_SUCCESS;
   }
   environment           (std::int32_t* argc, char*** argv, thread_support required_thread_support)
-  : should_finalize_(MPI_Init_thread(argc, argv, static_cast<std::int32_t>(required_thread_support), reinterpret_cast<std::int32_t*>(&provided_thread_support_)) == MPI_SUCCESS)
   {
-
+    std::int32_t provided_thread_support; // Unused. Call query_thread_support explicitly.
+    managed_ = MPI_Init_thread(argc, argv, static_cast<std::int32_t>(required_thread_support), &provided_thread_support) == MPI_SUCCESS;
   }
   environment           (const environment&  that) = delete;
-  environment           (      environment&& temp) = delete;
+  environment           (      environment&& temp) noexcept
+  : managed_(temp.managed_)
+  {
+    temp.managed_ = false;
+  }
   virtual ~environment  ()
   {
-    if (should_finalize_)
+    if (managed_)
       MPI_Finalize();
   }
   environment& operator=(const environment&  that) = delete;
-  environment& operator=(      environment&& temp) = delete;
+  environment& operator=(      environment&& temp) noexcept
+  {
+    if (this != &temp)
+    {
+      managed_      = temp.managed_;
+      temp.managed_ = false;
+    }
+    return *this;
+  }
 
   static bool           initialized            ()
   {
@@ -50,17 +61,13 @@ public:
     return static_cast<thread_support>(result);
   }
 
-  bool                  should_finalize        () const
+  [[nodiscard]]
+  bool                  managed                () const
   {
-    return should_finalize_;
-  }
-  thread_support        provided_thread_support() const
-  {
-    return provided_thread_support_;
+    return managed_;
   }
 
 protected:
-  bool           should_finalize_         ;
-  thread_support provided_thread_support_ = thread_support::single;
+  bool managed_ = false;
 };
 }
