@@ -69,15 +69,15 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Cart_create                
 - [ ] MPI_Cart_get                   
 - [ ] MPI_Cart_map                   
-- [ ] MPI_Cart_rank                  
+- [x] MPI_Cart_rank                  
 - [ ] MPI_Cart_shift                 
 - [ ] MPI_Cart_sub                   
 - [ ] MPI_Cartdim_get                
-- [ ] MPI_Close_port                 
+- [x] MPI_Close_port                 
 - [ ] MPI_Comm_accept                
 - [x] ~~MPI_Comm_c2f~~                   
 - [ ] MPI_Comm_call_errhandler       
-- [ ] MPI_Comm_compare               
+- [x] MPI_Comm_compare               
 - [ ] MPI_Comm_connect               
 - [x] MPI_Comm_create                
 - [ ] MPI_Comm_create_errhandler     
@@ -287,7 +287,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Op_create                 
 - [x] ~~MPI_Op_f2c~~                    
 - [x] MPI_Op_free                   
-- [ ] MPI_Open_port                 
+- [x] MPI_Open_port                 
 - [ ] MPI_Pack                      
 - [ ] MPI_Pack_external             
 - [ ] MPI_Pack_external_size        
