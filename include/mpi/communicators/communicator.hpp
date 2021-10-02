@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <mpi/core/comparison.hpp>
 #include <mpi/core/group.hpp>
 #include <mpi/core/information.hpp>
 #include <mpi/core/mpi.hpp>
@@ -13,39 +14,39 @@ namespace mpi
 class communicator
 {
 public:
-  communicator           (const communicator&  that, const group&       group      )
+  communicator            (const communicator&  that, const group&       group      )
   : managed_(true)
   {
     MPI_Comm_create(that.native_, group.native(), &native_);
   }
-  communicator           (const communicator&  that, const information& information)
+  communicator            (const communicator&  that, const information& information)
   : managed_(true)
   {
     MPI_Comm_dup_with_info(that.native_, information.native(), &native_);
   }
-  communicator           (const communicator&  that)
+  communicator            (const communicator&  that)
   : managed_(true)
   {
     MPI_Comm_dup(that.native_, &native_);
   }
-  communicator           (      communicator&& temp) noexcept
+  communicator            (      communicator&& temp) noexcept
   : managed_(temp.managed_), native_(temp.native_)
   {
     temp.managed_ = false;
-    temp.native_  = 0;
+    temp.native_  = MPI_COMM_NULL;
   }
-  virtual ~communicator  ()
+  virtual ~communicator   ()
   {
     if (managed_)
       MPI_Comm_free(&native_);
   }
-  communicator& operator=(const communicator&  that)
+  communicator& operator= (const communicator&  that)
   {
     managed_ = true;
     MPI_Comm_dup(that.native_, &native_);
     return *this;
   }
-  communicator& operator=(      communicator&& temp) noexcept
+  communicator& operator= (      communicator&& temp) noexcept
   {
     if (this != &temp)
     {
@@ -53,9 +54,14 @@ public:
       native_       = temp.native_ ;
 
       temp.managed_ = false;
-      temp.native_  = 0;
+      temp.native_  = MPI_COMM_NULL;
     }
     return *this;
+  }
+
+  bool          operator==(const communicator&  that) const
+  {
+    return compare(that) == comparison::identical;
   }
 
   [[nodiscard]]
@@ -99,7 +105,7 @@ public:
     return MPI_Comm_set_info(native_, value.native()) == MPI_SUCCESS;
   }
 
-  bool         abort          (std::int32_t return_code) const
+  bool         abort          (const std::int32_t return_code) const
   {
     return MPI_Abort(native_, return_code) == MPI_SUCCESS;
   }
@@ -107,6 +113,14 @@ public:
   bool         barrier        () const
   {
     return MPI_Barrier(native_) == MPI_SUCCESS;
+  }
+
+  [[nodiscard]]
+  comparison   compare        (const communicator& that) const
+  {
+    std::int32_t result;
+    MPI_Comm_compare(native_, that.native_, &result);
+    return static_cast<comparison>(result);
   }
 
   [[nodiscard]]
@@ -122,6 +136,6 @@ public:
 
 protected:
   bool     managed_ = false;
-  MPI_Comm native_  = 0;
+  MPI_Comm native_  = MPI_COMM_NULL;
 };
 }
