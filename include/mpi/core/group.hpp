@@ -67,11 +67,11 @@ public:
   : managed_(temp.managed_), native_(temp.native_)
   {
     temp.managed_ = false;
-    temp.native_  = 0;
+    temp.native_  = MPI_GROUP_NULL;
   }
   virtual ~group        ()
   {
-    if (managed_)
+    if (managed_ && native_ != MPI_GROUP_NULL)
       MPI_Group_free(&native_);
   }
   group&      operator= (const group&  that) = delete;
@@ -83,7 +83,7 @@ public:
       native_       = temp.native_ ;
 
       temp.managed_ = false;
-      temp.native_  = 0;
+      temp.native_  = MPI_GROUP_NULL;
     }
     return *this;
   }
@@ -148,6 +148,6 @@ public:
 
 protected:
   bool      managed_ = false;
-  MPI_Group native_  = 0;
+  MPI_Group native_  = MPI_GROUP_NULL;
 };
 }
