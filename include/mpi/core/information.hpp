@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 
+#include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
 namespace mpi
@@ -13,7 +14,7 @@ public:
   information            ()
   : managed_(true)
   {
-    MPI_Info_create(&native_);
+    MPI_CHECK_ERROR_CODE(MPI_Info_create, (&native_))
   }
   explicit information   (const MPI_Info native)
   : native_(native)
@@ -23,10 +24,11 @@ public:
   information            (const information&  that)
   : managed_(true)
   {
-    MPI_Info_dup(that.native_, &native_);
+    MPI_CHECK_ERROR_CODE(MPI_Info_dup, (that.native_, &native_))
   }
   information            (      information&& temp) noexcept
-  : managed_(temp.managed_), native_(temp.native_)
+  : managed_(temp.managed_)
+  , native_ (temp.native_ )
   {
     temp.managed_ = false;
     temp.native_  = MPI_INFO_NULL;
@@ -34,20 +36,24 @@ public:
   virtual ~information   ()
   {
     if (managed_ && native_ != MPI_INFO_NULL)
-      MPI_Info_free(&native_);
+      MPI_CHECK_ERROR_CODE(MPI_Info_free, (&native_))
   }
   information& operator= (const information&  that)
   {
     managed_ = true;
-    MPI_Info_dup(that.native_, &native_);
+    MPI_CHECK_ERROR_CODE(MPI_Info_dup, (that.native_, &native_))
     return *this;
   }
   information& operator= (      information&& temp) noexcept
   {
     if (this != &temp)
     {
+      if (managed_ && native_ != MPI_INFO_NULL)
+        MPI_CHECK_ERROR_CODE(MPI_Info_free, (&native_))
+
       managed_      = temp.managed_;
       native_       = temp.native_;
+
       temp.managed_ = false;
       temp.native_  = MPI_INFO_NULL;
     }
@@ -67,36 +73,36 @@ public:
   std::int32_t size   () const
   {
     auto result(0);
-    MPI_Info_get_nkeys(native_, &result);
+    MPI_CHECK_ERROR_CODE(MPI_Info_get_nkeys, (native_, &result))
     return result;
   }
   [[nodiscard]]
   std::string  at     (const std::int32_t index) const
   {
     std::string result(MPI_MAX_INFO_KEY, ' ');
-    MPI_Info_get_nthkey(native_, index, &result[0]);
+    MPI_CHECK_ERROR_CODE(MPI_Info_get_nthkey, (native_, index, &result[0]))
     return result;
   }
   [[nodiscard]]
   std::string  at     (const std::string& key) const
   {
     auto size(0), exists(0);
-    MPI_Info_get_valuelen(native_, key.c_str(), &size, &exists);
+    MPI_CHECK_ERROR_CODE(MPI_Info_get_valuelen, (native_, key.c_str(), &size, &exists))
 
     std::string result(size, ' ');
-    MPI_Info_get(native_, key.c_str(), size, &result[0], &exists);
+    MPI_CHECK_ERROR_CODE(MPI_Info_get, (native_, key.c_str(), size, &result[0], &exists))
 
     return result;
   }
   [[nodiscard]]
-  bool         set    (const std::string& key, const std::string& value) const
+  void         set    (const std::string& key, const std::string& value) const
   {
-    return MPI_Info_set(native_, key.c_str(), value.c_str()) == MPI_SUCCESS;
+    MPI_CHECK_ERROR_CODE(MPI_Info_set, (native_, key.c_str(), value.c_str()))
   }
   [[nodiscard]]
-  bool         remove (const std::string& key) const
+  void         remove (const std::string& key) const
   {
-    return MPI_Info_delete(native_, key.c_str()) == MPI_SUCCESS;
+    MPI_CHECK_ERROR_CODE(MPI_Info_delete, (native_, key.c_str()))
   }
 
   [[nodiscard]]

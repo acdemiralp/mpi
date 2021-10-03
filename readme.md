@@ -14,9 +14,9 @@ Modern C++20 message passing interface wrapper.
 - The classes which wrap MPI objects may have two types of constructors:
   - Managed   constructors: Construct a raw MPI object, and are     responsible for its destruction.
   - Unmanaged constructors: Accept    a raw MPI object, and are not responsible for its destruction.
-- The functions and methods return error codes when possible.
-  - This provides better information and intent than booleans.
-  - Not in constructors, destructors, getters/setters, or functions which return a value.
+
+### Usage Notes
+- Define MPI_USE_EXCEPTIONS to check the return values of all viable functions against MPI_SUCCESS and throw an exception otherwise.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] MPI                         

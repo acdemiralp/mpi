@@ -24,13 +24,29 @@ public:
   error_code& operator=  (const error_code&  that) = default;
   error_code& operator=  (      error_code&& temp) = default;
 
-  bool        operator== (const error_code&  that) const
+  bool        operator== (const error_code&  that  ) const
   {
     return native_ == that.native_;
   }
-  bool        operator!= (const error_code&  that) const
+  bool        operator!= (const error_code&  that  ) const
   {
     return native_ != that.native_;
+  }
+  bool        operator== (const error_class& that  ) const override
+  {
+    return native_ == that.native();
+  }
+  bool        operator!= (const error_class& that  ) const override
+  {
+    return native_ != that.native();
+  }
+  bool        operator== (const std::int32_t native) const override
+  {
+    return native_ == native;
+  }
+  bool        operator!= (const std::int32_t native) const override
+  {
+    return native_ != native;
   }
 
   [[nodiscard]]

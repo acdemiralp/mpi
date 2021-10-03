@@ -24,19 +24,19 @@ public:
   error_class& operator= (const error_class&  that) = default;
   error_class& operator= (      error_class&& temp) = default;
 
-  bool         operator==(const error_class&  that  ) const
+  virtual bool operator==(const error_class&  that  ) const
   {
     return native_ == that.native_;
   }
-  bool         operator!=(const error_class&  that  ) const
+  virtual bool operator!=(const error_class&  that  ) const
   {
     return native_ != that.native_;
   }
-  bool         operator==(const std::int32_t  native) const
+  virtual bool operator==(const std::int32_t  native) const
   {
     return native_ == native;
   }
-  bool         operator!=(const std::int32_t  native) const
+  virtual bool operator!=(const std::int32_t  native) const
   {
     return native_ != native;
   }
