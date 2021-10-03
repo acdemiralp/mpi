@@ -10,7 +10,7 @@ namespace mpi
 class op
 {
 public:
-  op           (bool commutative)
+  explicit op  (const bool commutative)
   {
     MPI_Op_create([ ] (void* in, void* inout, int* length, MPI_Datatype* type)
     {

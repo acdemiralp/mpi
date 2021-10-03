@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include <mpi/core/mpi.hpp>
-#include <mpi/io/access_mode.hpp>
+#include <mpi/io/enums/access_mode.hpp>
 
 namespace mpi
 {

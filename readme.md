@@ -14,6 +14,9 @@ Modern C++20 message passing interface wrapper.
 - The classes which wrap MPI objects may have two types of constructors:
   - Managed   constructors: Construct a raw MPI object, and are     responsible for its destruction.
   - Unmanaged constructors: Accept    a raw MPI object, and are not responsible for its destruction.
+- The functions and methods return error codes when possible.
+  - This provides better information and intent than booleans.
+  - Not in constructors, destructors, getters/setters, or functions which return a value.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] MPI                         
@@ -121,8 +124,8 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Errhandler_free            
 - [x] ~~MPI_Errhandler_get~~             
 - [x] ~~MPI_Errhandler_set~~            
-- [ ] MPI_Error_class                
-- [ ] MPI_Error_string               
+- [x] MPI_Error_class                
+- [x] MPI_Error_string               
 - [ ] MPI_Exscan                     
 - [ ] MPI_Fetch_and_op               
 - [x] ~~MPI_File_c2f~~
@@ -264,7 +267,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Ireduce_scatter           
 - [ ] MPI_Ireduce_scatter_block     
 - [ ] MPI_Irsend                    
-- [ ] MPI_Is_thread_main            
+- [x] MPI_Is_thread_main            
 - [ ] MPI_Iscan                     
 - [ ] MPI_Iscatter                  
 - [ ] MPI_Iscatterv                 
@@ -296,7 +299,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Probe                     
 - [x] MPI_Publish_name              
 - [ ] MPI_Put                       
-- [ ] MPI_Query_thread              
+- [x] MPI_Query_thread              
 - [ ] MPI_Raccumulate               
 - [ ] MPI_Recv                      
 - [ ] MPI_Recv_init                 
@@ -321,7 +324,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Send_init                 
 - [ ] MPI_Sendrecv                  
 - [ ] MPI_Sendrecv_replace          
-- [ ] MPI_Sizeof                    
+- [x] ~~MPI_Sizeof~~                    
 - [ ] MPI_Ssend                     
 - [ ] MPI_Ssend_init                
 - [ ] MPI_Start                     

@@ -15,7 +15,7 @@ public:
   status& operator=(const status&  that) = default;
   status& operator=(      status&& temp) = default;
 
-  bool set_cancelled(bool cancelled)
+  bool set_cancelled(const bool cancelled)
   {
     return MPI_Status_set_cancelled(this, static_cast<std::int32_t>(cancelled)) == MPI_SUCCESS;
   }

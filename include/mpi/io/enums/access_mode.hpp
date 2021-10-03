@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include <mpi/core/mpi.hpp>
 #include <mpi/core/utility/bitset_enum.hpp>
+#include <mpi/core/mpi.hpp>
 
 namespace mpi
 {

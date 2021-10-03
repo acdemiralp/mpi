@@ -10,26 +10,43 @@ namespace mpi
 class error_class
 {
 public:
-  error_class           ()
+  error_class            ()
   {
     MPI_Add_error_class(&native_);
   }
-  explicit error_class  (const std::int32_t native) : native_(native)
+  explicit error_class   (const std::int32_t native) : native_(native)
   {
     
   }
-  error_class           (const error_class&  that) = default;
-  error_class           (      error_class&& temp) = default;
-  virtual ~error_class  ()                         = default;
-  error_class& operator=(const error_class&  that) = default;
-  error_class& operator=(      error_class&& temp) = default;
+  error_class            (const error_class&  that) = default;
+  error_class            (      error_class&& temp) = default;
+  virtual ~error_class   ()                         = default;
+  error_class& operator= (const error_class&  that) = default;
+  error_class& operator= (      error_class&& temp) = default;
 
-  bool         set_string(const std::string& string) const
+  bool         operator==(const error_class&  that  ) const
   {
-    return MPI_Add_error_string(native_, string.c_str()) == MPI_SUCCESS;
+    return native_ == that.native_;
+  }
+  bool         operator!=(const error_class&  that  ) const
+  {
+    return native_ != that.native_;
+  }
+  bool         operator==(const std::int32_t  native) const
+  {
+    return native_ == native;
+  }
+  bool         operator!=(const std::int32_t  native) const
+  {
+    return native_ != native;
+  }
+
+  void         set_string(const std::string&  string) const
+  {
+    MPI_Add_error_string(native_, string.c_str());
   }
   [[nodiscard]]
-  std::string  string     () const
+  std::string  string    () const
   {
     std::string  result(MPI_MAX_ERROR_STRING, ' ');
     std::int32_t length(0);
