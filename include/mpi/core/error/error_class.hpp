@@ -28,6 +28,15 @@ public:
   {
     return MPI_Add_error_string(native_, string.c_str()) == MPI_SUCCESS;
   }
+  [[nodiscard]]
+  std::string  string     () const
+  {
+    std::string  result(MPI_MAX_ERROR_STRING, ' ');
+    std::int32_t length(0);
+    MPI_Error_string(native_, &result[0], &length);
+    result.resize(length);
+    return result;
+  }
 
   [[nodiscard]]
   std::int32_t native    () const

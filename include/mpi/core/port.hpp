@@ -8,6 +8,16 @@
 
 namespace mpi
 {
+template <typename type>
+class managed;
+template <>
+class managed<port> : public port
+{
+  
+};
+// An unmanaged object cannot inherit from a  managed   object as the destructor of the base class will     destroy the unmanaged object.
+// A  managed   object CAN    inherit from an unmanaged object as the destructor of the base class will not destroy the managed   object.
+
 class port
 {
 public:
