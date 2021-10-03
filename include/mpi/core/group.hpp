@@ -4,9 +4,9 @@
 #include <stdexcept>
 #include <vector>
 
-#include <mpi/core/comparison.hpp>
+#include <mpi/core/enums/comparison.hpp>
+#include <mpi/core/structs/range.hpp>
 #include <mpi/core/mpi.hpp>
-#include <mpi/core/range.hpp>
 
 namespace mpi
 {

@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
+#include <mpi/core/enums/thread_support.hpp>
 #include <mpi/core/mpi.hpp>
-#include <mpi/core/thread_support.hpp>
 
 namespace mpi
 {

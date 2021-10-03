@@ -42,9 +42,9 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPIX_Scatterv_init             
 - [x] MPI_Abort                      
 - [ ] MPI_Accumulate                 
-- [ ] MPI_Add_error_class            
-- [ ] MPI_Add_error_code             
-- [ ] MPI_Add_error_string           
+- [x] MPI_Add_error_class            
+- [x] MPI_Add_error_code             
+- [x] MPI_Add_error_string           
 - [ ] MPI_Address                    
 - [ ] MPI_Aint_add                   
 - [ ] MPI_Aint_diff                  
@@ -139,7 +139,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_File_get_info            
 - [ ] MPI_File_get_position        
 - [ ] MPI_File_get_position_shared 
-- [ ] MPI_File_get_size            
+- [x] MPI_File_get_size            
 - [ ] MPI_File_get_type_extent     
 - [ ] MPI_File_get_view            
 - [ ] MPI_File_iread               
@@ -270,9 +270,9 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Iscatterv                 
 - [ ] MPI_Isend                     
 - [ ] MPI_Issend                    
-- [ ] MPI_Keyval_create             
-- [ ] MPI_Keyval_free               
-- [ ] MPI_Lookup_name               
+- [x] ~~MPI_Keyval_create~~             
+- [x] ~~MPI_Keyval_free~~               
+- [x] MPI_Lookup_name               
 - [x] ~~MPI_Message_c2f~~               
 - [x] ~~MPI_Message_f2c~~               
 - [ ] MPI_Mprobe                    
@@ -294,7 +294,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Pack_size                 
 - [ ] MPI_Pcontrol                  
 - [ ] MPI_Probe                     
-- [ ] MPI_Publish_name              
+- [x] MPI_Publish_name              
 - [ ] MPI_Put                       
 - [ ] MPI_Query_thread              
 - [ ] MPI_Raccumulate               
@@ -408,7 +408,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Type_vector
 - [ ] MPI_Unpack
 - [ ] MPI_Unpack_external
-- [ ] MPI_Unpublish_name
+- [x] MPI_Unpublish_name
 - [x] MPI_Wait
 - [x] MPI_Waitall
 - [x] MPI_Waitany

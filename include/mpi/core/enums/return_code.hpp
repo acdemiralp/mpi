@@ -1,10 +1,12 @@
 #pragma once
 
+#include <cstdint>
+
 #include <mpi/core/mpi.hpp>
 
 namespace mpi
 {
-enum class return_code
+enum class return_code : std::int32_t
 {
   success                                 = MPI_SUCCESS                  ,
   buffer                                  = MPI_ERR_BUFFER               ,

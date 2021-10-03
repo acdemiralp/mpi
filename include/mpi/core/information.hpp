@@ -29,11 +29,11 @@ public:
   : managed_(temp.managed_), native_(temp.native_)
   {
     temp.managed_ = false;
-    temp.native_  = 0;
+    temp.native_  = MPI_INFO_NULL;
   }
   virtual ~information   ()
   {
-    if (managed_)
+    if (managed_ && native_ != MPI_INFO_NULL)
       MPI_Info_free(&native_);
   }
   information& operator= (const information&  that)
@@ -49,7 +49,7 @@ public:
       managed_      = temp.managed_;
       native_       = temp.native_;
       temp.managed_ = false;
-      temp.native_  = 0;
+      temp.native_  = MPI_INFO_NULL;
     }
     return *this;
   }
@@ -112,7 +112,7 @@ public:
 
 protected:
   bool     managed_ = false;
-  MPI_Info native_  = 0;
+  MPI_Info native_  = MPI_INFO_NULL;
 };
 
 inline const information& environment_information()

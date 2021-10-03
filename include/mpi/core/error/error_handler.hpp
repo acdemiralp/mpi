@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <functional>
 
-#include <mpi/communicators/communicator.hpp>
+#include <mpi/core/communicators/communicator.hpp>
+#include <mpi/core/enums/return_code.hpp>
 #include <mpi/core/mpi.hpp>
-#include <mpi/core/return_code.hpp>
 
 namespace mpi
 {

@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include <mpi/core/mpi.hpp>
-#include <mpi/utility/bitset_enum.hpp>
+#include <mpi/core/utility/bitset_enum.hpp>
 
 namespace mpi
 {

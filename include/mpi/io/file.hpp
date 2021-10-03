@@ -17,7 +17,7 @@ public:
   file           (const file&  that) = delete;
   file           (      file&& temp) noexcept
   {
-    
+
   }
   virtual ~file  ()
   {
@@ -27,6 +27,14 @@ public:
   file& operator=(      file&& temp) noexcept
   {
     
+  }
+
+  [[nodiscard]]
+  std::int64_t size() const
+  {
+    std::int64_t result;
+    MPI_File_get_size(native_, &result);
+    return result;
   }
 
 protected:
