@@ -3,6 +3,7 @@
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
+// There is no use for this functionality in C++. It is included for completeness.
 namespace mpi
 {
 using address = MPI_Aint;
