@@ -3,6 +3,7 @@
 #include <string>
 #include <utility>
 
+#include <mpi/core/exception.hpp>
 #include <mpi/core/information.hpp>
 #include <mpi/core/mpi.hpp>
 
@@ -14,10 +15,10 @@ public:
   explicit port  (const information& info = information())
   : managed_(true), name_(MPI_MAX_PORT_NAME, ' ')
   {
-    MPI_Open_port(info.native(), &name_[0]);
+    MPI_CHECK_ERROR_CODE(MPI_Open_port, (info.native(), &name_[0]))
   }
   explicit port  (const std::string& name)
-  : managed_(false), name_(name)
+  : name_(name)
   {
 
   }
@@ -31,7 +32,7 @@ public:
   virtual ~port  ()
   {
     if (managed_ && !name_.empty())
-      MPI_Close_port(name_.c_str());
+      MPI_CHECK_ERROR_CODE(MPI_Close_port, (name_.c_str()))
   }
   port& operator=(const port&  that) = delete;
   port& operator=(      port&& temp) noexcept
@@ -39,7 +40,7 @@ public:
     if (this != &temp)
     {
       if (managed_ && !name_.empty())
-        MPI_Close_port(name_.c_str());
+        MPI_CHECK_ERROR_CODE(MPI_Close_port, (name_.c_str()))
 
       managed_      = temp.managed_;
       name_         = std::move(temp.name_);

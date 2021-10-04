@@ -3,7 +3,7 @@
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
-// There is no use for this functionality in C++. It is included for completeness.
+// There is no reason to prefer the following over native functionality. They are included for completeness.
 namespace mpi
 {
 using address = MPI_Aint;
@@ -18,7 +18,7 @@ inline address add        (const address& lhs, const address& rhs)
 {
   return MPI_Aint_add (lhs, rhs);
 }
-inline address subtract   (const address& lhs, const address& rhs)
+inline address difference (const address& lhs, const address& rhs)
 {
   return MPI_Aint_diff(lhs, rhs);
 }
