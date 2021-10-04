@@ -48,9 +48,9 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Add_error_class            
 - [x] MPI_Add_error_code             
 - [x] MPI_Add_error_string           
-- [ ] MPI_Address                    
-- [ ] MPI_Aint_add                   
-- [ ] MPI_Aint_diff                  
+- [x] ~~MPI_Address~~                  
+- [x] MPI_Aint_add                   
+- [x] MPI_Aint_diff                  
 - [ ] MPI_Allgather                  
 - [ ] MPI_Allgatherv                 
 - [ ] MPI_Alloc_mem                  
@@ -196,7 +196,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Gatherv                  
 - [ ] MPI_Get                      
 - [ ] MPI_Get_accumulate           
-- [ ] MPI_Get_address              
+- [x] MPI_Get_address              
 - [ ] MPI_Get_count                
 - [ ] MPI_Get_elements             
 - [ ] MPI_Get_elements_x           
