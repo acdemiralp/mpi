@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <string>
 
 #include <mpi/core/error/error_code.hpp>
 #include <mpi/core/mpi.hpp>
