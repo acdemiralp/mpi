@@ -17,8 +17,7 @@ namespace mpi
 class information
 {
 public:
-  using map_type    = std::unordered_map<std::string, std::string>;
-  using native_type = MPI_Info;
+  using map_type = std::unordered_map<std::string, std::string>;
 
   information            ()
   : managed_(true)
@@ -31,7 +30,7 @@ public:
     for (const auto& [key, value] : map)
       emplace(key, value);
   }
-  explicit information   (const native_type   native)
+  explicit information   (const MPI_Info      native)
   : native_(native)
   {
 
@@ -161,14 +160,14 @@ public:
     return managed_;
   }
   [[nodiscard]]                                 
-  native_type  native  () const
+  MPI_Info     native  () const
   {
     return native_;
   }
 
 protected:
-  bool        managed_ = false;
-  native_type native_  = MPI_INFO_NULL;
+  bool     managed_ = false;
+  MPI_Info native_  = MPI_INFO_NULL;
 };
 
 inline const information environment_information { MPI_INFO_ENV };

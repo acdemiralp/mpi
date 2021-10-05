@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <string>
 
@@ -20,7 +21,7 @@ inline std::string                 library_version()
   std::string  result(MPI_MAX_LIBRARY_VERSION_STRING, ' ');
   std::int32_t size  (0);
   MPI_CHECK_ERROR_CODE(MPI_Get_library_version, (&result[0], &size))
-  result.resize(size);
+  result.resize(static_cast<std::size_t>(size));
   return result;
 }
 }

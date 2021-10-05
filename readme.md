@@ -1,22 +1,11 @@
 ### MPI
 Modern C++20 message passing interface wrapper.
 
-### Motivation
-- The accessibility argument:
-  - With its ~450 functions today, Message Passing Interface (MPI) has become inaccessible to not only laymen, but to computer scientists in the academia and the industry who do not have or pursue a doctoral degree in high performance computing (HPC).
-  - The intent is to expose these functionality to C++ developers with least pain.
-
-- The agility argument:
-  - A standard C++ interface has been under discussion (https://github.com/mpi-forum/mpi-issues/issues/288) but is far from implementation, and is perceived to be blocked until C++23.
-  - The intent is to spearhead a C++ wrapper with haste using tools available today. The output may be revised by the MPI community as an examplary implementation of a standard C++ interface.
-
-### Design Notes
-- The classes which wrap MPI objects may have two types of constructors:
-  - Managed   constructors: Construct a raw MPI object, and are     responsible for its destruction.
-  - Unmanaged constructors: Accept    a raw MPI object, and are not responsible for its destruction.
-
 ### Usage Notes
 - Define MPI_USE_EXCEPTIONS to check the return values of all viable functions against MPI_SUCCESS and throw an exception otherwise.
+- The object wrappers have two types of constructors:
+  - Managed   constructors: Construct a  new      MPI object, and     be responsible for its destruction.
+  - Unmanaged constructors: Accept    an existing MPI object, and not be responsible for its destruction.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] MPI                         
@@ -130,7 +119,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Fetch_and_op               
 - [x] ~~MPI_File_c2f~~
 - [ ] MPI_File_call_errhandler     
-- [ ] MPI_File_close               
+- [x] MPI_File_close               
 - [ ] MPI_File_create_errhandler   
 - [ ] MPI_File_delete              
 - [x] ~~MPI_File_f2c~~                 

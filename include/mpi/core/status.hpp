@@ -8,14 +8,17 @@
 
 namespace mpi
 {
-class status
+class status : public MPI_Status
 {
 public:
-  explicit status  (const MPI_Status& native) : native_(native)
+  explicit status  (const MPI_Status& native) : MPI_Status(native)
   {
     
   }
-  status           ()                    = default;
+  status           () : MPI_Status {0, 0, 0, 0, 0}
+  {
+    
+  }
   status           (const status&  that) = default;
   status           (      status&& temp) = default;
   virtual ~status  ()                    = default;
@@ -24,49 +27,40 @@ public:
 
   void              set_cancelled           (const bool cancelled)
   {
-    MPI_CHECK_ERROR_CODE(MPI_Status_set_cancelled, (&native_, static_cast<std::int32_t>(cancelled)))
+    MPI_CHECK_ERROR_CODE(MPI_Status_set_cancelled, (this, static_cast<std::int32_t>(cancelled)))
   }
   [[nodiscard]]
   bool              cancelled               () const
   {
     auto result(0);
-    MPI_CHECK_ERROR_CODE(MPI_Test_cancelled, (&native_, &result))
+    MPI_CHECK_ERROR_CODE(MPI_Test_cancelled, (this, &result))
     return static_cast<bool>(result);
   }
 
   [[nodiscard]]
   std::int32_t      count_low               () const
   {
-    return native_.count_lo;
+    return count_lo;
   }
   [[nodiscard]]
   std::int32_t      count_high_and_cancelled() const
   {
-    return native_.count_hi_and_cancelled;
+    return count_hi_and_cancelled;
   }
   [[nodiscard]]
   std::int32_t      source                  () const
   {
-    return native_.MPI_SOURCE;
+    return MPI_SOURCE;
   }
   [[nodiscard]]
   std::int32_t      tag                     () const
   {
-    return native_.MPI_SOURCE;
+    return MPI_SOURCE;
   }
   [[nodiscard]]
   error_code        error                   () const
   {
-    return error_code(native_.MPI_ERROR);
+    return error_code(MPI_ERROR);
   }
-
-  [[nodiscard]]
-  const MPI_Status& native                  () const
-  {
-    return native_;
-  }
-  
-protected:
-  MPI_Status native_ {0, 0, 0, 0, 0};
 };
 }

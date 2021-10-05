@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 
@@ -51,7 +52,7 @@ public:
     std::string  result(MPI_MAX_ERROR_STRING, ' ');
     std::int32_t length(0);
     MPI_Error_string(native_, &result[0], &length);
-    result.resize(length);
+    result.resize(static_cast<std::size_t>(length));
     return result;
   }
 

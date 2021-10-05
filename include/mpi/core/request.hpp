@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <tuple>
@@ -20,8 +21,8 @@ public:
   {
     
   }
-  request           (const request&  that) = delete;
-  request           (      request&& temp) noexcept
+  request           (const request&    that) = delete;
+  request           (      request&&   temp) noexcept
   : managed_(temp.managed_), native_(temp.native_)
   {
     temp.managed_ = false;
@@ -32,8 +33,8 @@ public:
     if (managed_ && native_ != MPI_REQUEST_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Request_free, (&native_))
   }
-  request& operator=(const request&  that) = delete;
-  request& operator=(      request&& temp) noexcept
+  request& operator=(const request&    that) = delete;
+  request& operator=(      request&&   temp) noexcept
   {
     if (this != &temp)
     {
@@ -53,24 +54,24 @@ public:
   std::optional<status> get_status() const
   {
     std::int32_t complete;
-    MPI_Status   result  ;
+    status       result  ;
     MPI_CHECK_ERROR_CODE(MPI_Request_get_status, (native_, &complete, &result))
-    return static_cast<bool>(complete) ? status(result) : std::optional<status>(std::nullopt);
+    return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
   }
   [[nodiscard]]
   std::optional<status> test      ()
   {
     std::int32_t complete;
-    MPI_Status   result  ;
+    status       result  ;
     MPI_CHECK_ERROR_CODE(MPI_Test, (&native_, &complete, &result))
-    return static_cast<bool>(complete) ? status(result) : std::optional<status>(std::nullopt);
+    return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
   }
 
   status                wait      ()
   {
-    MPI_Status result;
+    status result;
     MPI_CHECK_ERROR_CODE(MPI_Wait, (&native_, &result))
-    return status(result);
+    return result;
   }
   void                  cancel    ()
   {
@@ -97,7 +98,7 @@ inline std::optional<std::vector<status>>               test_all (const std::vec
 {
   std::vector<MPI_Request> raw_requests(requests.size());
   std::int32_t             complete    (0);
-  std::vector<MPI_Status>  result      (requests.size());
+  std::vector<status>      result      (requests.size());
 
   std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
   {
@@ -119,7 +120,7 @@ inline std::optional<std::tuple <std::int32_t, status>> test_any (const std::vec
     return request.native();
   });
 
-  MPI_Testany(static_cast<std::int32_t>(requests.size()), raw_requests.data(), &std::get<0>(result), &complete, &std::get<1>(result));
+  MPI_CHECK_ERROR_CODE(MPI_Testany, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &std::get<0>(result), &complete, &std::get<1>(result)))
 
   return static_cast<bool>(complete) ? result : std::optional<std::tuple<std::int32_t, status>>(std::nullopt);
 }
@@ -135,13 +136,13 @@ inline std::vector  <std::tuple <std::int32_t, status>> test_some(const std::vec
     return request.native();
   });
 
-  MPI_Testsome(static_cast<std::int32_t>(requests.size()), raw_requests.data(), &count, indices.data(), stati.data());
+  MPI_CHECK_ERROR_CODE(MPI_Testsome, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &count, indices.data(), stati.data()))
 
   if (count == MPI_UNDEFINED)
     return std::vector<std::tuple<std::int32_t, status>>();
 
-  indices.resize(count);
-  stati  .resize(count);
+  indices.resize(static_cast<std::size_t>(count));
+  stati  .resize(static_cast<std::size_t>(count));
 
   std::vector<std::tuple<std::int32_t, status>> result(count);
   std::transform(indices.begin(), indices.end(), stati.begin(), result.begin(), [ ] (const auto& lhs, const auto& rhs)
@@ -161,7 +162,7 @@ inline std::vector<status>                              wait_all (const std::vec
     return request.native();
   });
 
-  MPI_Waitall(static_cast<std::int32_t>(requests.size()), raw_requests.data(), result.data());
+  MPI_CHECK_ERROR_CODE(MPI_Waitall, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), result.data()))
 
   return result;
 }
@@ -175,7 +176,7 @@ inline std::tuple <std::int32_t, status>                wait_any (const std::vec
     return request.native();
   });
 
-  MPI_Waitany(static_cast<std::int32_t>(requests.size()), raw_requests.data(), &std::get<0>(result), &std::get<1>(result));
+  MPI_CHECK_ERROR_CODE(MPI_Waitany, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &std::get<0>(result), &std::get<1>(result)))
 
   return result;
 }
@@ -191,13 +192,13 @@ inline std::vector<std::tuple<std::int32_t, status>>    wait_some(const std::vec
     return request.native();
   });
 
-  MPI_Waitsome(static_cast<std::int32_t>(requests.size()), raw_requests.data(), &count, indices.data(), stati.data());
+  MPI_CHECK_ERROR_CODE(MPI_Waitsome, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &count, indices.data(), stati.data()))
 
   if (count == MPI_UNDEFINED)
     return std::vector<std::tuple<std::int32_t, status>>();
 
-  indices.resize(count);
-  stati  .resize(count);
+  indices.resize(static_cast<std::size_t>(count));
+  stati  .resize(static_cast<std::size_t>(count));
 
   std::vector<std::tuple<std::int32_t, status>> result(count);
   std::transform(indices.begin(), indices.end(), stati.begin(), result.begin(), [ ] (const auto& lhs, const auto& rhs)
