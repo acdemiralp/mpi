@@ -15,6 +15,7 @@ public:
 
   explicit op  (const std::function<void(void*, void*, int*, MPI_Datatype*)>& function, const bool commutative)
   {
+    // TODO: FIX. TARGET() DOES NOT WORK!
     MPI_CHECK_ERROR_CODE(MPI_Op_create, (*function.target<void(*)(void*, void*, int*, MPI_Datatype*)>(), static_cast<std::int32_t>(commutative), &native_))
   }
   explicit op  (const native_type native     )

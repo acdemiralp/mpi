@@ -65,7 +65,7 @@ public:
   {
     return native_;
   }
-
+  
 protected:
   MPI_Status native_ {0, 0, 0, 0, 0};
 };

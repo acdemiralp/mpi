@@ -53,7 +53,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Aint_diff                  
 - [ ] MPI_Allgather                  
 - [ ] MPI_Allgatherv                 
-- [ ] MPI_Alloc_mem                  
+- [x] MPI_Alloc_mem                  
 - [ ] MPI_Allreduce                  
 - [ ] MPI_Alltoall                   
 - [ ] MPI_Alltoallv                  
@@ -191,7 +191,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_File_write_shared        
 - [x] MPI_Finalize                 
 - [x] MPI_Finalized                
-- [ ] MPI_Free_mem                 
+- [x] MPI_Free_mem                 
 - [ ] MPI_Gather                   
 - [ ] MPI_Gatherv                  
 - [ ] MPI_Get                      

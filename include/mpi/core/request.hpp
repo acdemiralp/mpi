@@ -6,6 +6,7 @@
 #include <tuple>
 #include <vector>
 
+#include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/core/status.hpp>
 
@@ -14,7 +15,11 @@ namespace mpi
 class request
 {
 public:
-  request           ()                     = default;
+  explicit request  (const MPI_Request native)
+  : native_(native)
+  {
+    
+  }
   request           (const request&  that) = delete;
   request           (      request&& temp) noexcept
   : managed_(temp.managed_), native_(temp.native_)
@@ -25,13 +30,16 @@ public:
   virtual ~request  ()
   {
     if (managed_ && native_ != MPI_REQUEST_NULL)
-      MPI_Request_free(&native_);
+      MPI_CHECK_ERROR_CODE(MPI_Request_free, (&native_))
   }
   request& operator=(const request&  that) = delete;
   request& operator=(      request&& temp) noexcept
   {
     if (this != &temp)
     {
+      if (managed_ && native_ != MPI_REQUEST_NULL)
+        MPI_CHECK_ERROR_CODE(MPI_Request_free, (&native_))
+
       managed_      = temp.managed_;
       native_       = temp.native_ ;
 
@@ -40,30 +48,33 @@ public:
     }
     return *this;
   }
-  
-  std::optional<status> get_status()
+
+  [[nodiscard]]
+  std::optional<status> get_status() const
   {
     std::int32_t complete;
-    status       result  ;
-    MPI_Request_get_status(native_, &complete, &result);
-    return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
+    MPI_Status   result  ;
+    MPI_CHECK_ERROR_CODE(MPI_Request_get_status, (native_, &complete, &result))
+    return static_cast<bool>(complete) ? status(result) : std::optional<status>(std::nullopt);
   }
+  [[nodiscard]]
   std::optional<status> test      ()
   {
     std::int32_t complete;
-    status       result  ;
-    MPI_Test(&native_, &complete, &result);
-    return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
+    MPI_Status   result  ;
+    MPI_CHECK_ERROR_CODE(MPI_Test, (&native_, &complete, &result))
+    return static_cast<bool>(complete) ? status(result) : std::optional<status>(std::nullopt);
   }
+
   status                wait      ()
   {
-    status result;
-    MPI_Wait(&native_, &result);
-    return result;
+    MPI_Status result;
+    MPI_CHECK_ERROR_CODE(MPI_Wait, (&native_, &result))
+    return status(result);
   }
-  bool                  cancel    ()
+  void                  cancel    ()
   {
-    return MPI_Cancel(&native_) == MPI_SUCCESS;
+    MPI_CHECK_ERROR_CODE(MPI_Cancel, (&native_))
   }
 
   [[nodiscard]]
@@ -86,14 +97,14 @@ inline std::optional<std::vector<status>>               test_all (const std::vec
 {
   std::vector<MPI_Request> raw_requests(requests.size());
   std::int32_t             complete    (0);
-  std::vector<status>      result      (requests.size());
+  std::vector<MPI_Status>  result      (requests.size());
 
   std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });
 
-  MPI_Testall(static_cast<std::int32_t>(requests.size()), raw_requests.data(), &complete, result.data());
+  MPI_CHECK_ERROR_CODE(MPI_Testall, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &complete, result.data()))
 
   return static_cast<bool>(complete) ? result : std::optional<std::vector<status>>(std::nullopt);
 }
