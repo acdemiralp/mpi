@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
+#include <mpi/core/enums/profiling_level.hpp>
 #include <mpi/core/enums/thread_support.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
@@ -54,5 +56,19 @@ inline bool           is_thread_main      ()
   std::int32_t result;
   MPI_CHECK_ERROR_CODE(MPI_Is_thread_main, (&result))
   return static_cast<bool>(result);
+}
+
+inline std::string    processor_name      ()
+{
+  std::string  result(MPI_MAX_PROCESSOR_NAME, ' ');
+  std::int32_t size  (0);
+  MPI_CHECK_ERROR_CODE(MPI_Get_processor_name, (&result[0], &size))
+  result.resize(size);
+  return result;
+}
+
+inline void           set_profiling_level (const profiling_level level)
+{
+  MPI_CHECK_ERROR_CODE(MPI_Pcontrol, (static_cast<std::int32_t>(level)))
 }
 }

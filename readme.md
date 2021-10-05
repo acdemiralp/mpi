@@ -200,9 +200,9 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Get_count                
 - [ ] MPI_Get_elements             
 - [ ] MPI_Get_elements_x           
-- [ ] MPI_Get_library_version      
-- [ ] MPI_Get_processor_name       
-- [ ] MPI_Get_version              
+- [x] MPI_Get_library_version      
+- [x] MPI_Get_processor_name       
+- [x] MPI_Get_version              
 - [ ] MPI_Graph_create             
 - [ ] MPI_Graph_get                
 - [ ] MPI_Graph_map                
@@ -295,7 +295,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Pack_external             
 - [ ] MPI_Pack_external_size        
 - [ ] MPI_Pack_size                 
-- [ ] MPI_Pcontrol                  
+- [x] MPI_Pcontrol                  
 - [ ] MPI_Probe                     
 - [x] MPI_Publish_name              
 - [ ] MPI_Put                       

@@ -6,6 +6,7 @@
 
 #include <mpi/core/enums/comparison.hpp>
 #include <mpi/core/structs/range.hpp>
+#include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
 namespace mpi
@@ -79,6 +80,9 @@ public:
   {
     if (this != &temp)
     {
+      if (managed_ && native_ != MPI_GROUP_NULL)
+        MPI_Group_free(&native_);
+
       managed_      = temp.managed_;
       native_       = temp.native_ ;
 
