@@ -150,6 +150,8 @@ public:
   }
 
 protected:
+  communicator() = default; // Default constructor is only available to sub classes who control the member variables explicitly.
+  
   bool     managed_ = false;
   MPI_Comm native_  = MPI_COMM_NULL;
 };

@@ -57,14 +57,14 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Buffer_attach              
 - [ ] MPI_Buffer_detach              
 - [x] MPI_Cancel                     
-- [ ] MPI_Cart_coords                
-- [ ] MPI_Cart_create                
+- [x] MPI_Cart_coords                
+- [x] MPI_Cart_create                
 - [ ] MPI_Cart_get                   
-- [ ] MPI_Cart_map                   
+- [x] MPI_Cart_map                   
 - [x] MPI_Cart_rank                  
-- [ ] MPI_Cart_shift                 
-- [ ] MPI_Cart_sub                   
-- [ ] MPI_Cartdim_get                
+- [x] MPI_Cart_shift                 
+- [x] MPI_Cart_sub                   
+- [x] MPI_Cartdim_get                
 - [x] MPI_Close_port                 
 - [ ] MPI_Comm_accept                
 - [x] ~~MPI_Comm_c2f~~                   
