@@ -329,16 +329,16 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_T_category_get_info       
 - [ ] MPI_T_category_get_num        
 - [ ] MPI_T_category_get_pvars      
-- [ ] MPI_T_cvar_get_info           
-- [ ] MPI_T_cvar_get_num            
+- [x] MPI_T_cvar_get_info           
+- [x] MPI_T_cvar_get_num            
 - [ ] MPI_T_cvar_handle_alloc       
-- [ ] MPI_T_cvar_handle_free        
-- [ ] MPI_T_cvar_read               
-- [ ] MPI_T_cvar_write              
-- [ ] MPI_T_enum_get_info           
-- [ ] MPI_T_enum_get_item  
-- [ ] MPI_T_finalize 
-- [ ] MPI_T_init_thread
+- [x] MPI_T_cvar_handle_free        
+- [x] MPI_T_cvar_read               
+- [x] MPI_T_cvar_write              
+- [x] MPI_T_enum_get_info           
+- [x] MPI_T_enum_get_item  
+- [x] MPI_T_finalize 
+- [x] MPI_T_init_thread
 - [ ] MPI_T_pvar_get_info
 - [ ] MPI_T_pvar_get_num
 - [ ] MPI_T_pvar_handle_alloc
@@ -376,7 +376,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Type_dup
 - [ ] MPI_Type_extent
 - [x] ~~MPI_Type_f2c~~
-- [ ] MPI_Type_free
+- [x] MPI_Type_free
 - [ ] MPI_Type_free_keyval
 - [ ] MPI_Type_get_attr
 - [ ] MPI_Type_get_contents
