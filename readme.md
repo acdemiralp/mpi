@@ -47,9 +47,9 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Alltoall                   
 - [ ] MPI_Alltoallv                  
 - [ ] MPI_Alltoallw                  
-- [ ] MPI_Attr_delete                
-- [ ] MPI_Attr_get                   
-- [ ] MPI_Attr_put                   
+- [x] ~~MPI_Attr_delete~~                
+- [x] ~~MPI_Attr_get~~                   
+- [x] ~~MPI_Attr_put~~                   
 - [x] MPI_Barrier                    
 - [ ] MPI_Bcast                      
 - [ ] MPI_Bsend                      
@@ -66,17 +66,17 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Cart_sub                   
 - [x] MPI_Cartdim_get                
 - [x] MPI_Close_port                 
-- [ ] MPI_Comm_accept                
+- [x] MPI_Comm_accept                
 - [x] ~~MPI_Comm_c2f~~                   
 - [ ] MPI_Comm_call_errhandler       
 - [x] MPI_Comm_compare               
-- [ ] MPI_Comm_connect               
+- [x] MPI_Comm_connect               
 - [x] MPI_Comm_create                
 - [ ] MPI_Comm_create_errhandler     
-- [ ] MPI_Comm_create_group          
+- [x] MPI_Comm_create_group          
 - [ ] MPI_Comm_create_keyval         
 - [ ] MPI_Comm_delete_attr           
-- [ ] MPI_Comm_disconnect            
+- [x] MPI_Comm_disconnect            
 - [x] MPI_Comm_dup                   
 - [x] MPI_Comm_dup_with_info         
 - [x] ~~MPI_Comm_f2c~~                   
@@ -86,23 +86,23 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Comm_get_errhandler        
 - [x] MPI_Comm_get_info              
 - [x] MPI_Comm_get_name              
-- [ ] MPI_Comm_get_parent            
-- [ ] MPI_Comm_group                 
+- [x] MPI_Comm_get_parent            
+- [x] MPI_Comm_group                 
 - [ ] MPI_Comm_idup                  
-- [ ] MPI_Comm_join                  
+- [x] MPI_Comm_join                  
 - [x] MPI_Comm_rank                  
-- [ ] MPI_Comm_remote_group          
-- [ ] MPI_Comm_remote_size           
+- [x] MPI_Comm_remote_group          
+- [x] MPI_Comm_remote_size           
 - [ ] MPI_Comm_set_attr              
 - [ ] MPI_Comm_set_errhandler        
 - [x] MPI_Comm_set_info              
 - [x] MPI_Comm_set_name              
 - [x] MPI_Comm_size                  
-- [ ] MPI_Comm_spawn                 
-- [ ] MPI_Comm_spawn_multiple        
+- [x] MPI_Comm_spawn                 
+- [x] MPI_Comm_spawn_multiple        
 - [ ] MPI_Comm_split                 
 - [ ] MPI_Comm_split_type            
-- [ ] MPI_Comm_test_inter            
+- [x] MPI_Comm_test_inter            
 - [ ] MPI_Compare_and_swap           
 - [x] MPI_Dims_create                
 - [ ] MPI_Dist_graph_create          
