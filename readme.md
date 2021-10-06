@@ -59,7 +59,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Cancel                     
 - [x] MPI_Cart_coords                
 - [x] MPI_Cart_create                
-- [ ] MPI_Cart_get                   
+- [x] MPI_Cart_get                   
 - [x] MPI_Cart_map                   
 - [x] MPI_Cart_rank                  
 - [x] MPI_Cart_shift                 
@@ -104,7 +104,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Comm_split_type            
 - [ ] MPI_Comm_test_inter            
 - [ ] MPI_Compare_and_swap           
-- [ ] MPI_Dims_create                
+- [x] MPI_Dims_create                
 - [ ] MPI_Dist_graph_create          
 - [ ] MPI_Dist_graph_create_adjacent 
 - [ ] MPI_Dist_graph_neighbors       

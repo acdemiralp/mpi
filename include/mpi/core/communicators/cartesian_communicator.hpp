@@ -20,6 +20,21 @@ public:
   {
 
   }
+  cartesian_communicator            (const communicator&            that, const std::vector<bool>&      periodic  , const bool reorder = true)
+  : communicator()
+  {
+    managed_ = true;
+
+    std::vector<std::int32_t> sizes(periodic.size()), periods(periodic.size());
+    std::transform(periodic.begin(), periodic.end(), periods.begin(), [ ] (const bool value)
+    {
+      return static_cast<std::int32_t>(value);
+    });
+    
+    MPI_CHECK_ERROR_CODE(MPI_Dims_create, (that.size  (), static_cast<std::int32_t>(periodic.size()), sizes.data()))
+
+    MPI_CHECK_ERROR_CODE(MPI_Cart_create, (that.native(), static_cast<std::int32_t>(periodic.size()), sizes.data(), periods.data(), static_cast<std::int32_t>(reorder), &native_))
+  }
   cartesian_communicator            (const communicator&            that, const std::vector<dimension>& dimensions, const bool reorder = true)
   : communicator()
   {
@@ -59,7 +74,7 @@ public:
   }
 
   [[nodiscard]]
-  std::int32_t                number_of_dimensions() const
+  std::int32_t                dimension_count     () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Cartdim_get, (native_, &result))
@@ -68,12 +83,12 @@ public:
   [[nodiscard]]
   std::vector<dimension>      dimensions          () const
   {
-    const auto count = number_of_dimensions();
+    const auto count = dimension_count();
 
-    std::vector<std::int32_t> sizes (count), periods(count), coordinates(count); // TODO: MAKE COORDS AVAILABLE.
+    std::vector<std::int32_t> sizes (count), periods(count), coordinates(count); // Coordinates unused. Call coordinates() explicitly.
     std::vector<dimension>    result(count);
 
-    MPI_CHECK_ERROR_CODE(MPI_Cart_get, (native_, number_of_dimensions(), sizes.data(), periods.data(), coordinates.data()))
+    MPI_CHECK_ERROR_CODE(MPI_Cart_get, (native_, count, sizes.data(), periods.data(), coordinates.data()))
 
     std::transform(sizes.begin(), sizes.end(), periods.begin(), result.begin(), [ ] (const std::int32_t size, const std::int32_t periodic)
     {
@@ -82,7 +97,7 @@ public:
 
     return result;
   }
-
+  
   [[nodiscard]]
   std::int32_t                rank                (const std::vector<std::int32_t>& coordinates) const
   {
@@ -93,12 +108,18 @@ public:
   [[nodiscard]]
   std::vector<std::int32_t>   coordinates         (const std::int32_t rank) const
   {
-    std::vector<std::int32_t> result(number_of_dimensions());
+    std::vector<std::int32_t> result(dimension_count());
     MPI_CHECK_ERROR_CODE(MPI_Cart_coords, (native_, rank, static_cast<std::int32_t>(result.size()), result.data()))
     return result;
   }
   [[nodiscard]]
-  std::array<std::int32_t, 2> shift               (const std::int32_t dimension, const std::int32_t displacement) const
+  std::vector<std::int32_t>   coordinates         () const
+  {
+    return coordinates(communicator::rank());
+  }
+
+  [[nodiscard]]
+  std::array<std::int32_t, 2> shift               (const std::int32_t dimension, const std::int32_t displacement = 1) const
   {
     std::array<std::int32_t, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Cart_shift, (native_, dimension, displacement, &result[0], &result[1]))
