@@ -9,6 +9,7 @@
 
 #include <mpi/core/error/error_code.hpp>
 #include <mpi/core/enums/comparison.hpp>
+#include <mpi/core/enums/topology.hpp>
 #include <mpi/core/structs/spawn_data.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/group.hpp>
@@ -137,6 +138,13 @@ public:
     MPI_Group result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_group, (native_, &result))
     return mpi::group(result);
+  }
+  [[nodiscard]]
+  topology              topology            () const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Topo_test, (native_, &result))
+    return static_cast<mpi::topology>(result);
   }
 
   void                  abort               (const error_code& error_code) const

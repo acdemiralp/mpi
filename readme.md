@@ -105,10 +105,10 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Comm_test_inter            
 - [ ] MPI_Compare_and_swap           
 - [x] MPI_Dims_create                
-- [ ] MPI_Dist_graph_create          
-- [ ] MPI_Dist_graph_create_adjacent 
-- [ ] MPI_Dist_graph_neighbors       
-- [ ] MPI_Dist_graph_neighbors_count 
+- [x] MPI_Dist_graph_create          
+- [x] MPI_Dist_graph_create_adjacent 
+- [x] MPI_Dist_graph_neighbors       
+- [x] MPI_Dist_graph_neighbors_count 
 - [x] ~MPI_Errhandler_create~
 - [x] MPI_Errhandler_free            
 - [x] ~~MPI_Errhandler_get~~             
@@ -192,12 +192,12 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Get_library_version      
 - [x] MPI_Get_processor_name       
 - [x] MPI_Get_version              
-- [ ] MPI_Graph_create             
-- [ ] MPI_Graph_get                
-- [ ] MPI_Graph_map                
-- [ ] MPI_Graph_neighbors          
-- [ ] MPI_Graph_neighbors_count    
-- [ ] MPI_Graphdims_get            
+- [x] MPI_Graph_create             
+- [x] MPI_Graph_get                
+- [x] MPI_Graph_map                
+- [x] MPI_Graph_neighbors          
+- [x] MPI_Graph_neighbors_count    
+- [x] MPI_Graphdims_get            
 - [ ] MPI_Grequest_complete        
 - [ ] MPI_Grequest_start           
 - [x] ~~MPI_Group_c2f~~                
@@ -356,7 +356,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Testall
 - [x] MPI_Testany
 - [x] MPI_Testsome
-- [ ] MPI_Topo_test
+- [x] MPI_Topo_test
 - [x] ~~MPI_Type_c2f~~
 - [ ] MPI_Type_commit
 - [ ] MPI_Type_contiguous
