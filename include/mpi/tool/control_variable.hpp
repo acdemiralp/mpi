@@ -17,7 +17,8 @@ public:
   explicit control_variable  (const std::int32_t index, type& data)
   : managed_(true)
   {
-    MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (index, static_cast<void*>(&data), &native_, nullptr))
+    std::int32_t count;
+    MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (index, static_cast<void*>(&data), &native_, &count))
   }
   explicit control_variable  (const MPI_T_cvar_handle& native)
   : native_(native)

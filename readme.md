@@ -331,7 +331,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_T_category_get_pvars      
 - [x] MPI_T_cvar_get_info           
 - [x] MPI_T_cvar_get_num            
-- [ ] MPI_T_cvar_handle_alloc       
+- [x] MPI_T_cvar_handle_alloc       
 - [x] MPI_T_cvar_handle_free        
 - [x] MPI_T_cvar_read               
 - [x] MPI_T_cvar_write              
@@ -339,18 +339,18 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_T_enum_get_item  
 - [x] MPI_T_finalize 
 - [x] MPI_T_init_thread
-- [ ] MPI_T_pvar_get_info
+- [x] MPI_T_pvar_get_info
 - [x] MPI_T_pvar_get_num
-- [ ] MPI_T_pvar_handle_alloc
-- [ ] MPI_T_pvar_handle_free
-- [ ] MPI_T_pvar_read
-- [ ] MPI_T_pvar_readreset
-- [ ] MPI_T_pvar_reset
+- [x] MPI_T_pvar_handle_alloc
+- [x] MPI_T_pvar_handle_free
+- [x] MPI_T_pvar_read
+- [x] MPI_T_pvar_readreset
+- [x] MPI_T_pvar_reset
 - [x] MPI_T_pvar_session_create
 - [x] MPI_T_pvar_session_free
-- [ ] MPI_T_pvar_start
-- [ ] MPI_T_pvar_stop
-- [ ] MPI_T_pvar_write
+- [x] MPI_T_pvar_start
+- [x] MPI_T_pvar_stop
+- [x] MPI_T_pvar_write
 - [x] MPI_Test
 - [x] MPI_Test_cancelled
 - [x] MPI_Testall
