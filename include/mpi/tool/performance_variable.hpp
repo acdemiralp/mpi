@@ -17,6 +17,11 @@ public:
     std::int32_t count;
     MPI_T_pvar_handle_alloc(session_.native(), index, static_cast<void*>(&data), &native_, &count);
   }
+  explicit performance_variable  (const session& session, const MPI_T_pvar_handle& native)
+  : native_(native), session_(session)
+  {
+    
+  }
   performance_variable           (const performance_variable&  that) = delete;
   performance_variable           (      performance_variable&& temp) noexcept
   : managed_(temp.managed_), native_(temp.native_), session_(temp.session_)
@@ -104,75 +109,13 @@ inline std::int32_t                                  performance_variable_count(
 }
 inline std::vector<performance_variable_information> performance_variable_info ()
 {
-  std::vector<performance_variable_information> result(performance_variable_count());
+  const auto count = performance_variable_count();
 
-  for (std::size_t i = 0; i < result.size(); ++i)
-  {
-    auto& info = result[i];
+  std::vector<performance_variable_information> result;
+  result.reserve(count);
 
-    auto         name_size(0), description_size(0);
-    MPI_Datatype data_type;
-    MPI_T_enum   enum_type;
-
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_get_info, (
-      static_cast<std::int32_t>(i)                         , 
-      nullptr                                              , 
-      &name_size                                           , 
-      reinterpret_cast<std::int32_t*>(&info.verbosity)     ,
-      reinterpret_cast<std::int32_t*>(&info.type)          ,
-      &data_type                                           ,
-      &enum_type                                           ,
-      nullptr                                              ,
-      &description_size                                    ,
-      reinterpret_cast<std::int32_t*>(&info.bind_type)     ,
-      reinterpret_cast<std::int32_t*>(&info.read_only)     ,
-      reinterpret_cast<std::int32_t*>(&info.continuous)    ,
-      reinterpret_cast<std::int32_t*>(&info.atomic)        ))
-
-    info.name       .resize(name_size);
-    info.description.resize(description_size);
-    info.data_type = mpi::data_type(data_type);
-
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_get_info, (
-      static_cast<std::int32_t>(i)                         , 
-      info.name       .data()                              , 
-      &name_size                                           , 
-      reinterpret_cast<std::int32_t*>(&info.verbosity)     ,
-      reinterpret_cast<std::int32_t*>(&info.type)          ,
-      &data_type                                           ,
-      &enum_type                                           ,
-      info.description.data()                              ,
-      &description_size                                    ,
-      reinterpret_cast<std::int32_t*>(&info.bind_type)     ,
-      reinterpret_cast<std::int32_t*>(&info.read_only)     ,
-      reinterpret_cast<std::int32_t*>(&info.continuous)    ,
-      reinterpret_cast<std::int32_t*>(&info.atomic)        ))
-
-    if (enum_type != MPI_T_ENUM_NULL)
-    {
-      auto& enum_info = result[i].enum_information.emplace();
-
-      auto enum_length(0), name_length(0);
-
-      MPI_CHECK_ERROR_CODE(MPI_T_enum_get_info, (enum_type, &enum_length, nullptr, &name_length))
-
-      enum_info.name .resize(name_length);
-      enum_info.items.resize(enum_length);
-
-      MPI_CHECK_ERROR_CODE(MPI_T_enum_get_info, (enum_type, &enum_length, result[i].enum_information->name.data(), &name_length))
-
-      for (std::size_t j = 0; j < enum_info.items.size(); ++j)
-      {
-        auto& enum_item = enum_info.items[j];
-
-        MPI_CHECK_ERROR_CODE(MPI_T_enum_get_item, (enum_type, static_cast<std::int32_t>(j), &enum_item.value, nullptr, &name_length))
-
-        enum_item.name.resize(name_length);
-
-        MPI_CHECK_ERROR_CODE(MPI_T_enum_get_item, (enum_type, static_cast<std::int32_t>(j), &enum_item.value, enum_item.name.data(), &name_length))
-      }
-    }
-  }
+  for (auto i = 0; i < count; ++i)
+    result.emplace_back(i);
 
   return result;
 }
