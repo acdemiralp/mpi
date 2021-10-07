@@ -15,7 +15,7 @@ namespace mpi::tool
 {
 struct performance_variable
 {
-  explicit performance_variable  (const std::int32_t index)
+  explicit performance_variable  (const std::int32_t index) : index(index)
   {
     auto         name_size(0), description_size(0);
     MPI_Datatype raw_data_type;
@@ -63,6 +63,8 @@ struct performance_variable
   virtual ~performance_variable  ()                                  = default;
   performance_variable& operator=(const performance_variable&  that) = delete ;
   performance_variable& operator=(      performance_variable&& temp) = default;
+
+  std::int32_t               index      ;
 
   std::string                name       ;
   std::string                description;

@@ -13,8 +13,7 @@ class environment
 public:
   explicit environment  (const thread_support required_thread_support)
   {
-    std::int32_t provided_thread_support; // Unused.
-    MPI_CHECK_ERROR_CODE(MPI_T_init_thread, (static_cast<std::int32_t>(required_thread_support), &provided_thread_support))
+    MPI_CHECK_ERROR_CODE(MPI_T_init_thread, (static_cast<std::int32_t>(required_thread_support), reinterpret_cast<std::int32_t*>(&provided_thread_support_)))
   }
   environment           (const environment&  that) = delete;
   environment           (      environment&& temp) = delete;
@@ -24,5 +23,14 @@ public:
   }
   environment& operator=(const environment&  that) = delete;
   environment& operator=(      environment&& temp) = delete;
+
+  [[nodiscard]]
+  thread_support provided_thread_support() const
+  {
+    return provided_thread_support_;
+  }
+
+protected:
+  thread_support provided_thread_support_;
 };
 }

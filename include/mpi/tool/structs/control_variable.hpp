@@ -15,7 +15,7 @@ namespace mpi::tool
 {
 struct control_variable
 {
-  explicit control_variable  (const std::int32_t index)
+  explicit control_variable  (const std::int32_t index) : index(index)
   {
     auto         name_size(0), description_size(0);
     MPI_Datatype raw_data_type;
@@ -57,6 +57,8 @@ struct control_variable
   virtual ~control_variable  ()                              = default;
   control_variable& operator=(const control_variable&  that) = delete ;
   control_variable& operator=(      control_variable&& temp) = default;
+
+  std::int32_t               index      ;
 
   std::string                name       ;
   std::string                description;

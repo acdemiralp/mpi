@@ -12,7 +12,7 @@ class performance_variable_handle
 {
 public:
   explicit performance_variable_handle  (const session& session, const std::int32_t index, type& data)
-  : session_(session)
+  : managed_(true), session_(session)
   {
     std::int32_t count;
     MPI_T_pvar_handle_alloc(session_.native(), index, static_cast<void*>(&data), &native_, &count);

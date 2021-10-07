@@ -14,12 +14,13 @@ namespace mpi::tool
 struct category
 {
   explicit category  (const std::int32_t index);
-  category           (const category&  that) = delete ;
+  category           (const category&  that) = default;
   category           (      category&& temp) = default;
   virtual ~category  ()                      = default;
-  category& operator=(const category&  that) = delete ;
+  category& operator=(const category&  that) = default;
   category& operator=(      category&& temp) = default;
 
+  std::int32_t                      index                ;
   std::string                       name                 ;
   std::string                       description          ;
   std::vector<control_variable>     control_variables    ;
@@ -71,7 +72,7 @@ inline std::vector<category> categories        (const std::vector<std::int32_t>&
   return result;
 }
 
-inline category::category(const std::int32_t index)
+inline category::category(const std::int32_t index) : index(index)
 {
   std::int32_t name_length, description_length, control_variable_count, performance_variable_count, subcategory_count;
 

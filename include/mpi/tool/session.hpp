@@ -8,9 +8,15 @@ namespace mpi::tool
 class session
 {
 public:
-  explicit session  ()
+  session           ()
+  : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_session_create, (&native_))
+  }
+  explicit session  (const MPI_T_pvar_session native)
+  : native_(native)
+  {
+    
   }
   session           (const session&  that) = delete;
   session           (      session&& temp) noexcept
