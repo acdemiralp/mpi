@@ -323,12 +323,12 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Status_set_cancelled      
 - [ ] MPI_Status_set_elements       
 - [ ] MPI_Status_set_elements_x     
-- [ ] MPI_T_category_changed        
-- [ ] MPI_T_category_get_categories 
-- [ ] MPI_T_category_get_cvars      
-- [ ] MPI_T_category_get_info       
-- [ ] MPI_T_category_get_num        
-- [ ] MPI_T_category_get_pvars      
+- [x] MPI_T_category_changed        
+- [x] MPI_T_category_get_categories 
+- [x] MPI_T_category_get_cvars      
+- [x] MPI_T_category_get_info       
+- [x] MPI_T_category_get_num        
+- [x] MPI_T_category_get_pvars      
 - [x] MPI_T_cvar_get_info           
 - [x] MPI_T_cvar_get_num            
 - [ ] MPI_T_cvar_handle_alloc       
@@ -340,14 +340,14 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_T_finalize 
 - [x] MPI_T_init_thread
 - [ ] MPI_T_pvar_get_info
-- [ ] MPI_T_pvar_get_num
+- [x] MPI_T_pvar_get_num
 - [ ] MPI_T_pvar_handle_alloc
 - [ ] MPI_T_pvar_handle_free
 - [ ] MPI_T_pvar_read
 - [ ] MPI_T_pvar_readreset
 - [ ] MPI_T_pvar_reset
-- [ ] MPI_T_pvar_session_create
-- [ ] MPI_T_pvar_session_free
+- [x] MPI_T_pvar_session_create
+- [x] MPI_T_pvar_session_free
 - [ ] MPI_T_pvar_start
 - [ ] MPI_T_pvar_stop
 - [ ] MPI_T_pvar_write
