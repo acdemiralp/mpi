@@ -17,7 +17,7 @@ struct performance_variable_information
   std::string                     description     ;
   verbosity                       verbosity       ;
   performance_variable_class      variable_class  ;
-  data_type                       type            ;
+  data_type                       data_type       ;
   std::optional<enum_information> enum_information;
   bind_type                       bind_type       ;
   bool                            read_only       ;

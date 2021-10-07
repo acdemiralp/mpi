@@ -131,7 +131,7 @@ inline std::vector<performance_variable_information> performance_variable_info (
 
     info.name       .resize(name_size);
     info.description.resize(description_size);
-    info.type = mpi::data_type(data_type);
+    info.data_type = mpi::data_type(data_type);
 
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_get_info, (
       static_cast<std::int32_t>(i)                         , 
