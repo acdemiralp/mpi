@@ -15,10 +15,12 @@ struct control_variable_information
 {
   std::string                     name            ;
   std::string                     description     ;
-  verbosity                       verbosity       ;
-  data_type                       data_type       ;
-  std::optional<enum_information> enum_information;
+
   bind_type                       bind_type       ;
   scope                           scope           ;
+  verbosity                       verbosity       ;
+
+  data_type                       data_type       ;
+  std::optional<enum_information> enum_information;
 };
 }

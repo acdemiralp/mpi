@@ -6,7 +6,7 @@
 
 namespace mpi::tool
 {
-enum class performance_variable_class : std::int32_t
+enum class performance_variable_type : std::int32_t
 {
   state          = MPI_T_PVAR_CLASS_STATE        ,
   level          = MPI_T_PVAR_CLASS_LEVEL        ,

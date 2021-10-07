@@ -121,7 +121,6 @@ inline std::vector<control_variable_information> control_variable_info ()
     if (enum_type != MPI_T_ENUM_NULL)
     {
       auto& enum_info = result[i].enum_information.emplace();
-      enum_info.type  = enum_type;
 
       auto enum_length(0), name_length(0);
 
@@ -135,13 +134,12 @@ inline std::vector<control_variable_information> control_variable_info ()
       for (std::size_t j = 0; j < enum_info.items.size(); ++j)
       {
         auto& enum_item = enum_info.items[j];
-        enum_item.index = static_cast<std::int32_t>(j);
 
-        MPI_CHECK_ERROR_CODE(MPI_T_enum_get_item, (enum_type, enum_item.index, &enum_item.value, nullptr, &name_length))
+        MPI_CHECK_ERROR_CODE(MPI_T_enum_get_item, (enum_type, static_cast<std::int32_t>(j), &enum_item.value, nullptr, &name_length))
 
         enum_item.name.resize(name_length);
 
-        MPI_CHECK_ERROR_CODE(MPI_T_enum_get_item, (enum_type, enum_item.index, &enum_item.value, enum_item.name.data(), &name_length))
+        MPI_CHECK_ERROR_CODE(MPI_T_enum_get_item, (enum_type, static_cast<std::int32_t>(j), &enum_item.value, enum_item.name.data(), &name_length))
       }
     }
   }
