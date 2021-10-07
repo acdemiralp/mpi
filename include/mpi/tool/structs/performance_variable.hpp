@@ -1,19 +1,21 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <optional>
+#include <vector>
 
 #include <mpi/core/data_type.hpp>
 #include <mpi/tool/enums/bind_type.hpp>
 #include <mpi/tool/enums/performance_variable_type.hpp>
 #include <mpi/tool/enums/verbosity.hpp>
-#include <mpi/tool/structs/enum_information.hpp>
+#include <mpi/tool/structs/enumeration.hpp>
 
 namespace mpi::tool
 {
-struct performance_variable_information
+struct performance_variable
 {
-  explicit performance_variable_information  (const std::int32_t index)
+  explicit performance_variable  (const std::int32_t index)
   {
     auto         name_size(0), description_size(0);
     MPI_Datatype raw_data_type;
@@ -52,27 +54,58 @@ struct performance_variable_information
       reinterpret_cast<std::int32_t*>(&continuous),
       reinterpret_cast<std::int32_t*>(&atomic)    ))
 
-    data_type = mpi::data_type(raw_data_type);
+    data_type.emplace(raw_data_type);
     if (enum_type != MPI_T_ENUM_NULL)
-      enum_information = tool::enum_information(enum_type);
+      enumeration.emplace(enum_type);
   }
-  performance_variable_information           (const performance_variable_information&  that) = delete ;
-  performance_variable_information           (      performance_variable_information&& temp) = default;
-  virtual ~performance_variable_information  ()                                              = default;
-  performance_variable_information& operator=(const performance_variable_information&  that) = delete ;
-  performance_variable_information& operator=(      performance_variable_information&& temp) = default;
+  performance_variable           (const performance_variable&  that) = delete ;
+  performance_variable           (      performance_variable&& temp) = default;
+  virtual ~performance_variable  ()                                  = default;
+  performance_variable& operator=(const performance_variable&  that) = delete ;
+  performance_variable& operator=(      performance_variable&& temp) = default;
 
-  std::string                     name            ;
-  std::string                     description     ;
+  std::string                name       ;
+  std::string                description;
 
-  bind_type                       bind_type       ;
-  performance_variable_type       type            ;
-  verbosity                       verbosity       ;
-  bool                            read_only       ;
-  bool                            continuous      ;
-  bool                            atomic          ;
+  bind_type                  bind_type  ;
+  performance_variable_type  type       ;
+  verbosity                  verbosity  ;
+  bool                       read_only  ;
+  bool                       continuous ;
+  bool                       atomic     ;
 
-  data_type                       data_type       ;
-  std::optional<enum_information> enum_information;
+  std::optional<data_type>   data_type  ; // Abusing optional for delayed construction of a stack variable.
+  std::optional<enumeration> enumeration;
 };
+
+inline std::int32_t                      performance_variable_count()
+{
+  std::int32_t result;
+  MPI_CHECK_ERROR_CODE(MPI_T_pvar_get_num, (&result))
+  return result;
+}
+inline std::vector<performance_variable> performance_variables     ()
+{
+  const auto count = performance_variable_count();
+
+  std::vector<performance_variable> result;
+  result.reserve(count);
+
+  for (auto i = 0; i < count; ++i)
+    result.emplace_back(i);
+
+  return result;
+}
+inline std::vector<performance_variable> performance_variables     (const std::vector<std::int32_t>& indices)
+{
+  const auto count = static_cast<std::int32_t>(indices.size());
+
+  std::vector<performance_variable> result;
+  result.reserve(count);
+
+  for (auto i = 0; i < count; ++i)
+    result.emplace_back(indices[i]);
+
+  return result;
+}
 }

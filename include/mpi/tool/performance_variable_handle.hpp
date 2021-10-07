@@ -2,40 +2,40 @@
 
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
-#include <mpi/tool/structs/performance_variable_information.hpp>
+#include <mpi/tool/structs/performance_variable.hpp>
 #include <mpi/tool/session.hpp>
 
 namespace mpi::tool
 {
-class performance_variable
+template <typename type>
+class performance_variable_handle
 {
 public:
-  template <typename type>
-  explicit performance_variable  (const session& session, const std::int32_t index, type& data)
+  explicit performance_variable_handle  (const session& session, const std::int32_t index, type& data)
   : session_(session)
   {
     std::int32_t count;
     MPI_T_pvar_handle_alloc(session_.native(), index, static_cast<void*>(&data), &native_, &count);
   }
-  explicit performance_variable  (const session& session, const MPI_T_pvar_handle& native)
+  explicit performance_variable_handle  (const session& session, const MPI_T_pvar_handle& native)
   : native_(native), session_(session)
   {
     
   }
-  performance_variable           (const performance_variable&  that) = delete;
-  performance_variable           (      performance_variable&& temp) noexcept
+  performance_variable_handle           (const performance_variable_handle&  that) = delete;
+  performance_variable_handle           (      performance_variable_handle&& temp) noexcept
   : managed_(temp.managed_), native_(temp.native_), session_(temp.session_)
   {
     temp.managed_ = false;
     temp.native_  = MPI_T_PVAR_HANDLE_NULL;
   }
-  virtual ~performance_variable  ()
+  virtual ~performance_variable_handle  ()
   {
     if (managed_ && native_ != MPI_T_PVAR_HANDLE_NULL)
       MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_free, (session_.native(), &native_))
   }
-  performance_variable& operator=(const performance_variable&  that) = delete;
-  performance_variable& operator=(      performance_variable&& temp) noexcept
+  performance_variable_handle& operator=(const performance_variable_handle&  that) = delete;
+  performance_variable_handle& operator=(      performance_variable_handle&& temp) noexcept
   {
     if (this != &temp)
     {
@@ -64,21 +64,18 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_reset, (session_.native(), native_))
   }
 
-  template <typename type>
   type              read      () const
   {
     type result;
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_read     , (session_.native(), native_, static_cast<      void*>(&result)))
     return result;
   }
-  template <typename type>
   type              read_reset() const
   {
     type result;
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_readreset, (session_.native(), native_, static_cast<      void*>(&result)))
     return result;
   }
-  template <typename type>
   void              write     (const type& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_write    , (session_.native(), native_, static_cast<const void*>(&value)))
@@ -100,23 +97,4 @@ protected:
   MPI_T_pvar_handle native_  = MPI_T_PVAR_HANDLE_NULL;
   const session&    session_ ;
 };
-
-inline std::int32_t                                  performance_variable_count()
-{
-  std::int32_t result;
-  MPI_CHECK_ERROR_CODE(MPI_T_pvar_get_num, (&result))
-  return result;
-}
-inline std::vector<performance_variable_information> performance_variable_info ()
-{
-  const auto count = performance_variable_count();
-
-  std::vector<performance_variable_information> result;
-  result.reserve(count);
-
-  for (auto i = 0; i < count; ++i)
-    result.emplace_back(i);
-
-  return result;
-}
 }
