@@ -21,3 +21,4 @@ enum class bind_type : std::int32_t
   information   = MPI_T_BIND_MPI_INFO
 };
 }
+

@@ -1,33 +1,58 @@
 #pragma once
 
+#include <cstdint>
+#include <cstddef>
+#include <optional>
+
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/tool/structs/performance_variable.hpp>
+#include <mpi/tool/object_variant.hpp>
 #include <mpi/tool/session.hpp>
 
 namespace mpi::tool
 {
-template <typename type>
 class performance_variable_handle
 {
 public:
-  explicit performance_variable_handle  (const session& session, const std::int32_t index, type& data)
+  template <typename type>
+  explicit performance_variable_handle  (const performance_variable& variable, const session& session)
   : managed_(true), session_(session)
   {
-    std::int32_t count;
-    MPI_T_pvar_handle_alloc(session_.native(), index, static_cast<void*>(&data), &native_, &count);
+    if (variable.bind_type == bind_type::file)
+    {
+      MPI_File handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_alloc, (session_.native(), variable.index, static_cast<void*>(&handle), &native_, &count_))
+    }
+    else
+    {
+      std::int32_t handle; // Abusing the fact that all native MPI object handles are std::int32_ts and all wrapper objects can be constructed from a native MPI object handle.
+      MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_alloc, (session_.native(), variable.index, static_cast<void*>(&handle), &native_, &count_))
+      
+      if      (variable.bind_type == bind_type::communicator ) object_ = communicator (handle);
+      else if (variable.bind_type == bind_type::data_type    ) object_ = data_type    (handle);
+      else if (variable.bind_type == bind_type::error_handler) object_ = error_handler(handle);
+      else if (variable.bind_type == bind_type::group        ) object_ = group        (handle);
+      else if (variable.bind_type == bind_type::information  ) object_ = information  (handle);
+      else if (variable.bind_type == bind_type::message      ) object_ = message      (handle);
+      else if (variable.bind_type == bind_type::op           ) object_ = op           (handle);
+      else if (variable.bind_type == bind_type::request      ) object_ = request      (handle);
+      else if (variable.bind_type == bind_type::window       ) object_ = window       (handle);
+    }
   }
-  explicit performance_variable_handle  (const session& session, const MPI_T_pvar_handle& native)
-  : native_(native), session_(session)
+  explicit performance_variable_handle  (const MPI_T_pvar_handle&    native  , const session& session, const std::int32_t count = 1, std::optional<object_variant> object = std::nullopt)
+  : native_(native), count_(count), object_(std::move(object)), session_(session)
   {
     
   }
   performance_variable_handle           (const performance_variable_handle&  that) = delete;
   performance_variable_handle           (      performance_variable_handle&& temp) noexcept
-  : managed_(temp.managed_), native_(temp.native_), session_(temp.session_)
+  : managed_(temp.managed_), native_(temp.native_), count_(temp.count_), object_(std::move(temp.object_)), session_(temp.session_)
   {
     temp.managed_ = false;
     temp.native_  = MPI_T_PVAR_HANDLE_NULL;
+    temp.count_   = 1;
+    temp.object_  = std::nullopt;
   }
   virtual ~performance_variable_handle  ()
   {
@@ -44,57 +69,82 @@ public:
 
       managed_      = temp.managed_;
       native_       = temp.native_ ;
+      count_        = temp.count_  ;
+      object_       = std::move(temp.object_);
+      session_      = temp.session_;
 
       temp.managed_ = false;
       temp.native_  = MPI_T_PVAR_HANDLE_NULL;
+      temp.count_   = 1;
+      temp.object_  = std::nullopt;
     }
     return *this;
   }
 
-  void              start     () const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_start, (session_.native(), native_))
-  }
-  void              stop      () const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_stop , (session_.native(), native_))
-  }
-  void              reset     () const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_reset, (session_.native(), native_))
-  }
-
-  type              read      () const
+  template <typename type>
+  type                                 read      () const
   {
     type result;
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_read     , (session_.native(), native_, static_cast<      void*>(&result)))
     return result;
   }
-  type              read_reset() const
+  template <typename type>
+  type                                 read_reset() const
   {
     type result;
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_readreset, (session_.native(), native_, static_cast<      void*>(&result)))
     return result;
   }
-  void              write     (const type& value) const
+  template <typename type>
+  void                                 write     (const type& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_write    , (session_.native(), native_, static_cast<const void*>(&value)))
   }
 
+  void                                 start     () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_start, (session_.native(), native_))
+  }
+  void                                 stop      () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_stop , (session_.native(), native_))
+  }
+  void                                 reset     () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_reset, (session_.native(), native_))
+  }
+
   [[nodiscard]]
-  bool              managed   () const
+  bool                                 managed   () const
   {
     return managed_;
   }
   [[nodiscard]]
-  MPI_T_pvar_handle native    () const
+  MPI_T_pvar_handle                    native    () const
   {
     return native_;
   }
+  [[nodiscard]]
+  std::int32_t                         count     () const
+  {
+    return count_;
+  }
+  [[nodiscard]]
+  const std::optional<object_variant>& object    () const
+  {
+    return object_;
+  }
+  [[nodiscard]]
+  const session&                       session   () const
+  {
+    return session_;
+  }
 
 protected:
-  bool              managed_ = false;
-  MPI_T_pvar_handle native_  = MPI_T_PVAR_HANDLE_NULL;
-  const session&    session_ ;
+  bool                          managed_ = false;
+  MPI_T_pvar_handle             native_  = MPI_T_PVAR_HANDLE_NULL;
+  std::int32_t                  count_   = 1;
+  std::optional<object_variant> object_  = std::nullopt;
+  const tool::session&          session_ ;
 };
 }
