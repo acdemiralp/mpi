@@ -72,16 +72,16 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Comm_compare               
 - [x] MPI_Comm_connect               
 - [x] MPI_Comm_create                
-- [ ] MPI_Comm_create_errhandler     
+- [x] MPI_Comm_create_errhandler     
 - [x] MPI_Comm_create_group          
-- [ ] MPI_Comm_create_keyval         
+- [x] MPI_Comm_create_keyval         
 - [ ] MPI_Comm_delete_attr           
 - [x] MPI_Comm_disconnect            
 - [x] MPI_Comm_dup                   
 - [x] MPI_Comm_dup_with_info         
 - [x] ~~MPI_Comm_f2c~~                   
 - [x] MPI_Comm_free                  
-- [ ] MPI_Comm_free_keyval           
+- [x] MPI_Comm_free_keyval           
 - [ ] MPI_Comm_get_attr              
 - [ ] MPI_Comm_get_errhandler        
 - [x] MPI_Comm_get_info              
@@ -120,7 +120,7 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_File_c2f~~
 - [ ] MPI_File_call_errhandler     
 - [x] MPI_File_close               
-- [ ] MPI_File_create_errhandler   
+- [x] MPI_File_create_errhandler   
 - [ ] MPI_File_delete              
 - [x] ~~MPI_File_f2c~~                 
 - [x] MPI_File_get_amode           
@@ -276,7 +276,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Neighbor_alltoallw        
 - [x] ~~MPI_Op_c2f~~                    
 - [x] MPI_Op_commutative            
-- [ ] MPI_Op_create                 
+- [x] MPI_Op_create                 
 - [x] ~~MPI_Op_f2c~~                    
 - [x] MPI_Op_free                   
 - [x] MPI_Open_port                 
@@ -413,7 +413,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Win_complete
 - [ ] MPI_Win_create
 - [ ] MPI_Win_create_dynamic
-- [ ] MPI_Win_create_errhandler
+- [x] MPI_Win_create_errhandler
 - [x] MPI_Win_create_keyval
 - [ ] MPI_Win_delete_attr
 - [ ] MPI_Win_detach

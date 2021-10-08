@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <functional>
 
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
@@ -11,10 +10,12 @@ namespace mpi
 class op
 {
 public:
-  explicit op  (const std::function<void(void*, void*, int*, MPI_Datatype*)>& function, const bool commutative)
+  using function_type = void (*) (void*, void*, std::int32_t*, MPI_Datatype*);
+
+  explicit op  (const function_type function, const bool commutative)
+  : managed_(true)
   {
-    // TODO: FIX. TARGET() DOES NOT WORK!
-    MPI_CHECK_ERROR_CODE(MPI_Op_create, (*function.target<void(*)(void*, void*, int*, MPI_Datatype*)>(), static_cast<std::int32_t>(commutative), &native_))
+    MPI_CHECK_ERROR_CODE(MPI_Op_create, (function, static_cast<std::int32_t>(commutative), &native_))
   }
   explicit op  (const MPI_Op native)
   : native_(native)

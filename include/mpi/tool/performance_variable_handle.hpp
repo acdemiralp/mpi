@@ -31,7 +31,7 @@ public:
       
       if      (variable.bind_type == bind_type::communicator ) object_ = communicator (handle);
       else if (variable.bind_type == bind_type::data_type    ) object_ = data_type    (handle);
-      else if (variable.bind_type == bind_type::error_handler) object_ = error_handler(handle);
+      else if (variable.bind_type == bind_type::error_handler) object_ = communicator_error_handler(handle);
       else if (variable.bind_type == bind_type::group        ) object_ = group        (handle);
       else if (variable.bind_type == bind_type::information  ) object_ = information  (handle);
       else if (variable.bind_type == bind_type::message      ) object_ = message      (handle);
