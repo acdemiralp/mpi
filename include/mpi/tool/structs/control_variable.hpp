@@ -5,7 +5,7 @@
 #include <optional>
 #include <vector>
 
-#include <mpi/core/data_type.hpp>
+#include <mpi/core/type/data_type.hpp>
 #include <mpi/tool/enums/bind_type.hpp>
 #include <mpi/tool/enums/scope.hpp>
 #include <mpi/tool/enums/verbosity.hpp>

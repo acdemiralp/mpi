@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mpi/core/data_type.hpp>
+#include <mpi/core/type/data_type.hpp>
 #include <mpi/core/mpi.hpp>
 
 namespace mpi::data_types
@@ -32,7 +32,6 @@ inline const data_type uint64_t                = data_type(MPI_UINT64_T         
 inline const data_type address_int             = data_type(MPI_AINT                   );
 inline const data_type count                   = data_type(MPI_COUNT                  );
 inline const data_type offset                  = data_type(MPI_OFFSET                 );
-inline const data_type c_complex               = data_type(MPI_C_COMPLEX              );
 inline const data_type c_complex_float         = data_type(MPI_C_FLOAT_COMPLEX        );
 inline const data_type c_complex_double        = data_type(MPI_C_DOUBLE_COMPLEX       );
 inline const data_type c_complex_long_double   = data_type(MPI_C_LONG_DOUBLE_COMPLEX  );
