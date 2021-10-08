@@ -123,14 +123,14 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_File_create_errhandler   
 - [ ] MPI_File_delete              
 - [x] ~~MPI_File_f2c~~                 
-- [ ] MPI_File_get_amode           
-- [ ] MPI_File_get_atomicity       
-- [ ] MPI_File_get_byte_offset     
+- [x] MPI_File_get_amode           
+- [x] MPI_File_get_atomicity       
+- [x] MPI_File_get_byte_offset     
 - [ ] MPI_File_get_errhandler      
-- [ ] MPI_File_get_group           
-- [ ] MPI_File_get_info            
-- [ ] MPI_File_get_position        
-- [ ] MPI_File_get_position_shared 
+- [x] MPI_File_get_group           
+- [x] MPI_File_get_info            
+- [x] MPI_File_get_position        
+- [x] MPI_File_get_position_shared 
 - [x] MPI_File_get_size            
 - [ ] MPI_File_get_type_extent     
 - [ ] MPI_File_get_view            
@@ -144,7 +144,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_File_iwrite_at           
 - [ ] MPI_File_iwrite_at_all       
 - [ ] MPI_File_iwrite_shared       
-- [ ] MPI_File_open                
+- [x] MPI_File_open                
 - [ ] MPI_File_preallocate
 - [ ] MPI_File_read                
 - [ ] MPI_File_read_all            
@@ -160,12 +160,12 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_File_read_shared         
 - [ ] MPI_File_seek                
 - [ ] MPI_File_seek_shared         
-- [ ] MPI_File_set_atomicity       
+- [x] MPI_File_set_atomicity       
 - [ ] MPI_File_set_errhandler      
-- [ ] MPI_File_set_info            
-- [ ] MPI_File_set_size            
+- [x] MPI_File_set_info            
+- [x] MPI_File_set_size            
 - [ ] MPI_File_set_view            
-- [ ] MPI_File_sync                
+- [x] MPI_File_sync                
 - [ ] MPI_File_write               
 - [ ] MPI_File_write_all           
 - [ ] MPI_File_write_all_begin     

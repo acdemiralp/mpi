@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 
@@ -7,6 +8,7 @@
 #include <mpi/core/enums/mode.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/group.hpp>
+#include <mpi/core/information.hpp>
 #include <mpi/core/mpi.hpp>
 
 namespace mpi
