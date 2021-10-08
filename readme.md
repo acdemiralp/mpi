@@ -368,30 +368,30 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Type_create_hindexed_bloc
 - [ ] MPI_Type_create_hvector
 - [ ] MPI_Type_create_indexed_block
-- [ ] MPI_Type_create_keyval
+- [.] MPI_Type_create_keyval
 - [ ] MPI_Type_create_resized
 - [ ] MPI_Type_create_struct
 - [ ] MPI_Type_create_subarray
-- [ ] MPI_Type_delete_attr
+- [x] MPI_Type_delete_attr
 - [x] MPI_Type_dup
 - [x] ~~MPI_Type_extent~~
 - [x] ~~MPI_Type_f2c~~
 - [x] MPI_Type_free
-- [ ] MPI_Type_free_keyval
-- [ ] MPI_Type_get_attr
-- [ ] MPI_Type_get_contents
-- [ ] MPI_Type_get_envelope
-- [ ] MPI_Type_get_extent
-- [ ] MPI_Type_get_extent_x
+- [.] MPI_Type_free_keyval
+- [x] MPI_Type_get_attr
+- [.] MPI_Type_get_contents
+- [.] MPI_Type_get_envelope
+- [x] MPI_Type_get_extent
+- [x] MPI_Type_get_extent_x
 - [x] MPI_Type_get_name
-- [ ] MPI_Type_get_true_extent
-- [ ] MPI_Type_get_true_extent_x
+- [x] MPI_Type_get_true_extent
+- [x] MPI_Type_get_true_extent_x
 - [x] ~~MPI_Type_hindexed~~
 - [x] ~~MPI_Type_hvector~~
 - [ ] MPI_Type_indexed
 - [x] ~~MPI_Type_lb~~
-- [ ] MPI_Type_match_size
-- [ ] MPI_Type_set_attr
+- [x] ~~MPI_Type_match_size~~
+- [x] MPI_Type_set_attr
 - [x] MPI_Type_set_name
 - [x] MPI_Type_size
 - [x] MPI_Type_size_x

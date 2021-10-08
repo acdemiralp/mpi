@@ -3,7 +3,7 @@
 #include <mpi/core/data_type.hpp>
 #include <mpi/core/mpi.hpp>
 
-namespace mpi::standard_data_types
+namespace mpi::data_types
 {
 inline const data_type char_                   = data_type(MPI_CHAR                   );
 inline const data_type short_                  = data_type(MPI_SHORT                  );
@@ -29,13 +29,13 @@ inline const data_type uint8_t                 = data_type(MPI_UINT8_T          
 inline const data_type uint16_t                = data_type(MPI_UINT16_T               );
 inline const data_type uint32_t                = data_type(MPI_UINT32_T               );
 inline const data_type uint64_t                = data_type(MPI_UINT64_T               );
-inline const data_type aint                    = data_type(MPI_AINT                   );
+inline const data_type address_int             = data_type(MPI_AINT                   );
 inline const data_type count                   = data_type(MPI_COUNT                  );
 inline const data_type offset                  = data_type(MPI_OFFSET                 );
 inline const data_type c_complex               = data_type(MPI_C_COMPLEX              );
-inline const data_type c_float_complex         = data_type(MPI_C_FLOAT_COMPLEX        );
-inline const data_type c_double_complex        = data_type(MPI_C_DOUBLE_COMPLEX       );
-inline const data_type c_long_double_complex   = data_type(MPI_C_LONG_DOUBLE_COMPLEX  );
+inline const data_type c_complex_float         = data_type(MPI_C_FLOAT_COMPLEX        );
+inline const data_type c_complex_double        = data_type(MPI_C_DOUBLE_COMPLEX       );
+inline const data_type c_complex_long_double   = data_type(MPI_C_LONG_DOUBLE_COMPLEX  );
 inline const data_type byte                    = data_type(MPI_BYTE                   );
 inline const data_type packed                  = data_type(MPI_PACKED                 );
 inline const data_type bool_                   = data_type(MPI_CXX_BOOL               );
