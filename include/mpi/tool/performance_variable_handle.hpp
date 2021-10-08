@@ -7,6 +7,7 @@
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/tool/structs/performance_variable.hpp>
+#include <mpi/tool/container_adapter.hpp>
 #include <mpi/tool/object_variant.hpp>
 #include <mpi/tool/session.hpp>
 
@@ -15,7 +16,6 @@ namespace mpi::tool
 class performance_variable_handle
 {
 public:
-  template <typename type>
   explicit performance_variable_handle  (const performance_variable& variable, const session& session)
   : managed_(true), session_(session)
   {
@@ -26,7 +26,7 @@ public:
     }
     else
     {
-      std::int32_t handle; // Abusing the fact that all native MPI object handles are std::int32_ts and all wrapper objects can be constructed from a native MPI object handle.
+      std::int32_t handle; // Abusing the fact that all native MPI object handles are std::int32_ts.
       MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_alloc, (session_.native(), variable.index, static_cast<void*>(&handle), &native_, &count_))
       
       if      (variable.bind_type == bind_type::communicator ) object_ = communicator (handle);
@@ -60,45 +60,28 @@ public:
       MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_free, (session_.native(), &native_))
   }
   performance_variable_handle& operator=(const performance_variable_handle&  that) = delete;
-  performance_variable_handle& operator=(      performance_variable_handle&& temp) noexcept
-  {
-    if (this != &temp)
-    {
-      if (managed_ && native_ != MPI_T_PVAR_HANDLE_NULL)
-        MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_free, (session_.native(), &native_))
-
-      managed_      = temp.managed_;
-      native_       = temp.native_ ;
-      count_        = temp.count_  ;
-      object_       = std::move(temp.object_);
-      session_      = temp.session_;
-
-      temp.managed_ = false;
-      temp.native_  = MPI_T_PVAR_HANDLE_NULL;
-      temp.count_   = 1;
-      temp.object_  = std::nullopt;
-    }
-    return *this;
-  }
+  performance_variable_handle& operator=(      performance_variable_handle&& temp) = delete; // Assignment is disabled due to a constant reference member variable.
 
   template <typename type>
   type                                 read      () const
   {
     type result;
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_read     , (session_.native(), native_, static_cast<      void*>(&result)))
+    container_adapter<type>::resize(result, count_);
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_read     , (session_.native(), native_, container_adapter<type>::data(result)))
     return result;
   }
   template <typename type>
   type                                 read_reset() const
   {
     type result;
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_readreset, (session_.native(), native_, static_cast<      void*>(&result)))
+    container_adapter<type>::resize(result, count_);
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_readreset, (session_.native(), native_, container_adapter<type>::data(result)))
     return result;
   }
   template <typename type>
   void                                 write     (const type& value) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_write    , (session_.native(), native_, static_cast<const void*>(&value)))
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_write    , (session_.native(), native_, container_adapter<type>::data(value)))
   }
 
   void                                 start     () const

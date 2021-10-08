@@ -7,6 +7,7 @@
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/tool/structs/control_variable.hpp>
+#include <mpi/tool/container_adapter.hpp>
 #include <mpi/tool/object_variant.hpp>
 
 namespace mpi::tool
@@ -26,7 +27,7 @@ public:
     }
     else
     {
-      std::int32_t handle; // Abusing the fact that all native MPI object handles are std::int32_ts and all wrapper objects can be constructed from a native MPI object handle.
+      std::int32_t handle; // Abusing the fact that all native MPI object handles are std::int32_ts.
       MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, static_cast<void*>(&handle), &native_, &count_))
 
       if      (variable.bind_type == bind_type::communicator ) object_ = communicator (handle);
@@ -84,13 +85,14 @@ public:
   type                                 read       () const
   {
     type result;
-    MPI_CHECK_ERROR_CODE(MPI_T_cvar_read , (native_, static_cast<void*>(&result)))
+    container_adapter<type>::resize(result, count_);
+    MPI_CHECK_ERROR_CODE(MPI_T_cvar_read , (native_, container_adapter<type>::data(result)))
     return result;
   }
   template <typename type>
   void                                 write      (const type& value) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_T_cvar_write, (native_, static_cast<const void*>(&value)))
+    MPI_CHECK_ERROR_CODE(MPI_T_cvar_write, (native_, container_adapter<type>::data(value)))
   }
 
   [[nodiscard]]

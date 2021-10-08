@@ -47,6 +47,19 @@ public:
     return *this;
   }
 
+  void               start  () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_start, (native_, MPI_T_PVAR_ALL_HANDLES))
+  }
+  void               stop   () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_stop , (native_, MPI_T_PVAR_ALL_HANDLES))
+  }
+  void               reset  () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_reset, (native_, MPI_T_PVAR_ALL_HANDLES))
+  }
+
   [[nodiscard]]
   bool               managed() const
   {

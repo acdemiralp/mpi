@@ -90,5 +90,28 @@ MPI_SPECIALIZE_GET_DATA_TYPE(double       , MPI_DOUBLE            )
 #undef MPI_SPECIALIZE_GET_DATA_TYPE
 
 // Given MPI data type, cast to type??
+template <MPI_Datatype data_type>
+struct data_type_traits
+{
+  
+};
+  
+#define MPI_SPECIALIZE_GET_DATA_TYPE(TYPE, DATA_TYPE) \
+template <>                                           \
+data_type get_data_type<TYPE>()                       \
+{                                                     \
+  return data_type(DATA_TYPE);                        \
+}
+
+template <>
+struct data_type_traits<MPI_SHORT>
+{
+  using type = std::int16_t;
+};
+template <>
+struct data_type_traits<MPI_UNSIGNED_SHORT>
+{
+  using type = std::uint16_t;
+};
 
 }
