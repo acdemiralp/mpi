@@ -358,7 +358,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Testsome
 - [x] MPI_Topo_test
 - [x] ~~MPI_Type_c2f~~
-- [ ] MPI_Type_commit
+- [x] MPI_Type_commit
 - [ ] MPI_Type_contiguous
 - [ ] MPI_Type_create_darray
 - [ ] MPI_Type_create_f90_complex
@@ -373,8 +373,8 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Type_create_struct
 - [ ] MPI_Type_create_subarray
 - [ ] MPI_Type_delete_attr
-- [ ] MPI_Type_dup
-- [ ] MPI_Type_extent
+- [x] MPI_Type_dup
+- [x] ~~MPI_Type_extent~~
 - [x] ~~MPI_Type_f2c~~
 - [x] MPI_Type_free
 - [ ] MPI_Type_free_keyval
@@ -383,20 +383,20 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Type_get_envelope
 - [ ] MPI_Type_get_extent
 - [ ] MPI_Type_get_extent_x
-- [ ] MPI_Type_get_name
+- [x] MPI_Type_get_name
 - [ ] MPI_Type_get_true_extent
 - [ ] MPI_Type_get_true_extent_x
-- [ ] MPI_Type_hindexed
-- [ ] MPI_Type_hvector
+- [x] ~~MPI_Type_hindexed~~
+- [x] ~~MPI_Type_hvector~~
 - [ ] MPI_Type_indexed
-- [ ] MPI_Type_lb
+- [x] ~~MPI_Type_lb~~
 - [ ] MPI_Type_match_size
 - [ ] MPI_Type_set_attr
-- [ ] MPI_Type_set_name
-- [ ] MPI_Type_size
-- [ ] MPI_Type_size_x
-- [ ] MPI_Type_struct
-- [ ] MPI_Type_ub
+- [x] MPI_Type_set_name
+- [x] MPI_Type_size
+- [x] MPI_Type_size_x
+- [x] ~~MPI_Type_struct~~
+- [x] ~~MPI_Type_ub~~
 - [ ] MPI_Type_vector
 - [ ] MPI_Unpack
 - [ ] MPI_Unpack_external

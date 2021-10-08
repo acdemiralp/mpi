@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
@@ -13,7 +16,11 @@ public:
   {
     
   }
-  data_type           (const data_type&  that) = delete;
+  data_type           (const data_type&  that)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_dup, (that.native_, &native_))
+  }
   data_type           (      data_type&& temp) noexcept
   : managed_(temp.managed_), native_(temp.native_)
   {
@@ -25,7 +32,18 @@ public:
     if (managed_ && native_ != MPI_DATATYPE_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Type_free, (&native_))
   }
-  data_type& operator=(const data_type&  that) = delete;
+  data_type& operator=(const data_type&  that)
+  {
+    if (this != &that)
+    {
+      if (managed_ && native_ != MPI_DATATYPE_NULL)
+        MPI_CHECK_ERROR_CODE(MPI_Type_free, (&native_))
+      
+      managed_ = true;
+      MPI_CHECK_ERROR_CODE(MPI_Type_dup, (that.native_, &native_))
+    }
+    return *this;
+  }
   data_type& operator=(      data_type&& temp) noexcept
   {
     if (this != &temp)
@@ -42,21 +60,56 @@ public:
     return *this;
   }
 
+  [[nodiscard]]
+  std::string  name    () const
+  {
+    std::string  result(MPI_MAX_OBJECT_NAME, ' ');
+    std::int32_t count (0);
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_name, (native_, result.data(), &count))
+    result.resize(count);
+    return result;
+  }
+  void         set_name(const std::string& value) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_set_name, (native_, value.data()))
+  }
+
+  [[nodiscard]]
+  std::int32_t size    () const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Type_size, (native_, &result))
+    return result;
+  }
+  [[nodiscard]]
+  MPI_Count    size_x  () const
+  {
+    MPI_Count result;
+    MPI_CHECK_ERROR_CODE(MPI_Type_size_x, (native_, &result))
+    return result;
+  }
+
+  void         commit  ()
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_commit, (&native_))
+  }
+
+  [[nodiscard]]
+  bool         managed () const
+  {
+    return managed_;
+  }
+  [[nodiscard]]
+  MPI_Datatype native  () const
+  {
+    return native_;
+  }
+
 protected:
   bool         managed_ = false;
   MPI_Datatype native_  = MPI_DATATYPE_NULL;
 };
 
-
-
-inline const data_type int_data_type                = data_type(MPI_INTEGER           );
-inline const data_type unsigned_int_data_type       = data_type(MPI_UNSIGNED          );
-inline const data_type unsigned_long_data_type      = data_type(MPI_UNSIGNED_LONG     );
-inline const data_type unsigned_long_long_data_type = data_type(MPI_UNSIGNED_LONG_LONG);
-inline const data_type char_data_type               = data_type(MPI_CHAR              );
-inline const data_type float_data_type              = data_type(MPI_FLOAT             );
-inline const data_type double_data_type             = data_type(MPI_DOUBLE            );
-// TODO: Other common data types.
 
 
 
