@@ -7,17 +7,62 @@
 #include <vector>
 
 #include <mpi/core/enums/combiner.hpp>
+#include <mpi/core/type/data_type_information.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
 namespace mpi
 {
-struct data_type_contents
+struct key_value
 {
-  std::vector<std::int32_t> integers  ;
-  std::vector<std::int32_t> addresses ;
-  std::vector<std::int32_t> data_types;
-  combiner                  combiner  ;
+  key_value           () : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_keyval, (
+      [ ] (MPI_Datatype type, std::int32_t index, void* state, void* in, void* out, std::int32_t* flag)
+      {
+        out   = in;
+        *flag = 1 ;
+        return MPI_SUCCESS;
+      }, 
+      [ ] (MPI_Datatype type, std::int32_t index, void* value, void* state)
+      {
+        return MPI_SUCCESS;
+      }, 
+      &index_, 
+      nullptr)) // Extra state is unused.
+  }
+  key_value           (const key_value&  that) = delete;
+  key_value           (      key_value&& temp) noexcept
+  : managed_(temp.managed_), index_(temp.index_)
+  {
+    temp.managed_ = false;
+    temp.index_   = MPI_KEYVAL_INVALID;
+  }
+  virtual ~key_value  ()
+  {
+    if (managed_ && index_ != MPI_KEYVAL_INVALID)
+      MPI_CHECK_ERROR_CODE(MPI_Type_free_keyval, (&index_))
+  }
+  key_value& operator=(const key_value&  that) = delete;
+  key_value& operator=(      key_value&& temp) noexcept
+  {
+    if (this != &temp)
+    {
+      if (managed_ && index_ != MPI_KEYVAL_INVALID)
+        MPI_CHECK_ERROR_CODE(MPI_Type_free_keyval, (&index_))
+
+      managed_      = temp.managed_;
+      index_        = temp.index_;
+
+      temp.managed_ = false;
+      temp.index_   = MPI_KEYVAL_INVALID;
+    }
+    return *this;
+  }
+
+protected:
+  bool         managed_ = false;
+  std::int32_t index_   = MPI_KEYVAL_INVALID;
 };
 
 class data_type
@@ -145,6 +190,35 @@ public:
   {
     std::array<MPI_Count, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent_x, (native_, &result[0], &result[1]))
+    return result;
+  }
+  [[nodiscard]]
+  data_type_information    information     () const
+  {
+    data_type_information result;
+
+    std::int32_t integers_size, addresses_size, data_types_size;
+
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_envelope, (
+      native_         , 
+      &integers_size  , 
+      &addresses_size , 
+      &data_types_size, 
+      reinterpret_cast<std::int32_t*>(&result.combiner)))
+
+    result.integers  .resize(integers_size  );
+    result.addresses .resize(addresses_size );
+    result.data_types.resize(data_types_size);
+
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_contents, (
+      native_                 ,
+      integers_size           ,
+      addresses_size          ,
+      data_types_size         ,
+      result.integers  .data(),
+      result.addresses .data(),
+      result.data_types.data()))
+
     return result;
   }
 

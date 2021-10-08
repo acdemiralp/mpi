@@ -368,7 +368,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Type_create_hindexed_bloc
 - [ ] MPI_Type_create_hvector
 - [ ] MPI_Type_create_indexed_block
-- [.] MPI_Type_create_keyval
+- [x] MPI_Type_create_keyval
 - [ ] MPI_Type_create_resized
 - [ ] MPI_Type_create_struct
 - [ ] MPI_Type_create_subarray
@@ -377,10 +377,10 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Type_extent~~
 - [x] ~~MPI_Type_f2c~~
 - [x] MPI_Type_free
-- [.] MPI_Type_free_keyval
+- [x] MPI_Type_free_keyval
 - [x] MPI_Type_get_attr
-- [.] MPI_Type_get_contents
-- [.] MPI_Type_get_envelope
+- [x] MPI_Type_get_contents
+- [x] MPI_Type_get_envelope
 - [x] MPI_Type_get_extent
 - [x] MPI_Type_get_extent_x
 - [x] MPI_Type_get_name

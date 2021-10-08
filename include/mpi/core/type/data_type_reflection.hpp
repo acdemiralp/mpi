@@ -45,8 +45,8 @@ template<> inline data_type get_data_type<wchar_t                  >() { return 
 //template<> inline data_type get_data_type<MPI_Aint               >() { return data_type(MPI_AINT                   ); }
 //template<> inline data_type get_data_type<MPI_Count              >() { return data_type(MPI_COUNT                  ); }
 //template<> inline data_type get_data_type<MPI_Offset             >() { return data_type(MPI_OFFSET                 ); }
-//template<> inline data_type get_data_type<float _Complex         >() { return data_type(MPI_C_FLOAT_COMPLEX        ); }
-//template<> inline data_type get_data_type<double _Complex        >() { return data_type(MPI_C_DOUBLE_COMPLEX       ); }
+//template<> inline data_type get_data_type<float       _Complex   >() { return data_type(MPI_C_FLOAT_COMPLEX        ); }
+//template<> inline data_type get_data_type<double      _Complex   >() { return data_type(MPI_C_DOUBLE_COMPLEX       ); }
 //template<> inline data_type get_data_type<long double _Complex   >() { return data_type(MPI_C_LONG_DOUBLE_COMPLEX  ); }
 template<> inline data_type get_data_type<std::byte                >() { return data_type(MPI_BYTE                   ); }
 //template<> inline data_type get_data_type<_Packed                >() { return data_type(MPI_PACKED                 ); }
