@@ -410,40 +410,40 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Win_attach
 - [x] ~~MPI_Win_c2f~~
 - [ ] MPI_Win_call_errhandler
-- [ ] MPI_Win_complete
+- [x] MPI_Win_complete
 - [ ] MPI_Win_create
 - [ ] MPI_Win_create_dynamic
 - [ ] MPI_Win_create_errhandler
-- [ ] MPI_Win_create_keyval
+- [x] MPI_Win_create_keyval
 - [ ] MPI_Win_delete_attr
 - [ ] MPI_Win_detach
 - [x] ~~MPI_Win_f2c~~
-- [ ] MPI_Win_fence
-- [ ] MPI_Win_flush
-- [ ] MPI_Win_flush_all
-- [ ] MPI_Win_flush_local
-- [ ] MPI_Win_flush_local_all
-- [ ] MPI_Win_free
-- [ ] MPI_Win_free_keyval
+- [x] MPI_Win_fence
+- [x] MPI_Win_flush
+- [x] MPI_Win_flush_all
+- [x] MPI_Win_flush_local
+- [x] MPI_Win_flush_local_all
+- [x] MPI_Win_free
+- [x] MPI_Win_free_keyval
 - [ ] MPI_Win_get_attr
 - [ ] MPI_Win_get_errhandler
-- [ ] MPI_Win_get_group
-- [ ] MPI_Win_get_info
-- [ ] MPI_Win_get_name
-- [ ] MPI_Win_lock
-- [ ] MPI_Win_lock_all
-- [ ] MPI_Win_post
+- [x] MPI_Win_get_group
+- [x] MPI_Win_get_info
+- [x] MPI_Win_get_name
+- [x] MPI_Win_lock
+- [x] MPI_Win_lock_all
+- [x] MPI_Win_post
 - [ ] MPI_Win_set_attr
 - [ ] MPI_Win_set_errhandler
-- [ ] MPI_Win_set_info
-- [ ] MPI_Win_set_name
+- [x] MPI_Win_set_info
+- [x] MPI_Win_set_name
 - [ ] MPI_Win_shared_query
-- [ ] MPI_Win_start
-- [ ] MPI_Win_sync
-- [ ] MPI_Win_test
-- [ ] MPI_Win_unlock
-- [ ] MPI_Win_unlock_all
-- [ ] MPI_Win_wait
+- [x] MPI_Win_start
+- [x] MPI_Win_sync
+- [x] MPI_Win_test
+- [x] MPI_Win_unlock
+- [x] MPI_Win_unlock_all
+- [x] MPI_Win_wait
 - [x] MPI_Wtick
 - [x] MPI_Wtime
 

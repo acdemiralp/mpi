@@ -4,67 +4,15 @@
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include <mpi/core/enums/combiner.hpp>
 #include <mpi/core/type/data_type_information.hpp>
+#include <mpi/core/type/data_type_key_value.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
 namespace mpi
 {
-struct key_value
-{
-  key_value           () : managed_(true)
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Type_create_keyval, (
-      [ ] (MPI_Datatype type, std::int32_t index, void* state, void* in, void* out, std::int32_t* flag)
-      {
-        out   = in;
-        *flag = 1 ;
-        return MPI_SUCCESS;
-      }, 
-      [ ] (MPI_Datatype type, std::int32_t index, void* value, void* state)
-      {
-        return MPI_SUCCESS;
-      }, 
-      &index_, 
-      nullptr)) // Extra state is unused.
-  }
-  key_value           (const key_value&  that) = delete;
-  key_value           (      key_value&& temp) noexcept
-  : managed_(temp.managed_), index_(temp.index_)
-  {
-    temp.managed_ = false;
-    temp.index_   = MPI_KEYVAL_INVALID;
-  }
-  virtual ~key_value  ()
-  {
-    if (managed_ && index_ != MPI_KEYVAL_INVALID)
-      MPI_CHECK_ERROR_CODE(MPI_Type_free_keyval, (&index_))
-  }
-  key_value& operator=(const key_value&  that) = delete;
-  key_value& operator=(      key_value&& temp) noexcept
-  {
-    if (this != &temp)
-    {
-      if (managed_ && index_ != MPI_KEYVAL_INVALID)
-        MPI_CHECK_ERROR_CODE(MPI_Type_free_keyval, (&index_))
-
-      managed_      = temp.managed_;
-      index_        = temp.index_;
-
-      temp.managed_ = false;
-      temp.index_   = MPI_KEYVAL_INVALID;
-    }
-    return *this;
-  }
-
-protected:
-  bool         managed_ = false;
-  std::int32_t index_   = MPI_KEYVAL_INVALID;
-};
-
 class data_type
 {
 public:
@@ -132,22 +80,21 @@ public:
   }
 
   template <typename type>
-  std::optional<type>      attribute       (const std::int32_t key) const
+  std::optional<type>      attribute       (const data_type_key_value& key) const
   {
     type         result;
     std::int32_t exists;
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_attr, (native_, key, static_cast<void*>(&result), &exists))
-    return exists ? result : std::optional<type>(std::nullopt);
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
+    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
   }
   template <typename type>
-  void                     set_attribute   (const std::int32_t key, const type& value) const
+  void                     set_attribute   (const data_type_key_value& key, const type& value) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_Type_set_attr, (native_, key, static_cast<void*>(&value)))
+    MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
   }
-  template <typename type>
-  void                     remove_attribute(const std::int32_t key) const
+  void                     remove_attribute(const data_type_key_value& key) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_Type_delete_attr, (native_, key))
+    MPI_CHECK_ERROR_CODE(MPI_Type_delete_attr, (native_, key.native()))
   }
 
   [[nodiscard]]
@@ -164,6 +111,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Type_size_x, (native_, &result))
     return result;
   }
+
   [[nodiscard]]
   std::array<MPI_Aint , 2> extent          () const
   {
@@ -178,6 +126,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Type_get_extent_x, (native_, &result[0], &result[1]))
     return result;
   }
+
   [[nodiscard]]
   std::array<MPI_Aint , 2> true_extent     () const
   {
@@ -192,6 +141,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent_x, (native_, &result[0], &result[1]))
     return result;
   }
+
   [[nodiscard]]
   data_type_information    information     () const
   {
