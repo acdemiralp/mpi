@@ -3,7 +3,7 @@
 #include <variant>
 
 #include <mpi/core/communicators/communicator.hpp>
-#include <mpi/core/error/communicator_error_handler.hpp>
+#include <mpi/core/error/error_handler.hpp>
 #include <mpi/core/group.hpp>
 #include <mpi/core/op.hpp>
 #include <mpi/core/request.hpp>
@@ -18,7 +18,7 @@ namespace mpi::tool
 using object_variant = std::variant<
   communicator ,
   data_type    ,
-  communicator_error_handler,
+  error_handler,
   file         ,
   group        ,
   op           ,
