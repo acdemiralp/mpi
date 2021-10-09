@@ -80,7 +80,7 @@ public:
   }
 
   template <typename type>
-  std::optional<type>      attribute       (const communicator_key_value& key) const
+  std::optional<type>      attribute       (const data_type_key_value& key) const
   {
     type         result;
     std::int32_t exists;
@@ -88,11 +88,11 @@ public:
     return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
   }
   template <typename type>
-  void                     set_attribute   (const communicator_key_value& key, const type& value) const
+  void                     set_attribute   (const data_type_key_value& key, const type& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
   }
-  void                     remove_attribute(const communicator_key_value& key) const
+  void                     remove_attribute(const data_type_key_value& key) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_delete_attr, (native_, key.native()))
   }
