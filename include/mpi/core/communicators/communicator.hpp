@@ -10,6 +10,7 @@
 #include <mpi/core/error/error_code.hpp>
 #include <mpi/core/enums/comparison.hpp>
 #include <mpi/core/enums/topology.hpp>
+#include <mpi/core/error/error_handler.hpp>
 #include <mpi/core/structs/spawn_data.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/group.hpp>
@@ -92,14 +93,14 @@ public:
   }
 
   [[nodiscard]]
-  std::int32_t          rank                () const
+  std::int32_t               rank                () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_rank, (native_, &result))
     return result;
   }
   [[nodiscard]]
-  std::int32_t          size                () const
+  std::int32_t               size                () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_size, (native_, &result))
@@ -107,7 +108,7 @@ public:
   }
 
   [[nodiscard]]
-  std::string           name                () const
+  std::string                name                () const
   {
     std::string  result(MPI_MAX_OBJECT_NAME, ' ');
     std::int32_t length(0);
@@ -115,50 +116,84 @@ public:
     result.resize(static_cast<std::size_t>(length));
     return result;
   }
-  void                  set_name            (const std::string& value) const
+  void                       set_name            (const std::string& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_set_name, (native_, value.c_str()))
   }
 
   [[nodiscard]]
-  information           information         () const
+  information                information         () const
   {
     MPI_Info result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_get_info, (native_, &result))
     return mpi::information(result);
   }
-  void                  set_information     (const mpi::information& value) const
+  void                       set_information     (const mpi::information& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_set_info, (native_, value.native()))
   }
 
   [[nodiscard]]
-  group                 group               () const
+  group                      group               () const
   {
     MPI_Group result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_group, (native_, &result))
     return mpi::group(result);
   }
   [[nodiscard]]
-  topology              topology            () const
+  topology                   topology            () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Topo_test, (native_, &result))
     return static_cast<mpi::topology>(result);
   }
 
-  void                  abort               (const error_code& error_code) const
+  [[nodiscard]]
+  communicator_error_handler error_handler       () const
+  {
+    MPI_Errhandler result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_get_errhandler, (native_, &result))
+    return communicator_error_handler(result);
+  }
+  void                       set_error_handler   (const communicator_error_handler& value) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Comm_set_errhandler, (native_, value.native()))
+  }
+  void                       call_error_handler  (const error_code& value) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Comm_call_errhandler, (native_, value.native()))
+  }
+
+  template <typename type>
+  std::optional<type>        attribute           (const communicator_key_value& key) const
+  {
+    type         result;
+    std::int32_t exists;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
+    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
+  }
+  template <typename type>
+  void                       set_attribute       (const communicator_key_value& key, const type& value) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Comm_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
+  }
+  void                       remove_attribute    (const communicator_key_value& key) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Comm_delete_attr, (native_, key.native()))
+  }
+
+  void                       abort               (const error_code& error_code) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Abort, (native_, error_code.native()))
   }
 
-  void                  barrier             () const
+  void                       barrier             () const
   {
     MPI_CHECK_ERROR_CODE(MPI_Barrier, (native_))
   }
 
   [[nodiscard]]
-  comparison            compare             (const communicator& that) const
+  comparison                 compare             (const communicator& that) const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_compare, (native_, that.native_, &result))
@@ -167,7 +202,7 @@ public:
 
   // Intercommunicator functionality.
   [[nodiscard]]
-  communicator&&        accept              (const port& port, const mpi::information& info, const std::int32_t root) const
+  communicator&&             accept              (const port& port, const mpi::information& info, const std::int32_t root) const
   {
     communicator intercommunicator;
     intercommunicator.managed_ = true;
@@ -175,7 +210,7 @@ public:
     return std::move(intercommunicator);
   }
   [[nodiscard]]
-  communicator&&        connect             (const port& port, const mpi::information& info, const std::int32_t root) const
+  communicator&&             connect             (const port& port, const mpi::information& info, const std::int32_t root) const
   {
     communicator intercommunicator;
     intercommunicator.managed_ = true;
@@ -183,34 +218,34 @@ public:
     return std::move(intercommunicator);
   }
 
-  void                  disconnect          ()
+  void                       disconnect          ()
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_disconnect, (&native_))
   }
 
   [[nodiscard]]
-  bool                  is_intercommunicator() const
+  bool                       is_intercommunicator() const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_test_inter, (native_, &result))
     return static_cast<bool>(result);
   }
   [[nodiscard]]
-  mpi::group            remote_group        () const
+  mpi::group                 remote_group        () const
   {
     MPI_Group result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_remote_group, (native_, &result))
     return mpi::group(result);
   }
   [[nodiscard]]
-  std::int32_t          remote_size         () const
+  std::int32_t               remote_size         () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_remote_size, (native_, &result))
     return result;
   }
 
-  static communicator&& join                (const std::int32_t socket_file_descriptor)
+  static communicator&&      join                (const std::int32_t socket_file_descriptor)
   {
     communicator intercommunicator;
     intercommunicator.managed_ = true;
@@ -220,7 +255,7 @@ public:
 
   // Spawn functionality.
   [[nodiscard]]
-  communicator&&        spawn               (const spawn_data&              spawn_data, const std::int32_t root, const bool check_error_codes = true) const
+  communicator&&             spawn               (const spawn_data&              spawn_data, const std::int32_t root, const bool check_error_codes = true) const
   {
     communicator intercommunicator;
     intercommunicator.managed_ = true;
@@ -243,7 +278,7 @@ public:
     return std::move(intercommunicator);
   }
   [[nodiscard]]
-  communicator&&        spawn_multiple      (const std::vector<spawn_data>& spawn_data, const std::int32_t root, const bool check_error_codes = true) const
+  communicator&&             spawn_multiple      (const std::vector<spawn_data>& spawn_data, const std::int32_t root, const bool check_error_codes = true) const
   {
     communicator intercommunicator;
     intercommunicator.managed_ = true;
@@ -281,7 +316,7 @@ public:
     return std::move(intercommunicator);
   }
   [[nodiscard]]
-  communicator&&        parent              () const
+  communicator&&             parent              () const
   {
     MPI_Comm result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_get_parent, (&result))
@@ -289,12 +324,12 @@ public:
   }
 
   [[nodiscard]]
-  bool                  managed             () const
+  bool                       managed             () const
   {
     return managed_;
   }
   [[nodiscard]]
-  MPI_Comm              native              () const
+  MPI_Comm                   native              () const
   {
     return native_;
   }

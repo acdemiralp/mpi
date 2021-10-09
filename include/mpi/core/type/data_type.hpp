@@ -79,24 +79,6 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Type_set_name, (native_, value.data()))
   }
 
-  template <typename type>
-  std::optional<type>      attribute       (const data_type_key_value& key) const
-  {
-    type         result;
-    std::int32_t exists;
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
-    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
-  }
-  template <typename type>
-  void                     set_attribute   (const data_type_key_value& key, const type& value) const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
-  }
-  void                     remove_attribute(const data_type_key_value& key) const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Type_delete_attr, (native_, key.native()))
-  }
-
   [[nodiscard]]
   std::int32_t             size            () const
   {
@@ -170,6 +152,24 @@ public:
       result.data_types.data()))
 
     return result;
+  }
+
+  template <typename type>
+  std::optional<type>      attribute       (const data_type_key_value& key) const
+  {
+    type         result;
+    std::int32_t exists;
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
+    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
+  }
+  template <typename type>
+  void                     set_attribute   (const data_type_key_value& key, const type& value) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
+  }
+  void                     remove_attribute(const data_type_key_value& key) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_delete_attr, (native_, key.native()))
   }
 
   void                     commit          ()

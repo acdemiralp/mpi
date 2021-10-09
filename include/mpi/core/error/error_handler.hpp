@@ -44,6 +44,17 @@ public:
     return *this;
   }
 
+  [[nodiscard]]
+  bool           managed() const
+  {
+    return managed_;
+  }
+  [[nodiscard]]
+  MPI_Errhandler native () const
+  {
+    return native_;
+  }
+
 protected:
   error_handler() = default; // Default constructor is only available to sub classes who control the member variables explicitly.
 
