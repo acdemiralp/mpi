@@ -405,18 +405,18 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Waitall
 - [x] MPI_Waitany
 - [x] MPI_Waitsome
-- [ ] MPI_Win_allocate
-- [ ] MPI_Win_allocate_shared
-- [ ] MPI_Win_attach
+- [x] MPI_Win_allocate
+- [x] MPI_Win_allocate_shared
+- [x] MPI_Win_attach
 - [x] ~~MPI_Win_c2f~~
 - [x] MPI_Win_call_errhandler
 - [x] MPI_Win_complete
-- [ ] MPI_Win_create
-- [ ] MPI_Win_create_dynamic
+- [x] MPI_Win_create
+- [x] MPI_Win_create_dynamic
 - [x] MPI_Win_create_errhandler
 - [x] MPI_Win_create_keyval
 - [x] MPI_Win_delete_attr
-- [ ] MPI_Win_detach
+- [x] MPI_Win_detach
 - [x] ~~MPI_Win_f2c~~
 - [x] MPI_Win_fence
 - [x] MPI_Win_flush
@@ -437,7 +437,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Win_set_errhandler
 - [x] MPI_Win_set_info
 - [x] MPI_Win_set_name
-- [ ] MPI_Win_shared_query
+- [x] MPI_Win_shared_query
 - [x] MPI_Win_start
 - [x] MPI_Win_sync
 - [x] MPI_Win_test

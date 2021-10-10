@@ -3,10 +3,12 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <type_traits>
 
 #include <mpi/core/enums/lock_type.hpp>
 #include <mpi/core/enums/mode.hpp>
 #include <mpi/core/error/error_handler.hpp>
+#include <mpi/core/structs/window_information.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/group.hpp>
 #include <mpi/core/information.hpp>
@@ -18,13 +20,42 @@ namespace mpi
 class window
 {
 public:
-  explicit window  ()
+  explicit window  (const communicator& communicator, const std::int64_t size, const std::int32_t displacement_unit = 1, const bool shared = false, const information& information = mpi::information())
   : managed_(true)
   {
-    // Apply the difference in constructor.
-    // MPI_CHECK_ERROR_CODE(MPI_Win_allocate, ())
-    // MPI_CHECK_ERROR_CODE(MPI_Win_create  , ())
+    if (shared)
+      MPI_CHECK_ERROR_CODE(MPI_Win_allocate_shared, (size, displacement_unit, information.native(), communicator.native(), &base_pointer_, &native_))
+    else
+      MPI_CHECK_ERROR_CODE(MPI_Win_allocate       , (size, displacement_unit, information.native(), communicator.native(), &base_pointer_, &native_))
   }
+  template <typename type, typename = std::enable_if_t<!std::is_same<type, void>::value>>
+  explicit window  (const communicator& communicator, const std::int64_t size,                                           const bool shared = false, const information& information = mpi::information())
+  : managed_(true)
+  {
+    if (shared)
+      MPI_CHECK_ERROR_CODE(MPI_Win_allocate_shared, (sizeof(type) * size, sizeof(type), information.native(), communicator.native(), &base_pointer_, &native_))
+    else
+      MPI_CHECK_ERROR_CODE(MPI_Win_allocate       , (sizeof(type) * size, sizeof(type), information.native(), communicator.native(), &base_pointer_, &native_))
+  }
+
+  explicit window  (const communicator& communicator, void* base_pointer, const std::int64_t size, const std::int32_t displacement_unit = 1, const information& information = mpi::information())
+  : managed_(true), base_pointer_(base_pointer)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_create, (base_pointer, size, displacement_unit, information.native(), communicator.native(), &native_))
+  }
+  template <typename type, typename = std::enable_if_t<!std::is_same<type, void>::value>>
+  explicit window  (const communicator& communicator, type* base_pointer, const std::int64_t size,                                           const information& information = mpi::information())
+  : managed_(true), base_pointer_(base_pointer)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_create, (static_cast<void*>(base_pointer), sizeof(type) * size, sizeof(type), information.native(), communicator.native(), &native_))
+  }
+
+  explicit window  (const communicator& communicator, const information& information = mpi::information())
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_create_dynamic, (information.native(), communicator.native(), &native_))
+  }
+
   explicit window  (const MPI_Win  native)
   : native_(native)
   {
@@ -32,10 +63,11 @@ public:
   }
   window           (const window&  that) = delete;
   window           (      window&& temp) noexcept
-  : managed_(temp.managed_), native_(temp.native_)
+  : managed_(temp.managed_), native_(temp.native_), base_pointer_(temp.base_pointer_)
   {
-    temp.managed_ = false;
-    temp.native_  = MPI_WIN_NULL;
+    temp.managed_      = false;
+    temp.native_       = MPI_WIN_NULL;
+    temp.base_pointer_ = nullptr;
   }
   virtual ~window  ()
   {
@@ -50,11 +82,13 @@ public:
       if (managed_ && native_ != MPI_WIN_NULL)
         MPI_CHECK_ERROR_CODE(MPI_Win_free, (&native_))
 
-      managed_      = temp.managed_;
-      native_       = temp.native_ ;
+      managed_           = temp.managed_     ;
+      native_            = temp.native_      ;
+      base_pointer_      = temp.base_pointer_;
 
-      temp.managed_ = false;
-      temp.native_  = MPI_WIN_NULL;
+      temp.managed_      = false;
+      temp.native_       = MPI_WIN_NULL;
+      temp.base_pointer_ = nullptr;
     }
     return *this;
   }
@@ -107,6 +141,14 @@ public:
     MPI_Group result;
     MPI_CHECK_ERROR_CODE(MPI_Win_get_group, (native_, &result))
     return mpi::group(result);
+  }
+
+  [[nodiscard]]
+  window_information   query_shared      (const std::int32_t rank) const
+  {
+    window_information result;
+    MPI_CHECK_ERROR_CODE(MPI_Win_shared_query, (native_, rank, &result.size, &result.displacement, &result.base))
+    return result;
   }
 
   void                 lock              (const lock_type type, const std::int32_t rank, const std::optional<mode> assert = std::nullopt) const
@@ -177,6 +219,22 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Win_complete, (native_))
   }
 
+  void                 attach            (void* value, const std::int64_t size)
+  {
+    base_pointer_ = value;
+    MPI_CHECK_ERROR_CODE(MPI_Win_attach, (native_, value, size))
+  }
+  template <typename type, typename = std::enable_if_t<!std::is_same<type, void>::value>>
+  void                 attach            (type* value, const std::int64_t size)
+  {
+    base_pointer_ = value;
+    MPI_CHECK_ERROR_CODE(MPI_Win_attach, (native_, static_cast<void*>(value), sizeof(type) * size))
+  }
+  void                 detach            (void* value) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_detach, (native_, value))
+  }
+
   template <typename type>
   std::optional<type>  attribute         (const window_key_value& key) const
   {
@@ -196,18 +254,24 @@ public:
   }
 
   [[nodiscard]]
-  bool                 managed          () const
+  bool                 managed           () const
   {
     return managed_;
   }
   [[nodiscard]]
-  MPI_Win              native           () const
+  MPI_Win              native            () const
   {
     return native_;
   }
+  template <typename type = void>
+  type*                base_pointer      () const
+  {
+    return static_cast<type*>(base_pointer_);
+  }
 
 protected:
-  bool    managed_ = false;
-  MPI_Win native_  = MPI_WIN_NULL;
+  bool    managed_      = false;
+  MPI_Win native_       = MPI_WIN_NULL;
+  void*   base_pointer_ = nullptr; // Invalid on unmanaged construction. A call to attach(...) updates the base_pointer_.
 };
 }

@@ -9,6 +9,7 @@
 #include <mpi/core/type/data_type_information.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/key_value.hpp>
+#include <mpi/core/memory.hpp>
 #include <mpi/core/mpi.hpp>
 
 namespace mpi
@@ -66,7 +67,7 @@ public:
   }
 
   [[nodiscard]]
-  std::string              name            () const
+  std::string                 name            () const
   {
     std::string  result(MPI_MAX_OBJECT_NAME, ' ');
     std::int32_t count (0);
@@ -74,58 +75,58 @@ public:
     result.resize(count);
     return result;
   }
-  void                     set_name        (const std::string& value) const
+  void                        set_name        (const std::string& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_set_name, (native_, value.data()))
   }
 
   [[nodiscard]]
-  std::int32_t             size            () const
+  std::int32_t                size            () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Type_size, (native_, &result))
     return result;
   }
   [[nodiscard]]
-  MPI_Count                size_x          () const
+  std::int64_t                size_x          () const
   {
-    MPI_Count result;
+    std::int64_t result;
     MPI_CHECK_ERROR_CODE(MPI_Type_size_x, (native_, &result))
     return result;
   }
 
   [[nodiscard]]
-  std::array<MPI_Aint , 2> extent          () const
+  std::array<std::int64_t, 2> extent          () const
   {
-    std::array<MPI_Aint, 2> result {};
+    std::array<std::int64_t, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_extent  , (native_, &result[0], &result[1]))
     return result;
   }
   [[nodiscard]]
-  std::array<MPI_Count, 2> extent_x        () const
+  std::array<std::int64_t, 2> extent_x        () const
   {
-    std::array<MPI_Count, 2> result {};
+    std::array<std::int64_t, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_extent_x, (native_, &result[0], &result[1]))
     return result;
   }
 
   [[nodiscard]]
-  std::array<MPI_Aint , 2> true_extent     () const
+  std::array<std::int64_t, 2> true_extent     () const
   {
-    std::array<MPI_Aint, 2> result {};
+    std::array<std::int64_t, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent  , (native_, &result[0], &result[1]))
     return result;
   }
   [[nodiscard]]
-  std::array<MPI_Count, 2> true_extent_x   () const
+  std::array<std::int64_t, 2> true_extent_x   () const
   {
-    std::array<MPI_Count, 2> result {};
+    std::array<std::int64_t, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent_x, (native_, &result[0], &result[1]))
     return result;
   }
 
   [[nodiscard]]
-  data_type_information    information     () const
+  data_type_information       information     () const
   {
     data_type_information result;
 
@@ -155,7 +156,7 @@ public:
   }
 
   template <typename type>
-  std::optional<type>      attribute       (const data_type_key_value& key) const
+  std::optional<type>         attribute       (const data_type_key_value& key) const
   {
     type         result;
     std::int32_t exists;
@@ -163,27 +164,27 @@ public:
     return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
   }
   template <typename type>
-  void                     set_attribute   (const data_type_key_value& key, const type& value) const
+  void                        set_attribute   (const data_type_key_value& key, const type& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
   }
-  void                     remove_attribute(const data_type_key_value& key) const
+  void                        remove_attribute(const data_type_key_value& key) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_delete_attr, (native_, key.native()))
   }
 
-  void                     commit          ()
+  void                        commit          ()
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_commit, (&native_))
   }
 
   [[nodiscard]]
-  bool                     managed         () const
+  bool                        managed         () const
   {
     return managed_;
   }
   [[nodiscard]]
-  MPI_Datatype             native          () const
+  MPI_Datatype                native          () const
   {
     return native_;
   }
