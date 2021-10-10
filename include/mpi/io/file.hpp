@@ -54,6 +54,42 @@ public:
   }
 
   [[nodiscard]]
+  access_mode        access_mode       () const
+  {
+    mpi::access_mode result;
+    MPI_CHECK_ERROR_CODE(MPI_File_get_amode, (native_, reinterpret_cast<std::int32_t*>(&result)))
+    return result;
+  }
+  [[nodiscard]]
+  MPI_Offset         byte_offset       (const MPI_Offset offset) const
+  {
+    MPI_Offset result;
+    MPI_CHECK_ERROR_CODE(MPI_File_get_byte_offset    , (native_, offset, &result))
+    return result;
+  }
+  [[nodiscard]]
+  group              group             () const
+  {
+    MPI_Group result;
+    MPI_CHECK_ERROR_CODE(MPI_File_get_group, (native_, &result))
+    return mpi::group(result);
+  }
+  [[nodiscard]]
+  MPI_Offset         position          () const
+  {
+    MPI_Offset result;
+    MPI_CHECK_ERROR_CODE(MPI_File_get_position       , (native_, &result))
+    return result;
+  }
+  [[nodiscard]]
+  MPI_Offset         shared_position   () const
+  {
+    MPI_Offset result;
+    MPI_CHECK_ERROR_CODE(MPI_File_get_position_shared, (native_, &result))
+    return result;
+  }
+  
+  [[nodiscard]]
   information        information       () const
   {
     MPI_Info result;
@@ -90,44 +126,6 @@ public:
   }
 
   [[nodiscard]]
-  access_mode        access_mode       () const
-  {
-    mpi::access_mode result;
-    MPI_CHECK_ERROR_CODE(MPI_File_get_amode, (native_, reinterpret_cast<std::int32_t*>(&result)))
-    return result;
-  }
-  [[nodiscard]]
-  group              group             () const
-  {
-    MPI_Group result;
-    MPI_CHECK_ERROR_CODE(MPI_File_get_group, (native_, &result))
-    return mpi::group(result);
-  }
-
-  [[nodiscard]]
-  MPI_Offset         position          () const
-  {
-    MPI_Offset result;
-    MPI_CHECK_ERROR_CODE(MPI_File_get_position       , (native_, &result))
-    return result;
-  }
-  [[nodiscard]]
-  MPI_Offset         shared_position   () const
-  {
-    MPI_Offset result;
-    MPI_CHECK_ERROR_CODE(MPI_File_get_position_shared, (native_, &result))
-    return result;
-  }
-
-  [[nodiscard]]
-  MPI_Offset         byte_offset       (const MPI_Offset offset) const
-  {
-    MPI_Offset result;
-    MPI_CHECK_ERROR_CODE(MPI_File_get_byte_offset    , (native_, offset, &result))
-    return result;
-  }
-
-  [[nodiscard]]
   file_error_handler error_handler     () const
   {
     MPI_Errhandler result;
@@ -146,6 +144,17 @@ public:
   void               synchronize       () const
   {
     MPI_CHECK_ERROR_CODE(MPI_File_sync, (native_))
+  }
+
+  [[nodiscard]]
+  bool               managed           () const
+  {
+    return managed_;
+  }
+  [[nodiscard]]
+  MPI_File           native            () const
+  {
+    return native_;
   }
 
 protected:

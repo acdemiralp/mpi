@@ -42,10 +42,6 @@ public:
     return native_ != native;
   }
 
-  void         set_string(const std::string&  string) const
-  {
-    MPI_Add_error_string(native_, string.c_str());
-  }
   [[nodiscard]]
   std::string  string    () const
   {
@@ -55,7 +51,11 @@ public:
     result.resize(static_cast<std::size_t>(length));
     return result;
   }
-
+  void         set_string(const std::string&  string) const
+  {
+    MPI_Add_error_string(native_, string.c_str());
+  }
+  
   [[nodiscard]]
   std::int32_t native    () const
   {

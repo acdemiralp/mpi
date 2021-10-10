@@ -20,6 +20,7 @@ enum class access_mode : std::int32_t
   sequential      = MPI_MODE_SEQUENTIAL     
 };
 
+template <>
 struct is_bitset_enum<access_mode>
 {
   static const bool enable = true;

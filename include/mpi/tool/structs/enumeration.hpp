@@ -11,7 +11,7 @@ namespace mpi::tool
 {
 struct enumeration
 {
-  explicit enumeration  (const MPI_T_enum native) : native(native)
+  explicit enumeration  (MPI_T_enum native) : native(native)
   {
     auto item_count(0), name_length(0);
 

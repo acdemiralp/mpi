@@ -8,7 +8,7 @@
 
 namespace mpi
 {
-struct spawn_data
+struct spawn_information
 {
   std::string              command      ;
   std::vector<std::string> arguments    ;

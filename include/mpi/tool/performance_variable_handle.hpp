@@ -29,15 +29,15 @@ public:
       std::int32_t handle; // Abusing the fact that all native MPI object handles are std::int32_ts.
       MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_alloc, (session_.native(), variable.index, static_cast<void*>(&handle), &native_, &count_))
       
-      if      (variable.bind_type == bind_type::communicator ) object_ = communicator (handle);
-      else if (variable.bind_type == bind_type::data_type    ) object_ = data_type    (handle);
-      else if (variable.bind_type == bind_type::error_handler) object_ = error_handler(handle);
-      else if (variable.bind_type == bind_type::group        ) object_ = group        (handle);
-      else if (variable.bind_type == bind_type::information  ) object_ = information  (handle);
-      else if (variable.bind_type == bind_type::message      ) object_ = message      (handle);
-      else if (variable.bind_type == bind_type::op           ) object_ = op           (handle);
-      else if (variable.bind_type == bind_type::request      ) object_ = request      (handle);
-      else if (variable.bind_type == bind_type::window       ) object_ = window       (handle);
+      if      (variable.bind_type == bind_type::communicator ) object_ = communicator        (handle);
+      else if (variable.bind_type == bind_type::data_type    ) object_ = data_type           (handle);
+      else if (variable.bind_type == bind_type::error_handler) object_ = error_handler       (handle);
+      else if (variable.bind_type == bind_type::group        ) object_ = group               (handle);
+      else if (variable.bind_type == bind_type::information  ) object_ = information         (handle);
+      else if (variable.bind_type == bind_type::message      ) object_ = static_cast<message>(handle);
+      else if (variable.bind_type == bind_type::op           ) object_ = op                  (handle);
+      else if (variable.bind_type == bind_type::request      ) object_ = request             (handle);
+      else if (variable.bind_type == bind_type::window       ) object_ = window              (handle);
     }
   }
   explicit performance_variable_handle  (const MPI_T_pvar_handle&    native  , const session& session, const std::int32_t count = 1, std::optional<object_variant> object = std::nullopt)

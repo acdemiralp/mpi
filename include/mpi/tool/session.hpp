@@ -13,7 +13,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_session_create, (&native_))
   }
-  explicit session  (const MPI_T_pvar_session native)
+  explicit session  (MPI_T_pvar_session native)
   : native_(native)
   {
     

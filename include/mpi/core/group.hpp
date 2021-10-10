@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <stdexcept>
 #include <vector>
 
 #include <mpi/core/enums/comparison.hpp>
@@ -14,11 +13,6 @@ namespace mpi
 class group
 {
 public:
-  enum class filter
-  {
-    exclude,
-    include
-  };
   enum class operation
   {
     difference  ,
@@ -26,28 +20,28 @@ public:
     union_
   };
 
-  explicit group   (const MPI_Group native)
+  explicit group    (const MPI_Group native)
   : native_(native)
   {
     
   }
-  group            (const group&  that, const std::vector<std::int32_t>& ranks , const filter filter = filter::include)
+  group             (const group&  that, const std::vector<std::int32_t>& ranks , const bool include = true)
   : managed_(true)
   {
-    if      (filter == filter::exclude)
-      MPI_CHECK_ERROR_CODE(MPI_Group_excl, (that.native_, static_cast<std::int32_t>(ranks.size()), ranks.data(), &native_))
-    else if (filter == filter::include)
+    if (include)
       MPI_CHECK_ERROR_CODE(MPI_Group_incl, (that.native_, static_cast<std::int32_t>(ranks.size()), ranks.data(), &native_))
+    else
+      MPI_CHECK_ERROR_CODE(MPI_Group_excl, (that.native_, static_cast<std::int32_t>(ranks.size()), ranks.data(), &native_))
   }
-  group            (const group&  that, const std::vector<range>&        ranges, const filter filter = filter::include)
+  group             (const group&  that, const std::vector<range>&        ranges, const bool include = true)
   : managed_(true)
   {
-    if      (filter == filter::exclude)
-      MPI_CHECK_ERROR_CODE(MPI_Group_range_excl, (that.native_, static_cast<std::int32_t>(ranges.size()), reinterpret_cast<std::int32_t(*)[3]>(const_cast<std::vector<range>&>(ranges).data()), &native_))
-    else if (filter == filter::include)
+    if (include)
       MPI_CHECK_ERROR_CODE(MPI_Group_range_incl, (that.native_, static_cast<std::int32_t>(ranges.size()), reinterpret_cast<std::int32_t(*)[3]>(const_cast<std::vector<range>&>(ranges).data()), &native_))
+    else
+      MPI_CHECK_ERROR_CODE(MPI_Group_range_excl, (that.native_, static_cast<std::int32_t>(ranges.size()), reinterpret_cast<std::int32_t(*)[3]>(const_cast<std::vector<range>&>(ranges).data()), &native_))
   }
-  group            (const group&  lhs , const group& rhs, const operation operation = operation::union_)
+  group             (const group&  lhs , const group& rhs, const operation operation = operation::union_)
   : managed_(true)
   {
     if      (operation == operation::difference)
@@ -57,25 +51,25 @@ public:
     else if (operation == operation::union_)
       MPI_CHECK_ERROR_CODE(MPI_Group_union       , (lhs.native_, rhs.native_, &native_))
   }
-  group            (const group&  that) = delete;
-  group            (      group&& temp) noexcept
+  group             (const group&  that) = delete;
+  group             (      group&& temp) noexcept
   : managed_(temp.managed_), native_(temp.native_)
   {
     temp.managed_ = false;
     temp.native_  = MPI_GROUP_NULL;
   }
-  virtual ~group   ()
+  virtual ~group    ()
   {
     if (managed_ && native_ != MPI_GROUP_NULL)
-      MPI_CHECK_ERROR_CODE(MPI_Group_free, (&native_));
+      MPI_CHECK_ERROR_CODE(MPI_Group_free, (&native_))
   }
-  group& operator= (const group&  that) = delete;
-  group& operator= (      group&& temp) noexcept
+  group&  operator= (const group&  that) = delete;
+  group&  operator= (      group&& temp) noexcept
   {
     if (this != &temp)
     {
       if (managed_ && native_ != MPI_GROUP_NULL)
-        MPI_CHECK_ERROR_CODE(MPI_Group_free, (&native_));
+        MPI_CHECK_ERROR_CODE(MPI_Group_free, (&native_))
 
       managed_      = temp.managed_;
       native_       = temp.native_ ;
@@ -86,21 +80,27 @@ public:
     return *this;
   }
 
-  bool   operator==(const group&  that) const
+  bool    operator==(const group&  that) const
   {
     return compare(that) == comparison::identical;
   }
-  group  operator+ (const group&  that) const
+
+  // Convenience for operation constructor.
+  group&& operator+ (const group&  that) const
   {
-    return group(*this, that, operation::union_);
+    return std::move(group(*this, that, operation::union_));
   }
-  group  operator- (const group&  that) const
+  group&& operator- (const group&  that) const
   {
-    return group(*this, that, operation::difference);
+    return std::move(group(*this, that, operation::difference));
   }
-  group  operator& (const group&  that) const
+  group&& operator| (const group&  that) const
   {
-    return group(*this, that, operation::intersection);
+    return std::move(group(*this, that, operation::union_));
+  }
+  group&& operator& (const group&  that) const
+  {
+    return std::move(group(*this, that, operation::intersection));
   }
 
   [[nodiscard]]

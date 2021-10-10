@@ -20,7 +20,7 @@ public:
   }
   environment           (std::int32_t* argc          , char*** argv          , thread_support required_thread_support)
   {
-    std::int32_t provided_thread_support; // Unused. Call this.thread_support() explicitly.
+    std::int32_t provided_thread_support; // Unused. Call query_thread_support() explicitly.
     MPI_CHECK_ERROR_CODE(MPI_Init_thread, (argc, argv, static_cast<std::int32_t>(required_thread_support), &provided_thread_support))
   }
   environment           (const environment&  that)          = delete;

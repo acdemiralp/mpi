@@ -10,7 +10,7 @@ namespace mpi::tool
 template <typename type>
 struct container_adapter
 {
-  static void  resize(type& container, const std::size_t size)
+  static void  resize(type& container                   , const std::size_t size)
   {
     // Do nothing.
   }
@@ -22,7 +22,7 @@ struct container_adapter
 template <typename type, std::size_t size>
 struct container_adapter<std::array<type, size>>
 {
-  static void  resize(std::array<type, size>& container, const std::size_t size)
+  static void  resize(std::array<type, size>& container , const std::size_t _size)
   {
     // Do nothing.
   }
@@ -34,7 +34,7 @@ struct container_adapter<std::array<type, size>>
 template <typename type>
 struct container_adapter<std::vector<type>>
 {
-  static void  resize(std::vector<type>& container, const std::size_t size)
+  static void  resize(std::vector<type>& container      , const std::size_t size)
   {
     container.resize(size);
   }

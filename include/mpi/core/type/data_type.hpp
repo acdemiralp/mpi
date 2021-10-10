@@ -67,20 +67,6 @@ public:
   }
 
   [[nodiscard]]
-  std::string                 name            () const
-  {
-    std::string  result(MPI_MAX_OBJECT_NAME, ' ');
-    std::int32_t count (0);
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_name, (native_, result.data(), &count))
-    result.resize(count);
-    return result;
-  }
-  void                        set_name        (const std::string& value) const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Type_set_name, (native_, value.data()))
-  }
-
-  [[nodiscard]]
   std::int32_t                size            () const
   {
     std::int32_t result;
@@ -94,7 +80,6 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Type_size_x, (native_, &result))
     return result;
   }
-
   [[nodiscard]]
   std::array<std::int64_t, 2> extent          () const
   {
@@ -109,7 +94,6 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Type_get_extent_x, (native_, &result[0], &result[1]))
     return result;
   }
-
   [[nodiscard]]
   std::array<std::int64_t, 2> true_extent     () const
   {
@@ -124,7 +108,6 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent_x, (native_, &result[0], &result[1]))
     return result;
   }
-
   [[nodiscard]]
   data_type_information       information     () const
   {
@@ -153,6 +136,20 @@ public:
       result.data_types.data()))
 
     return result;
+  }
+
+  [[nodiscard]]
+  std::string                 name            () const
+  {
+    std::string  result(MPI_MAX_OBJECT_NAME, ' ');
+    std::int32_t count (0);
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_name, (native_, result.data(), &count))
+    result.resize(count);
+    return result;
+  }
+  void                        set_name        (const std::string& value) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_set_name, (native_, value.data()))
   }
 
   template <typename type>

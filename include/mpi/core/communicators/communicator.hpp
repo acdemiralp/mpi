@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -11,10 +12,11 @@
 #include <mpi/core/enums/comparison.hpp>
 #include <mpi/core/enums/topology.hpp>
 #include <mpi/core/error/error_handler.hpp>
-#include <mpi/core/structs/spawn_data.hpp>
+#include <mpi/core/structs/spawn_information.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/group.hpp>
 #include <mpi/core/information.hpp>
+#include <mpi/core/key_value.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/core/port.hpp>
 
@@ -28,17 +30,76 @@ public:
   {
     
   }
-  communicator            (const communicator&  that, const group&       group      )
+  communicator            (const communicator&  that, const group&                          group      )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create       , (that.native_, group      .native(),      &native_))
   }
-  communicator            (const communicator&  that, const group&       group      , const std::int32_t tag)
+  communicator            (const communicator&  that, const group&                          group      , const std::int32_t tag      )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_group , (that.native_, group      .native(), tag, &native_))
   }
-  communicator            (const communicator&  that, const information& information)
+  communicator            (const communicator&  that, const port&                           port       , const bool         accept   , const information& information       = mpi::information(), const std::int32_t root = 0)
+  : managed_(true)
+  {
+    if (accept)
+      MPI_CHECK_ERROR_CODE(MPI_Comm_accept , (port.name().c_str(), information.native(), root, that.native(), &native_))
+    else
+      MPI_CHECK_ERROR_CODE(MPI_Comm_connect, (port.name().c_str(), information.native(), root, that.native(), &native_))
+  }
+  communicator            (const communicator&  that, const spawn_information&              spawn_info , const std::int32_t root  = 0, const bool         check_error_codes = true)
+  : managed_(true)
+  {
+    std::vector<char*> arguments(spawn_info.arguments.size());
+    std::transform(spawn_info.arguments.begin(), spawn_info.arguments.end(), arguments.begin(), [ ] (const std::string& value)
+    {
+      return value.c_str();
+    });
+
+    std::vector<std::int32_t> error_codes(spawn_info.process_count);
+
+    MPI_CHECK_ERROR_CODE(MPI_Comm_spawn, (spawn_info.command.c_str(), arguments.data(), spawn_info.process_count, spawn_info.information.native(), root, that.native(), &native_, error_codes.data()))
+
+    if (check_error_codes)
+      for (auto& code : error_codes)
+        if (code != MPI_SUCCESS)
+          throw exception("spawn", error_code(code));
+  }
+  communicator            (const communicator&  that, const std::vector<spawn_information>& spawn_info , const std::int32_t root  = 0, const bool         check_error_codes = true)
+  : managed_(true)
+  {
+    std::vector<char*>              commands      (spawn_info.size());
+    std::vector<std::vector<char*>> arguments     (spawn_info.size());
+    std::vector<char**>             raw_arguments (spawn_info.size());
+    std::vector<std::int32_t>       process_counts(spawn_info.size());
+    std::vector<MPI_Info>           infos         (spawn_info.size());
+    std::int32_t                    total_count   (0);
+    for (std::size_t i = 0; i < spawn_info.size(); ++i)
+    {
+      arguments[i].resize(spawn_info[i].arguments.size());
+      std::transform(spawn_info[i].arguments.begin(), spawn_info[i].arguments.end(), arguments[i].begin(), [ ] (const std::string& value)
+      {
+        return value.c_str();
+      });
+
+      commands      [i]  = const_cast<char*>(spawn_info[i].command.c_str());
+      raw_arguments [i]  = arguments.back().data();
+      process_counts[i]  = spawn_info[i].process_count;
+      infos         [i]  = spawn_info[i].information.native();
+      total_count       += spawn_info[i].process_count;
+    }
+
+    std::vector<std::int32_t> error_codes(total_count);
+
+    MPI_CHECK_ERROR_CODE(MPI_Comm_spawn_multiple, (static_cast<std::int32_t>(spawn_info.size()), commands.data(), raw_arguments.data(), process_counts.data(), infos.data(), root, that.native(), &native_, error_codes.data()))
+
+    if (check_error_codes)
+      for (auto& code : error_codes)
+        if (code != MPI_SUCCESS)
+          throw exception("spawn_multiple", error_code(code));
+  }
+  communicator            (const communicator&  that, const information&                    information)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_dup_with_info, (that.native_, information.native(), &native_))
@@ -92,6 +153,23 @@ public:
     return compare(that) == comparison::identical;
   }
 
+  // A static member function for construction is bad practice but the alternative is to use the default constructor for retrieving the parent communicator, which is unclear transmission of intent.
+  [[nodiscard]]
+  static communicator&&      parent              ()
+  {
+    MPI_Comm result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_get_parent, (&result))
+    return std::move(communicator(result));
+  }
+  // A static member function for construction is bad practice but the unmanaged constructor also takes a single std::int32_t (an MPI_Comm). MPI should consider using unique structs rather than integers for handles.
+  static communicator&&      join                (const std::int32_t socket_file_descriptor)
+  {
+    communicator result;
+    result.managed_ = true;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_join, (socket_file_descriptor, &result.native_))
+    return std::move(result);
+  }
+  
   [[nodiscard]]
   std::int32_t               rank                () const
   {
@@ -105,6 +183,51 @@ public:
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Comm_size, (native_, &result))
     return result;
+  }
+
+  [[nodiscard]]
+  group                      group               () const
+  {
+    MPI_Group result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_group, (native_, &result))
+    return mpi::group(result);
+  }
+  [[nodiscard]]
+  topology                   topology            () const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Topo_test, (native_, &result))
+    return static_cast<mpi::topology>(result);
+  }
+
+  [[nodiscard]]
+  bool                       is_intercommunicator() const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_test_inter, (native_, &result))
+    return static_cast<bool>(result);
+  }
+  [[nodiscard]]
+  mpi::group                 remote_group        () const
+  {
+    MPI_Group result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_remote_group, (native_, &result))
+    return mpi::group(result);
+  }
+  [[nodiscard]]
+  std::int32_t               remote_size         () const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_remote_size, (native_, &result))
+    return result;
+  }
+
+  [[nodiscard]]
+  comparison                 compare             (const communicator& that) const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_compare, (native_, that.native_, &result))
+    return static_cast<comparison>(result);
   }
 
   [[nodiscard]]
@@ -131,21 +254,6 @@ public:
   void                       set_information     (const mpi::information& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_set_info, (native_, value.native()))
-  }
-
-  [[nodiscard]]
-  group                      group               () const
-  {
-    MPI_Group result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_group, (native_, &result))
-    return mpi::group(result);
-  }
-  [[nodiscard]]
-  topology                   topology            () const
-  {
-    std::int32_t result;
-    MPI_CHECK_ERROR_CODE(MPI_Topo_test, (native_, &result))
-    return static_cast<mpi::topology>(result);
   }
 
   [[nodiscard]]
@@ -186,141 +294,14 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Abort, (native_, error_code.native()))
   }
-
   void                       barrier             () const
   {
     MPI_CHECK_ERROR_CODE(MPI_Barrier, (native_))
   }
-
-  [[nodiscard]]
-  comparison                 compare             (const communicator& that) const
-  {
-    std::int32_t result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_compare, (native_, that.native_, &result))
-    return static_cast<comparison>(result);
-  }
-
-  // Intercommunicator functionality.
-  [[nodiscard]]
-  communicator&&             accept              (const port& port, const mpi::information& info, const std::int32_t root) const
-  {
-    communicator intercommunicator;
-    intercommunicator.managed_ = true;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_accept , (port.name().c_str(), info.native(), root, native_, &intercommunicator.native_))
-    return std::move(intercommunicator);
-  }
-  [[nodiscard]]
-  communicator&&             connect             (const port& port, const mpi::information& info, const std::int32_t root) const
-  {
-    communicator intercommunicator;
-    intercommunicator.managed_ = true;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_connect, (port.name().c_str(), info.native(), root, native_, &intercommunicator.native_))
-    return std::move(intercommunicator);
-  }
-
+  // Disconnect must currently be called explicitly. It is possible to state keep whether the accept/connect constructor has been used and call disconnect in the destructor if so.
   void                       disconnect          ()
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_disconnect, (&native_))
-  }
-
-  [[nodiscard]]
-  bool                       is_intercommunicator() const
-  {
-    std::int32_t result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_test_inter, (native_, &result))
-    return static_cast<bool>(result);
-  }
-  [[nodiscard]]
-  mpi::group                 remote_group        () const
-  {
-    MPI_Group result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_remote_group, (native_, &result))
-    return mpi::group(result);
-  }
-  [[nodiscard]]
-  std::int32_t               remote_size         () const
-  {
-    std::int32_t result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_remote_size, (native_, &result))
-    return result;
-  }
-
-  static communicator&&      join                (const std::int32_t socket_file_descriptor)
-  {
-    communicator intercommunicator;
-    intercommunicator.managed_ = true;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_join, (socket_file_descriptor, &intercommunicator.native_))
-    return std::move(intercommunicator);
-  }
-
-  // Spawn functionality.
-  [[nodiscard]]
-  communicator&&             spawn               (const spawn_data&              spawn_data, const std::int32_t root, const bool check_error_codes = true) const
-  {
-    communicator intercommunicator;
-    intercommunicator.managed_ = true;
-
-    std::vector<char*> arguments(spawn_data.arguments.size());
-    std::transform(spawn_data.arguments.begin(), spawn_data.arguments.end(), arguments.begin(), [ ] (const std::string& value)
-    {
-      return value.c_str();
-    });
-
-    std::vector<std::int32_t> error_codes(spawn_data.process_count);
-
-    MPI_CHECK_ERROR_CODE(MPI_Comm_spawn, (spawn_data.command.c_str(), arguments.data(), spawn_data.process_count, spawn_data.information.native(), root, native_, &intercommunicator.native_, error_codes.data()))
-
-    if (check_error_codes)
-      for (auto& code : error_codes)
-        if (code != MPI_SUCCESS)
-          throw exception("spawn", error_code(code));
-
-    return std::move(intercommunicator);
-  }
-  [[nodiscard]]
-  communicator&&             spawn_multiple      (const std::vector<spawn_data>& spawn_data, const std::int32_t root, const bool check_error_codes = true) const
-  {
-    communicator intercommunicator;
-    intercommunicator.managed_ = true;
-
-    std::vector<char*>              commands      (spawn_data.size());
-    std::vector<std::vector<char*>> arguments     (spawn_data.size());
-    std::vector<char**>             raw_arguments (spawn_data.size());
-    std::vector<std::int32_t>       process_counts(spawn_data.size());
-    std::vector<MPI_Info>           infos         (spawn_data.size());
-    std::int32_t                    total_count   (0);
-    for (std::size_t i = 0; i < spawn_data.size(); ++i)
-    {
-      arguments[i].resize(spawn_data[i].arguments.size());
-      std::transform(spawn_data[i].arguments.begin(), spawn_data[i].arguments.end(), arguments[i].begin(), [ ] (const std::string& value)
-      {
-        return value.c_str();
-      });
-
-      commands      [i]  = const_cast<char*>(spawn_data[i].command.c_str());
-      raw_arguments [i]  = arguments.back().data();
-      process_counts[i]  = spawn_data[i].process_count;
-      infos         [i]  = spawn_data[i].information.native();
-      total_count       += spawn_data[i].process_count;
-    }
-
-    std::vector<std::int32_t> error_codes(total_count);
-
-    MPI_CHECK_ERROR_CODE(MPI_Comm_spawn_multiple, (static_cast<std::int32_t>(spawn_data.size()), commands.data(), raw_arguments.data(), process_counts.data(), infos.data(), root, native_, &intercommunicator.native_, error_codes.data()))
-
-    if (check_error_codes)
-      for (auto& code : error_codes)
-        if (code != MPI_SUCCESS)
-          throw exception("spawn_multiple", error_code(code));
-
-    return std::move(intercommunicator);
-  }
-  [[nodiscard]]
-  communicator&&             parent              () const
-  {
-    MPI_Comm result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_get_parent, (&result))
-    return std::move(communicator(result));
   }
 
   [[nodiscard]]

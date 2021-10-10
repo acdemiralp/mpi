@@ -11,11 +11,11 @@ namespace mpi
 class status : public MPI_Status
 {
 public:
-  explicit status  (const MPI_Status& native) : MPI_Status(native)
+  status           () : MPI_Status {0, 0, 0, 0, 0}
   {
     
   }
-  status           () : MPI_Status {0, 0, 0, 0, 0}
+  explicit status  (const MPI_Status& native) : MPI_Status(native)
   {
     
   }
@@ -25,16 +25,16 @@ public:
   status& operator=(const status&  that) = default;
   status& operator=(      status&& temp) = default;
 
-  void              set_cancelled           (const bool cancelled)
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Status_set_cancelled, (this, static_cast<std::int32_t>(cancelled)))
-  }
   [[nodiscard]]
   bool              cancelled               () const
   {
     auto result(0);
     MPI_CHECK_ERROR_CODE(MPI_Test_cancelled, (this, &result))
     return static_cast<bool>(result);
+  }
+  void              set_cancelled           (const bool cancelled)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Status_set_cancelled, (this, static_cast<std::int32_t>(cancelled)))
   }
 
   [[nodiscard]]

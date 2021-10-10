@@ -10,7 +10,7 @@ namespace mpi::tool
 {
 struct enumeration_item
 {
-  explicit enumeration_item  (const MPI_T_enum native, const std::int32_t index) : index(index)
+  explicit enumeration_item  (MPI_T_enum native, const std::int32_t index) : index(index)
   {
     auto name_length(0);
 

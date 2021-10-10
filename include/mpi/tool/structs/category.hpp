@@ -13,7 +13,7 @@ namespace mpi::tool
 {
 struct category
 {
-  explicit category  (const std::int32_t index);
+  explicit category  (std::int32_t index);
   category           (const category&  that) = default;
   category           (      category&& temp) = default;
   virtual ~category  ()                      = default;

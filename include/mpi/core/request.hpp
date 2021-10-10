@@ -66,7 +66,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Test, (&native_, &complete, &result))
     return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
   }
-
+  
   status                wait      ()
   {
     status result;

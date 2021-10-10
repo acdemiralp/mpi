@@ -3,9 +3,14 @@ Modern C++20 message passing interface wrapper.
 
 ### Usage Notes
 - Define MPI_USE_EXCEPTIONS to check the return values of all viable functions against MPI_SUCCESS and throw an exception otherwise.
+
+### Design Notes
 - The object wrappers have two types of constructors:
   - Managed   constructors: Construct a  new      MPI object, and     be responsible for its destruction.
   - Unmanaged constructors: Accept    an existing MPI object, and not be responsible for its destruction.
+- Copy constructors are deleted unless MPI provides duplication functions (ending with _dup) for the object.
+- Move constructors are available whenever possible.
+- Namespace functions are preferred over static member functions whenever possible.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] MPI                         

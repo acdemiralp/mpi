@@ -24,10 +24,12 @@ public:
   exception& operator=(const exception&  that) = default;
   exception& operator=(      exception&& temp) = default;
 
+  [[nodiscard]]
   const std::string& function_name() const
   {
     return function_name_;
   }
+  [[nodiscard]]
   const error_code&  code         () const
   {
     return code_;

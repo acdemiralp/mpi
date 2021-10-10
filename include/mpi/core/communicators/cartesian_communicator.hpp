@@ -97,6 +97,20 @@ public:
 
     return result;
   }
+  [[nodiscard]]
+  std::int32_t                map                 (const std::vector<dimension>& dimensions) const
+  {
+    std::vector<std::int32_t> sizes(dimensions.size()), periods(dimensions.size());
+    for (std::size_t i = 0; i < dimensions.size(); ++i)
+    {
+      sizes  [i] = dimensions[i].size;
+      periods[i] = static_cast<std::int32_t>(dimensions[i].periodic);
+    }
+
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Cart_map, (native_, static_cast<std::int32_t>(dimensions.size()), sizes.data(), periods.data(), &result))
+    return result;
+  }
   
   [[nodiscard]]
   std::int32_t                rank                (const std::vector<std::int32_t>& coordinates) const
@@ -123,20 +137,6 @@ public:
   {
     std::array<std::int32_t, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Cart_shift, (native_, dimension, displacement, &result[0], &result[1]))
-    return result;
-  }
-  [[nodiscard]]
-  std::int32_t                map                 (const std::vector<dimension>& dimensions) const
-  {
-    std::vector<std::int32_t> sizes(dimensions.size()), periods(dimensions.size());
-    for (std::size_t i = 0; i < dimensions.size(); ++i)
-    {
-      sizes  [i] = dimensions[i].size;
-      periods[i] = static_cast<std::int32_t>(dimensions[i].periodic);
-    }
-
-    std::int32_t result;
-    MPI_CHECK_ERROR_CODE(MPI_Cart_map, (native_, static_cast<std::int32_t>(dimensions.size()), sizes.data(), periods.data(), &result))
     return result;
   }
 };

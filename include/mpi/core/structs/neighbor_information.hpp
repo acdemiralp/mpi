@@ -6,7 +6,7 @@
 
 namespace mpi
 {
-struct adjacent_distributed_graph
+struct neighbor_information
 {
   std::vector  <std::int32_t>              sources            ;
   std::optional<std::vector<std::int32_t>> source_weights     ;

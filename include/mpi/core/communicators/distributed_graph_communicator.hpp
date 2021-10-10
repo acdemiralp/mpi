@@ -4,9 +4,9 @@
 #include <vector>
 
 #include <mpi/core/communicators/communicator.hpp>
-#include <mpi/core/structs/adjacent_distributed_graph.hpp>
+#include <mpi/core/structs/neighbor_information.hpp>
 #include <mpi/core/structs/distributed_graph.hpp>
-#include <mpi/core/structs/distributed_graph_information.hpp>
+#include <mpi/core/structs/neighbor_counts.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/information.hpp>
 #include <mpi/core/mpi.hpp>
@@ -21,7 +21,7 @@ public:
   {
 
   }
-  explicit distributed_graph_communicator   (const communicator& that, const distributed_graph&          graph, const mpi::information& info = mpi::information(), const bool reorder = true)
+  explicit distributed_graph_communicator   (const communicator& that, const distributed_graph&    graph, const mpi::information& info = mpi::information(), const bool reorder = true)
   : communicator()
   {
     managed_ = true;
@@ -37,7 +37,7 @@ public:
       static_cast<std::int32_t>(reorder), 
       &native_))
   }
-  explicit distributed_graph_communicator   (const communicator& that, const adjacent_distributed_graph& graph, const mpi::information& info = mpi::information(), const bool reorder = true)
+  explicit distributed_graph_communicator   (const communicator& that, const neighbor_information& graph, const mpi::information& info = mpi::information(), const bool reorder = true)
   : communicator()
   {
     managed_ = true;
@@ -66,31 +66,31 @@ public:
   }
 
   [[nodiscard]]
-  distributed_graph_information neighbor_information() const
+  neighbor_counts      neighbor_counts() const
   {
-    distributed_graph_information result {};
-    MPI_CHECK_ERROR_CODE(MPI_Dist_graph_neighbors_count, (native_, &result.in_degree, &result.out_degree, reinterpret_cast<std::int32_t*>(&result.weighted)))
+    mpi::neighbor_counts result {};
+    MPI_CHECK_ERROR_CODE(MPI_Dist_graph_neighbors_count, (native_, &result.source_count, &result.destination_count, reinterpret_cast<std::int32_t*>(&result.weighted)))
     return result;
   }
   [[nodiscard]]
-  adjacent_distributed_graph    neighbors           () const
+  neighbor_information neighbors      () const
   {
-    const auto info = neighbor_information();
+    const auto info = neighbor_counts();
 
-    adjacent_distributed_graph result
+    neighbor_information result
     {
-      std::vector<std::int32_t>(info.in_degree ),
-      info.weighted ? std::vector<std::int32_t>(info.in_degree ) : std::vector<std::int32_t>(),
-      std::vector<std::int32_t>(info.out_degree),
-      info.weighted ? std::vector<std::int32_t>(info.out_degree) : std::vector<std::int32_t>()
+      std::vector<std::int32_t>(info.source_count     ),
+      info.weighted ? std::vector<std::int32_t>(info.source_count     ) : std::vector<std::int32_t>(),
+      std::vector<std::int32_t>(info.destination_count),
+      info.weighted ? std::vector<std::int32_t>(info.destination_count) : std::vector<std::int32_t>()
     };
 
     MPI_CHECK_ERROR_CODE(MPI_Dist_graph_neighbors, (
       native_, 
-      info.in_degree, 
+      info.source_count, 
       result.sources     .data(), 
       info.weighted ? result.source_weights     ->data() : MPI_UNWEIGHTED, 
-      info.out_degree, 
+      info.destination_count, 
       result.destinations.data(), 
       info.weighted ? result.destination_weights->data() : MPI_UNWEIGHTED))
 

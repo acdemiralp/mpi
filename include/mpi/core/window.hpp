@@ -5,7 +5,6 @@
 #include <optional>
 #include <type_traits>
 
-#include <mpi/core/enums/lock_type.hpp>
 #include <mpi/core/enums/mode.hpp>
 #include <mpi/core/error/error_handler.hpp>
 #include <mpi/core/structs/window_information.hpp>
@@ -56,8 +55,8 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Win_create_dynamic, (information.native(), communicator.native(), &native_))
   }
 
-  explicit window  (const MPI_Win  native)
-  : native_(native)
+  explicit window  (const MPI_Win  native, void* base_pointer = nullptr)
+  : native_(native), base_pointer_(base_pointer)
   {
     
   }
@@ -91,6 +90,21 @@ public:
       temp.base_pointer_ = nullptr;
     }
     return *this;
+  }
+
+  [[nodiscard]]
+  group                group             () const
+  {
+    MPI_Group result;
+    MPI_CHECK_ERROR_CODE(MPI_Win_get_group, (native_, &result))
+    return mpi::group(result);
+  }
+  [[nodiscard]]
+  window_information   query_shared      (const std::int32_t rank) const
+  {
+    window_information result {};
+    MPI_CHECK_ERROR_CODE(MPI_Win_shared_query, (native_, rank, &result.size, &result.displacement, &result.base))
+    return result;
   }
 
   [[nodiscard]]
@@ -135,25 +149,77 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Win_call_errhandler, (native_, value.native()))
   }
 
-  [[nodiscard]]
-  group                group             () const
+  template <typename type>
+  std::optional<type>  attribute         (const window_key_value& key) const
   {
-    MPI_Group result;
-    MPI_CHECK_ERROR_CODE(MPI_Win_get_group, (native_, &result))
-    return mpi::group(result);
+    type         result;
+    std::int32_t exists;
+    MPI_CHECK_ERROR_CODE(MPI_Win_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
+    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
+  }
+  template <typename type>
+  void                 set_attribute     (const window_key_value& key, const type& value) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
+  }
+  void                 remove_attribute  (const window_key_value& key) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_delete_attr, (native_, key.native()))
+  }
+
+  void                 attach            (void* value, const std::int64_t size)
+  {
+    base_pointer_ = value;
+    MPI_CHECK_ERROR_CODE(MPI_Win_attach, (native_, value, size))
+  }
+  template <typename type, typename = std::enable_if_t<!std::is_same<type, void>::value>>
+  void                 attach            (type* value, const std::int64_t size)
+  {
+    base_pointer_ = value;
+    MPI_CHECK_ERROR_CODE(MPI_Win_attach, (native_, static_cast<void*>(value), sizeof(type) * size))
+  }
+  void                 detach            (void* value) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_detach, (native_, value))
+  }
+
+  void                 post              (const mpi::group& group, const std::optional<mode> assert = std::nullopt) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_post    , (group.native(), assert ? static_cast<std::int32_t>(*assert) : 0, native_))
+  }
+  void                 start             (const mpi::group& group, const std::optional<mode> assert = std::nullopt) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_start   , (group.native(), assert ? static_cast<std::int32_t>(*assert) : 0, native_))
+  }
+  void                 complete          () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_complete, (native_))
   }
 
   [[nodiscard]]
-  window_information   query_shared      (const std::int32_t rank) const
+  bool                 test              () const
   {
-    window_information result;
-    MPI_CHECK_ERROR_CODE(MPI_Win_shared_query, (native_, rank, &result.size, &result.displacement, &result.base))
-    return result;
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Win_test, (native_, &result))
+    return static_cast<bool>(result);
+  }
+  void                 wait              () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_wait, (native_))
   }
 
-  void                 lock              (const lock_type type, const std::int32_t rank, const std::optional<mode> assert = std::nullopt) const
+  void                 fence             (const std::optional<mode> assert = std::nullopt) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_Win_lock      , (static_cast<std::int32_t>(type), rank, assert ? static_cast<std::int32_t>(*assert) : 0, native_))
+    MPI_CHECK_ERROR_CODE(MPI_Win_fence, (assert ? static_cast<std::int32_t>(*assert) : 0, native_))
+  }
+  void                 synchronize       () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_sync, (native_))
+  }
+
+  void                 lock              (const std::int32_t rank, const bool shared = false, const std::optional<mode> assert = std::nullopt) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Win_lock      , (shared ? MPI_LOCK_SHARED : MPI_LOCK_EXCLUSIVE, rank, assert ? static_cast<std::int32_t>(*assert) : 0, native_))
   }
   void                 lock_all          (const std::optional<mode> assert = std::nullopt) const
   {
@@ -185,74 +251,6 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Win_flush_local_all, (      native_))
   }
 
-  void                 fence             (const std::optional<mode> assert = std::nullopt) const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Win_fence, (assert ? static_cast<std::int32_t>(*assert) : 0, native_))
-  }
-  void                 synchronize       () const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Win_sync, (native_))
-  }
-
-  [[nodiscard]]
-  bool                 test              () const
-  {
-    std::int32_t result;
-    MPI_CHECK_ERROR_CODE(MPI_Win_test, (native_, &result))
-    return static_cast<bool>(result);
-  }
-  void                 wait              () const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Win_wait, (native_))
-  }
-
-  void                 post              (const mpi::group& group, const std::optional<mode> assert = std::nullopt) const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Win_post    , (group.native(), assert ? static_cast<std::int32_t>(*assert) : 0, native_))
-  }
-  void                 start             (const mpi::group& group, const std::optional<mode> assert = std::nullopt) const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Win_start   , (group.native(), assert ? static_cast<std::int32_t>(*assert) : 0, native_))
-  }
-  void                 complete          () const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Win_complete, (native_))
-  }
-
-  void                 attach            (void* value, const std::int64_t size)
-  {
-    base_pointer_ = value;
-    MPI_CHECK_ERROR_CODE(MPI_Win_attach, (native_, value, size))
-  }
-  template <typename type, typename = std::enable_if_t<!std::is_same<type, void>::value>>
-  void                 attach            (type* value, const std::int64_t size)
-  {
-    base_pointer_ = value;
-    MPI_CHECK_ERROR_CODE(MPI_Win_attach, (native_, static_cast<void*>(value), sizeof(type) * size))
-  }
-  void                 detach            (void* value) const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Win_detach, (native_, value))
-  }
-
-  template <typename type>
-  std::optional<type>  attribute         (const window_key_value& key) const
-  {
-    type         result;
-    std::int32_t exists;
-    MPI_CHECK_ERROR_CODE(MPI_Win_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
-    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
-  }
-  template <typename type>
-  void                 set_attribute     (const window_key_value& key, const type& value) const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Win_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
-  }
-  void                 remove_attribute  (const window_key_value& key) const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Win_delete_attr, (native_, key.native()))
-  }
-
   [[nodiscard]]
   bool                 managed           () const
   {
@@ -272,6 +270,6 @@ public:
 protected:
   bool    managed_      = false;
   MPI_Win native_       = MPI_WIN_NULL;
-  void*   base_pointer_ = nullptr; // Invalid on unmanaged construction. A call to attach(...) updates the base_pointer_.
+  void*   base_pointer_ = nullptr;
 };
 }
