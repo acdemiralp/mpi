@@ -106,8 +106,8 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Comm_size                  
 - [x] MPI_Comm_spawn                 
 - [x] MPI_Comm_spawn_multiple        
-- [ ] MPI_Comm_split                 
-- [ ] MPI_Comm_split_type            
+- [x] MPI_Comm_split                 
+- [x] MPI_Comm_split_type            
 - [x] MPI_Comm_test_inter            
 - [ ] MPI_Compare_and_swap           
 - [x] MPI_Dims_create                
@@ -365,19 +365,19 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Topo_test
 - [x] ~~MPI_Type_c2f~~
 - [x] MPI_Type_commit
-- [ ] MPI_Type_contiguous
+- [x] MPI_Type_contiguous
 - [ ] MPI_Type_create_darray
-- [ ] MPI_Type_create_f90_complex
-- [ ] MPI_Type_create_f90_integer
-- [ ] MPI_Type_create_f90_real
-- [ ] MPI_Type_create_hindexed
-- [ ] MPI_Type_create_hindexed_bloc
-- [ ] MPI_Type_create_hvector
-- [ ] MPI_Type_create_indexed_block
+- [x] ~~MPI_Type_create_f90_complex~~
+- [x] ~~MPI_Type_create_f90_integer~~
+- [x] ~~MPI_Type_create_f90_real~~
+- [x] MPI_Type_create_hindexed
+- [x] MPI_Type_create_hindexed_block
+- [x] MPI_Type_create_hvector
+- [x] MPI_Type_create_indexed_block
 - [x] MPI_Type_create_keyval
-- [ ] MPI_Type_create_resized
+- [x] MPI_Type_create_resized
 - [ ] MPI_Type_create_struct
-- [ ] MPI_Type_create_subarray
+- [x] MPI_Type_create_subarray
 - [x] MPI_Type_delete_attr
 - [x] MPI_Type_dup
 - [x] ~~MPI_Type_extent~~
@@ -394,7 +394,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Type_get_true_extent_x
 - [x] ~~MPI_Type_hindexed~~
 - [x] ~~MPI_Type_hvector~~
-- [ ] MPI_Type_indexed
+- [x] MPI_Type_indexed
 - [x] ~~MPI_Type_lb~~
 - [x] ~~MPI_Type_match_size~~
 - [x] MPI_Type_set_attr
@@ -403,7 +403,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Type_size_x
 - [x] ~~MPI_Type_struct~~
 - [x] ~~MPI_Type_ub~~
-- [ ] MPI_Type_vector
+- [x] MPI_Type_vector
 - [ ] MPI_Unpack
 - [ ] MPI_Unpack_external
 - [x] MPI_Unpublish_name

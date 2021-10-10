@@ -14,6 +14,12 @@
 
 namespace mpi
 {
+enum class order : std::int32_t
+{
+  c_order       = MPI_ORDER_C      ,
+  fortran_order = MPI_ORDER_FORTRAN
+};
+
 class data_type
 {
 public:
@@ -21,6 +27,50 @@ public:
   : native_(native)
   {
     
+  }
+  data_type           (const data_type&  that, const std::int32_t count)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_contiguous, (count, that.native_, &native_)) 
+  }
+  data_type           (const data_type&  that, const std::int32_t count, const std::int32_t block_length, const std::int32_t stride)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_vector , (count, block_length, stride, that.native_, &native_)) 
+  }
+  data_type           (const data_type&  that, const std::int32_t count, const std::int32_t block_length, const std::int64_t stride)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_hvector, (count, block_length, stride, that.native_, &native_))
+  }
+  data_type           (const data_type&  that, const std::int32_t               block_length , const std::vector<std::int32_t>& displacements)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_indexed_block , (static_cast<std::int32_t>(displacements.size()), block_length, displacements.data(), that.native_, &native_))
+  }
+  data_type           (const data_type&  that, const std::int32_t               block_length , const std::vector<std::int64_t>& displacements)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_hindexed_block, (static_cast<std::int32_t>(displacements.size()), block_length, displacements.data(), that.native_, &native_))
+  }
+  data_type           (const data_type&  that, const std::vector<std::int32_t>& block_lengths, const std::vector<std::int32_t>& displacements)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_indexed        , (static_cast<std::int32_t>(block_lengths.size()), block_lengths.data(), displacements.data(), that.native_, &native_))
+  }
+  data_type           (const data_type&  that, const std::vector<std::int32_t>& block_lengths, const std::vector<std::int64_t>& displacements)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_hindexed, (static_cast<std::int32_t>(block_lengths.size()), block_lengths.data(), displacements.data(), that.native_, &native_))
+  }
+  data_type           (const data_type&  that, const std::vector<std::int32_t>& sizes        , const std::vector<std::int32_t>& sub_sizes    , const std::vector<std::int32_t>& starts, const order order = order::c_order)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_subarray, (static_cast<std::int32_t>(sizes.size()), sizes.data(), sub_sizes.data(), starts.data(), static_cast<std::int32_t>(order), that.native_, &native_))
+  }
+  data_type           (const data_type&  that, const std::int64_t lower_bound, const std::int64_t extent)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_resized, (that.native_, lower_bound, extent, &native_)) 
   }
   data_type           (const data_type&  that)
   : managed_(true)

@@ -19,6 +19,7 @@
 #include <mpi/core/key_value.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/core/port.hpp>
+#include <mpi/core/request.hpp>
 
 namespace mpi
 {
@@ -35,10 +36,20 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create       , (that.native_, group      .native(),      &native_))
   }
-  communicator            (const communicator&  that, const group&                          group      , const std::int32_t tag      )
+  communicator            (const communicator&  that, const group&                          group      , const std::int32_t tag)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_group , (that.native_, group      .native(), tag, &native_))
+  }
+  communicator            (const communicator&  that, const std::int32_t                    color      , const std::int32_t key)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Comm_split        , (that.native_, color, key, &native_))
+  }
+  communicator            (const communicator&  that, const std::int32_t                    split_type , const std::int32_t key      , const information& information)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Comm_split_type   , (that.native_, split_type, key, information.native(), &native_))
   }
   communicator            (const communicator&  that, const port&                           port       , const bool         accept   , const information& information       = mpi::information(), const std::int32_t root = 0)
   : managed_(true)
@@ -169,7 +180,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Comm_join, (socket_file_descriptor, &result.native_))
     return std::move(result);
   }
-  
+
   [[nodiscard]]
   std::int32_t               rank                () const
   {

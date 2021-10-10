@@ -167,7 +167,7 @@ public:
   template <typename type>
   std::pair<std::vector<type>, status> read    (const std::int32_t count)
   {
-    return read<type>(count, get_data_type<type>());
+    return read    <type>(count, get_data_type<type>());
   }
   template <typename type>
   std::pair<std::vector<type>, status> read_all(const std::int32_t count)
