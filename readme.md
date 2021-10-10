@@ -192,9 +192,9 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Get                      
 - [ ] MPI_Get_accumulate           
 - [x] MPI_Get_address              
-- [ ] MPI_Get_count                
-- [ ] MPI_Get_elements             
-- [ ] MPI_Get_elements_x           
+- [x] MPI_Get_count                
+- [x] MPI_Get_elements             
+- [x] MPI_Get_elements_x           
 - [x] MPI_Get_library_version      
 - [x] MPI_Get_processor_name       
 - [x] MPI_Get_version              
@@ -204,8 +204,8 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Graph_neighbors          
 - [x] MPI_Graph_neighbors_count    
 - [x] MPI_Graphdims_get            
-- [ ] MPI_Grequest_complete        
-- [ ] MPI_Grequest_start           
+- [x] MPI_Grequest_complete        
+- [x] MPI_Grequest_start           
 - [x] ~~MPI_Group_c2f~~                
 - [x] MPI_Group_compare            
 - [x] MPI_Group_difference         
@@ -327,8 +327,8 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Status_c2f~~                
 - [x] ~~MPI_Status_f2c~~                
 - [x] MPI_Status_set_cancelled      
-- [ ] MPI_Status_set_elements       
-- [ ] MPI_Status_set_elements_x     
+- [x] MPI_Status_set_elements       
+- [x] MPI_Status_set_elements_x     
 - [x] MPI_T_category_changed        
 - [x] MPI_T_category_get_categories 
 - [x] MPI_T_category_get_cvars      
@@ -366,7 +366,7 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Type_c2f~~
 - [x] MPI_Type_commit
 - [x] MPI_Type_contiguous
-- [ ] MPI_Type_create_darray
+- [x] MPI_Type_create_darray
 - [x] ~~MPI_Type_create_f90_complex~~
 - [x] ~~MPI_Type_create_f90_integer~~
 - [x] ~~MPI_Type_create_f90_real~~
@@ -376,7 +376,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Type_create_indexed_block
 - [x] MPI_Type_create_keyval
 - [x] MPI_Type_create_resized
-- [ ] MPI_Type_create_struct
+- [x] MPI_Type_create_struct
 - [x] MPI_Type_create_subarray
 - [x] MPI_Type_delete_attr
 - [x] MPI_Type_dup

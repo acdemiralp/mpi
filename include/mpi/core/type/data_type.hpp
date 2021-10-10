@@ -1,25 +1,22 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include <mpi/core/enums/combiner.hpp>
-#include <mpi/core/type/data_type_information.hpp>
+#include <mpi/core/structs/data_type_information.hpp>
+#include <mpi/core/structs/distributed_array_information.hpp>
+#include <mpi/core/structs/sub_array_information.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/key_value.hpp>
-#include <mpi/core/memory.hpp>
 #include <mpi/core/mpi.hpp>
 
 namespace mpi
 {
-enum class order : std::int32_t
-{
-  c_order       = MPI_ORDER_C      ,
-  fortran_order = MPI_ORDER_FORTRAN
-};
-
 class data_type
 {
 public:
@@ -28,10 +25,26 @@ public:
   {
     
   }
+  data_type           (const std::vector<data_type>& data_types, const std::vector<std::int32_t>& block_lengths, const std::vector<std::int64_t>& displacements)
+  : managed_(true)
+  {
+    std::vector<MPI_Datatype> raw_data_types(data_types.size());
+    std::transform(data_types.begin(), data_types.end(), raw_data_types.begin(), [ ] (const auto& request)
+    {
+      return request.native();
+    });
+
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_struct  , (static_cast<std::int32_t>(block_lengths.size()), block_lengths.data(), displacements.data(), raw_data_types.data(), &native_))
+  }
   data_type           (const data_type&  that, const std::int32_t count)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_contiguous, (count, that.native_, &native_)) 
+  }
+  data_type           (const data_type&  that, const std::int64_t lower_bound, const std::int64_t extent)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_resized, (that.native_, lower_bound, extent, &native_)) 
   }
   data_type           (const data_type&  that, const std::int32_t count, const std::int32_t block_length, const std::int32_t stride)
   : managed_(true)
@@ -63,14 +76,30 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_hindexed, (static_cast<std::int32_t>(block_lengths.size()), block_lengths.data(), displacements.data(), that.native_, &native_))
   }
-  data_type           (const data_type&  that, const std::vector<std::int32_t>& sizes        , const std::vector<std::int32_t>& sub_sizes    , const std::vector<std::int32_t>& starts, const order order = order::c_order)
+  data_type           (const data_type&  that, const sub_array_information&         sub_array)
   {
-    MPI_CHECK_ERROR_CODE(MPI_Type_create_subarray, (static_cast<std::int32_t>(sizes.size()), sizes.data(), sub_sizes.data(), starts.data(), static_cast<std::int32_t>(order), that.native_, &native_))
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_subarray, (
+      static_cast<std::int32_t>(sub_array.sizes.size()), 
+      sub_array.sizes    .data(), 
+      sub_array.sub_sizes.data(),
+      sub_array.starts   .data(), 
+      sub_array.fortran_order ? MPI_ORDER_FORTRAN : MPI_ORDER_C, 
+      that.native_, 
+      &native_))
   }
-  data_type           (const data_type&  that, const std::int64_t lower_bound, const std::int64_t extent)
-  : managed_(true)
+  data_type           (const data_type&  that, const distributed_array_information& distributed_array)
   {
-    MPI_CHECK_ERROR_CODE(MPI_Type_create_resized, (that.native_, lower_bound, extent, &native_)) 
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_darray, (
+      distributed_array.size,
+      distributed_array.rank,
+      static_cast<std::int32_t>            (distributed_array.global_sizes .size()),
+      distributed_array.global_sizes          .data(),
+      reinterpret_cast<const std::int32_t*>(distributed_array.distributions.data()),
+      distributed_array.distribution_arguments.data(),
+      distributed_array.process_grid_sizes    .data(),
+      distributed_array.fortran_order ? MPI_ORDER_FORTRAN : MPI_ORDER_C,
+      that.native_, 
+      &native_))
   }
   data_type           (const data_type&  that)
   : managed_(true)

@@ -90,6 +90,8 @@ public:
   }
 
 protected:
+  request() = default; // Default constructor is only available to sub classes who control the member variables explicitly.
+
   bool        managed_ = false;
   MPI_Request native_  = MPI_REQUEST_NULL;
 };

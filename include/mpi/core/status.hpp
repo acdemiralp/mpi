@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include <mpi/core/error/error_code.hpp>
+#include <mpi/core/type/data_type.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
@@ -26,39 +27,71 @@ public:
   status& operator=(      status&& temp) = default;
 
   [[nodiscard]]
-  bool              cancelled               () const
+  std::int32_t count                   (const data_type& type) const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Get_count     , (this, type.native(), &result))
+    return result;
+  }
+
+  [[nodiscard]]
+  std::int32_t element_count           (const data_type& type) const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Get_elements  , (this, type.native(), &result))
+    return result;
+  }
+  void         set_element_count       (const data_type& type, const std::int32_t count)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Status_set_elements  , (this, type.native(), count))
+  }
+
+  [[nodiscard]]
+  std::int64_t element_count_x         (const data_type& type) const
+  {
+    std::int64_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Get_elements_x, (this, type.native(), &result))
+    return result;
+  }
+  void         set_element_count_x     (const data_type& type, const std::int64_t count)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Status_set_elements_x, (this, type.native(), count))
+  }
+
+  [[nodiscard]]
+  bool         cancelled               () const
   {
     auto result(0);
     MPI_CHECK_ERROR_CODE(MPI_Test_cancelled, (this, &result))
     return static_cast<bool>(result);
   }
-  void              set_cancelled           (const bool cancelled)
+  void         set_cancelled           (const bool cancelled)
   {
     MPI_CHECK_ERROR_CODE(MPI_Status_set_cancelled, (this, static_cast<std::int32_t>(cancelled)))
   }
 
   [[nodiscard]]
-  std::int32_t      count_low               () const
+  std::int32_t count_low               () const
   {
     return count_lo;
   }
   [[nodiscard]]
-  std::int32_t      count_high_and_cancelled() const
+  std::int32_t count_high_and_cancelled() const
   {
     return count_hi_and_cancelled;
   }
   [[nodiscard]]
-  std::int32_t      source                  () const
+  std::int32_t source                  () const
   {
     return MPI_SOURCE;
   }
   [[nodiscard]]
-  std::int32_t      tag                     () const
+  std::int32_t tag                     () const
   {
     return MPI_SOURCE;
   }
   [[nodiscard]]
-  error_code        error                   () const
+  error_code   error                   () const
   {
     return error_code(MPI_ERROR);
   }
