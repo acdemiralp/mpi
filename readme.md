@@ -3,6 +3,7 @@ Modern C++20 message passing interface wrapper.
 
 ### Usage Notes
 - Define MPI_USE_EXCEPTIONS to check the return values of all viable functions against MPI_SUCCESS and throw an exception otherwise.
+- Specialize the function `template<> inline data_type mpi::get_data_type<YOUR_TYPE>() { return YOUR_DATA_TYPE; }` to enable data type inference for your type.
 
 ### Design Notes
 - The object wrappers have two types of constructors:
@@ -126,7 +127,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_File_call_errhandler     
 - [x] MPI_File_close               
 - [x] MPI_File_create_errhandler   
-- [ ] MPI_File_delete              
+- [x] MPI_File_delete              
 - [x] ~~MPI_File_f2c~~                 
 - [x] MPI_File_get_amode           
 - [x] MPI_File_get_atomicity       
@@ -151,8 +152,8 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_File_iwrite_shared       
 - [x] MPI_File_open                
 - [ ] MPI_File_preallocate
-- [ ] MPI_File_read                
-- [ ] MPI_File_read_all            
+- [x] MPI_File_read                
+- [x] MPI_File_read_all            
 - [ ] MPI_File_read_all_begin      
 - [ ] MPI_File_read_all_end        
 - [ ] MPI_File_read_at             

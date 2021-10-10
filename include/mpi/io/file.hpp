@@ -4,12 +4,14 @@
 
 #include <mpi/core/communicators/communicator.hpp>
 #include <mpi/core/error/error_handler.hpp>
+#include <mpi/core/type/data_type.hpp>
+#include <mpi/core/type/data_type_reflection.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/information.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/io/enums/access_mode.hpp>
 
-namespace mpi
+namespace mpi::io
 {
 class file
 {
@@ -56,14 +58,14 @@ public:
   [[nodiscard]]
   access_mode        access_mode       () const
   {
-    mpi::access_mode result;
+    io::access_mode result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_amode, (native_, reinterpret_cast<std::int32_t*>(&result)))
     return result;
   }
   [[nodiscard]]
-  MPI_Offset         byte_offset       (const MPI_Offset offset) const
+  std::int64_t       byte_offset       (const std::int64_t offset) const
   {
-    MPI_Offset result;
+    std::int64_t result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_byte_offset    , (native_, offset, &result))
     return result;
   }
@@ -75,16 +77,16 @@ public:
     return mpi::group(result);
   }
   [[nodiscard]]
-  MPI_Offset         position          () const
+  std::int64_t       position          () const
   {
-    MPI_Offset result;
+    std::int64_t result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_position       , (native_, &result))
     return result;
   }
   [[nodiscard]]
-  MPI_Offset         shared_position   () const
+  std::int64_t       shared_position   () const
   {
-    MPI_Offset result;
+    std::int64_t result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_position_shared, (native_, &result))
     return result;
   }
@@ -102,13 +104,13 @@ public:
   }
 
   [[nodiscard]]
-  MPI_Offset         size              () const
+  std::int64_t       size              () const
   {
-    MPI_Offset result;
+    std::int64_t result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_size, (native_, &result))
     return result;
   }
-  void               set_size          (const MPI_Offset value) const
+  void               set_size          (const std::int64_t value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_File_set_size, (native_, value))
   }
@@ -146,6 +148,34 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_File_sync, (native_))
   }
 
+  // The type and data_type must match. It is possible to automate this by implementing get_data_type<type> to map type to a data_type.
+  template <typename type>
+  std::pair<std::vector<type>, status> read    (const std::int32_t count, const data_type& data_type)
+  {
+    std::pair<std::vector<type>, status> result {std::vector<type>(count), {}};
+    MPI_CHECK_ERROR_CODE(MPI_File_read    , (native_, static_cast<void*>(result.first.data()), count, data_type.native(), &result.second))
+    return result;
+  }
+  template <typename type>
+  std::pair<std::vector<type>, status> read_all(const std::int32_t count, const data_type& data_type)
+  {
+    std::pair<std::vector<type>, status> result {std::vector<type>(count), {}};
+    MPI_CHECK_ERROR_CODE(MPI_File_read_all, (native_, static_cast<void*>(result.first.data()), count, data_type.native(), &result.second))
+    return result;
+  }
+
+  template <typename type>
+  std::pair<std::vector<type>, status> read    (const std::int32_t count)
+  {
+    return read<type>(count, get_data_type<type>());
+  }
+  template <typename type>
+  std::pair<std::vector<type>, status> read_all(const std::int32_t count)
+  {
+    return read_all<type>(count, get_data_type<type>());
+  }
+
+
   [[nodiscard]]
   bool               managed           () const
   {
@@ -161,4 +191,9 @@ protected:
   bool     managed_ = false;
   MPI_File native_  = MPI_FILE_NULL;
 };
+
+inline void delete_file(const std::string& filepath, const information& information = mpi::information())
+{
+  MPI_CHECK_ERROR_CODE(MPI_File_delete, (filepath.c_str(), information.native()))
+}
 }

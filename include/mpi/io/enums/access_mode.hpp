@@ -5,7 +5,7 @@
 #include <mpi/core/utility/bitset_enum.hpp>
 #include <mpi/core/mpi.hpp>
 
-namespace mpi
+namespace mpi::io
 {
 enum class access_mode : std::int32_t
 {
