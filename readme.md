@@ -3,15 +3,21 @@ Modern C++20 message passing interface wrapper.
 
 ### Usage Notes
 - Define MPI_USE_EXCEPTIONS to check the return values of all viable functions against MPI_SUCCESS and throw an exception otherwise.
-- Specialize the function `template<> inline data_type mpi::get_data_type<YOUR_TYPE>() { return YOUR_DATA_TYPE; }` to enable data type inference for your type.
+- Specialize `template<> inline mpi::data_type mpi::get_data_type<YOUR_TYPE>() { return YOUR_DATA_TYPE; }` to enable data type inference for your type.
 
 ### Design Notes
-- The object wrappers have two types of constructors:
-  - Managed   constructors: Construct a  new      MPI object, and     be responsible for its destruction.
-  - Unmanaged constructors: Accept    an existing MPI object, and not be responsible for its destruction.
-- Copy constructors are deleted unless MPI provides duplication functions (ending with _dup) for the object.
-- Move constructors are available whenever possible.
-- Namespace functions are preferred over static member functions whenever possible.
+- Constructors:
+  - Copy constructors are deleted unless MPI provides duplication functions (ending with _dup) for the object.
+  - Move constructors are available whenever possible.
+  - The object wrappers have two types of constructors:
+    - Managed   constructors: Construct a  new      MPI object, and     be responsible for its destruction.
+    - Unmanaged constructors: Accept    an existing MPI object, and not be responsible for its destruction.
+- Structures:
+  - Structs are for POD data types. They may only contain member variables, constructors, destructors and assignment operators.
+- Statics:
+  - Namespace functions are preferred over static member functions whenever possible.
+- Reflection:
+  - WIP: A data_type for any class/struct can be created through reflection/serialization.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] MPI                         
@@ -322,8 +328,8 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Sizeof~~                    
 - [ ] MPI_Ssend                     
 - [ ] MPI_Ssend_init                
-- [ ] MPI_Start                     
-- [ ] MPI_Startall                  
+- [x] MPI_Start                     
+- [x] MPI_Startall                  
 - [x] ~~MPI_Status_c2f~~                
 - [x] ~~MPI_Status_f2c~~                
 - [x] MPI_Status_set_cancelled      
