@@ -17,16 +17,14 @@ Modern C++20 message passing interface wrapper.
 - Statics:
   - Namespace functions are preferred over static member functions whenever possible.
 - Reflection:
-  - A data_type for any class/struct can be created through reflection.
-  - Candidates:
-    | Library                                            | Built | Extra step | Manual | Dependencies |
-    |----------------------------------------------------|-------|------------|--------|--------------|
-    | https://github.com/boostorg/pfr                    | False | False      | False  | False        |
-    | https://github.com/felixguendling/cista            | False | False      | False  | False        |
-  - Rejections:
+  - The data_type for aggregate classes/structs can be automatically created through reflection.
+  - Survey of reflection libraries:
     | Library                                            | Built | Extra step | Manual | Dependencies |
     |----------------------------------------------------|-------|------------|--------|--------------|
     | https://github.com/rttrorg/rttr                    | True  | False      | True   | False        |
+    | https://github.com/boostorg/pfr                    | False | False      | False  | False        |
+    | https://github.com/apolukhin/pfr_non_boost         | False | False      | False  | False        |
+    | https://github.com/felixguendling/cista            | False | False      | False  | False        |
     | https://github.com/veselink1/refl-cpp              | False | False      | True   | False        |
     | https://github.com/AustinBrunkhorst/CPP-Reflection | True  | True       | True   | True         |
     | https://github.com/billyquith/ponder               | True  | False      | True   | False        |
@@ -42,6 +40,7 @@ Modern C++20 message passing interface wrapper.
     | https://github.com/Leandros/metareflect            | False | True       | True   | True         |
     | https://github.com/Cylix/Reflex                    | False | False      | True   | True         |
     | https://github.com/boostorg/describe               | False | False      | True   | True         |
+  - Selected apolukhin/pfr_non_boost.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] MPI                         
