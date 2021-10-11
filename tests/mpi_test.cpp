@@ -13,28 +13,24 @@
 struct type
 {
   std::int32_t                x;
-  std::string                 y;
+  char                        y[256];
   std::array<std::int32_t, 3> z;
 };
-
-template <typename type>
-mpi::data_type&& get_data_type()
-{
-  std::vector<mpi::data_type> data_types   ;
-  std::vector<std::int32_t>   block_lengths;
-  std::vector<std::int64_t>   displacements;
-
-  // Goal: Create a mpi::data_type from a type. Requires reflection to enumerate member variables.
-
-  return std::move(mpi::data_type(data_types, block_lengths, displacements));
-}
 
 namespace mpi
 {
 template <typename type, std::size_t size>
+struct type_traits<type[size]>
+{
+  static data_type get_data_type()
+  {
+    return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
+  }
+};
+template <typename type, std::size_t size>
 struct type_traits<std::array<type, size>>
 {
-  data_type get_data_type()
+  static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
   }
@@ -43,15 +39,15 @@ struct type_traits<std::array<type, size>>
 template <>
 struct type_traits<type>
 {
-  data_type get_data_type()
+  static data_type get_data_type()
   {
-    std::vector<mpi::data_type> data_types   ;
-    std::vector<std::int32_t>   block_lengths;
-    std::vector<std::int64_t>   displacements;
+    std::vector<data_type>    data_types   ;
+    std::vector<std::int32_t> block_lengths;
+    std::vector<std::int64_t> displacements;
 
     // Goal: Create a mpi::data_type from a type. Requires reflection to enumerate member variables.
 
-    return std::move(mpi::data_type(data_types, block_lengths, displacements));
+    return std::move(data_type(data_types, block_lengths, displacements));
   }
 };
 }
@@ -62,17 +58,17 @@ TEST_CASE("MPI Test", "[mpi]")
   std::vector<std::int32_t>   block_lengths(3);
   std::vector<std::int64_t>   displacements(3);
 
-  data_types   [0] = mpi::data_types::int32_t;
-  block_lengths[0] = sizeof(std::int32_t);
+  data_types   [0] = mpi::type_traits<std::int32_t>::get_data_type();
+  block_lengths[0] = 1;
   displacements[0] = 0;
 
-  data_types   [1] = mpi::data_types::char_;
-  block_lengths[1] = sizeof(std::int32_t);
-  displacements[1] = 0;
+  data_types   [1] = mpi::type_traits<char[256]>::get_data_type();
+  block_lengths[1] = 1;
+  displacements[1] = block_lengths[0] * sizeof(std::int32_t);
 
-  data_types   [2] = mpi::data_types::int32_t;
-  block_lengths[2] = sizeof(std::int32_t);
-  displacements[2] = 0;
+  data_types   [2] = mpi::type_traits<std::array<std::int32_t, 3>>::get_data_type();
+  block_lengths[2] = 1;
+  displacements[2] = block_lengths[1] * sizeof(char[256]);
 
   mpi::data_type data_type(data_types, block_lengths, displacements);
 }
