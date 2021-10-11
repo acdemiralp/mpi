@@ -14,6 +14,7 @@
 #include <mpi/core/exception.hpp>
 #include <mpi/core/key_value.hpp>
 #include <mpi/core/mpi.hpp>
+#include <mpi/third_party/pfr.hpp>
 
 namespace mpi
 {
@@ -24,6 +25,28 @@ public:
   : native_(native)
   {
     
+  }
+  template <typename type>
+  data_type           (const type& value)
+  {
+    const auto count = pfr::tuple_size<type>::value;
+
+    std::vector<MPI_Datatype> data_types   ; data_types   .reserve(count);
+    std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
+    std::vector<std::int64_t> displacements; displacements.reserve(count);
+    std::int64_t              displacement (0);
+
+    pfr::for_each_field(type(), [&] (auto& field)
+    {
+      std::remove_reference<decltype(field)> tt;
+
+      data_types   .push_back(MPI_INT);
+      block_lengths.push_back(1);
+      displacements.push_back(displacement);
+      displacement += sizeof(std::int32_t);
+    });
+
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_struct  , (static_cast<std::int32_t>(block_lengths.size()), block_lengths.data(), displacements.data(), data_types.data(), &native_))
   }
   data_type           (const std::vector<data_type>& data_types, const std::vector<std::int32_t>& block_lengths, const std::vector<std::int64_t>& displacements)
   : managed_(true)
