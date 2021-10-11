@@ -4,11 +4,11 @@
 #include <cstddef>
 #include <optional>
 
+#include <mpi/core/utility/container_adapter.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/tool/structs/performance_variable.hpp>
-#include <mpi/tool/container_adapter.hpp>
-#include <mpi/tool/object_variant.hpp>
+#include <mpi/tool/utility/object_variant.hpp>
 #include <mpi/tool/session.hpp>
 
 namespace mpi::tool

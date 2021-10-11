@@ -4,11 +4,11 @@
 #include <cstddef>
 #include <optional>
 
+#include <mpi/core/utility/container_adapter.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/tool/structs/control_variable.hpp>
-#include <mpi/tool/container_adapter.hpp>
-#include <mpi/tool/object_variant.hpp>
+#include <mpi/tool/utility/object_variant.hpp>
 
 namespace mpi::tool
 {
@@ -23,7 +23,7 @@ public:
       MPI_File handle;
       MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, static_cast<void*>(&handle), &native_, &count_))
 
-      object_ = file(handle);
+      object_ = io::file(handle);
     }
     else
     {

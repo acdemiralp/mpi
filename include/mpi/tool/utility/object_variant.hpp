@@ -19,7 +19,7 @@ using object_variant = std::variant<
   communicator ,
   data_type    ,
   error_handler,
-  file         ,
+  io::file     ,
   group        ,
   op           ,
   request      ,

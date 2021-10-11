@@ -66,12 +66,17 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Test, (&native_, &complete, &result))
     return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
   }
-  
+
   status                wait      ()
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_Wait, (&native_, &result))
     return result;
+  }
+
+  void                  start     ()
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Start, (&native_))
   }
   void                  cancel    ()
   {
@@ -208,5 +213,17 @@ inline std::vector<std::tuple<std::int32_t, status>>    wait_some(const std::vec
     return std::tuple<std::int32_t, status>{lhs, rhs};
   });
   return result;
+}
+
+inline void                                             start_all(const std::vector<request>& requests)
+{
+  std::vector<MPI_Request> raw_requests(requests.size());
+
+  std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
+  {
+    return request.native();
+  });
+
+  MPI_CHECK_ERROR_CODE(MPI_Startall, (static_cast<std::int32_t>(raw_requests.size()), raw_requests.data()))
 }
 }
