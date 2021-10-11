@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
@@ -67,6 +68,24 @@ MPI_SPECIALIZE_TYPE_TRAITS(std::complex<float      >, MPI_CXX_FLOAT_COMPLEX     
 MPI_SPECIALIZE_TYPE_TRAITS(std::complex<double     >, MPI_CXX_DOUBLE_COMPLEX     )
 MPI_SPECIALIZE_TYPE_TRAITS(std::complex<long double>, MPI_CXX_LONG_DOUBLE_COMPLEX)
 #undef MPI_SPECIALIZE_TYPE_TRAITS
+
+// Contiguous basic type traits.
+template <typename type, std::size_t size>
+struct type_traits<type[size]>
+{
+  static data_type get_data_type()
+  {
+    return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
+  }
+};
+template <typename type, std::size_t size>
+struct type_traits<std::array<type, size>>
+{
+  static data_type get_data_type()
+  {
+    return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
+  }
+};
 
 // Given a MPI data type, retrieves the associated typename at compile time.
 template <MPI_Datatype data_type>
