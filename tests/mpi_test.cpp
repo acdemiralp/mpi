@@ -11,13 +11,13 @@
 struct user_type
 {
   std::int32_t                x;
-  std::string                 y;
-  std::array<std::int32_t, 3> z;
+  std::array<std::int32_t, 3> y;
+  std::string                 z;
 };
 
-TEST_CASE("Test")
+TEST_CASE("MPI Test")
 {
   mpi::environment environment;
 
-  auto user_data_type = mpi::data_type(user_type());
+  auto user_data_type = mpi::type_traits<user_type>::get_data_type();
 }

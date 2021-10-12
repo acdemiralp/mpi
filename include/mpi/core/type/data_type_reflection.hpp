@@ -4,10 +4,12 @@
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <stddef.h>
 
 #include <mpi/core/type/data_type.hpp>
 #include <mpi/core/utility/missing_implementation.hpp>
 #include <mpi/core/mpi.hpp>
+#include <mpi/third_party/pfr.hpp>
 
 namespace mpi
 {
@@ -17,8 +19,24 @@ struct type_traits
 {
 static data_type get_data_type()
 {
-  static_assert(missing_implementation<type>::value, "Missing get_data_type implementation for type.");
-  return data_type(MPI_DATATYPE_NULL);
+  const auto count = pfr::tuple_size<type>::value;
+
+  std::vector<data_type>    data_types   ; data_types   .reserve(count);
+  std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
+  std::vector<std::int64_t> displacements; displacements.reserve(count);
+  std::int64_t              displacement (0);
+
+  pfr::for_each_field(type(), [&] (auto& field)
+  {
+    using member_type = std::remove_reference<decltype(field)>;
+
+    data_types   .push_back(type_traits<member_type>::get_data_type()); // TODO: Check if recursion works.
+    block_lengths.push_back(1);
+    displacements.push_back(displacement);
+    displacement += sizeof(field);                                      // TODO: Retrieve size of field. Does not work for e.g. string.
+  });
+
+  return std::move(data_type(data_types, block_lengths, displacements));
 }
 };
 
