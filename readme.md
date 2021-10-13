@@ -40,7 +40,10 @@ Modern C++20 message passing interface wrapper.
     | https://github.com/Leandros/metareflect            | False | True       | True   | True         |
     | https://github.com/Cylix/Reflex                    | False | False      | True   | True         |
     | https://github.com/boostorg/describe               | False | False      | True   | True         |
-  - Selected apolukhin/pfr_non_boost.
+  - PFR and Cista are candidates satisfying all four requirements above.
+  - PFR is suitable for reflecting MPI data types as justified in https://www.youtube.com/watch?v=abdeAew3gmQ.
+  - Cista emphasizes serialization, which is a use case of reflection. It feels inaccurate to include it only for reflection.
+  - Decided on PFR, specifically https://github.com/apolukhin/pfr_non_boost without the boost namespace.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] MPI                         

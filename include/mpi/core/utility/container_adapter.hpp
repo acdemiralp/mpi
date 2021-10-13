@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+#include <span>
 #include <string>
 #include <valarray>
 #include <vector>
@@ -23,11 +24,11 @@ struct container_adapter
 template <typename type, std::size_t size>
 struct container_adapter<type[size]>
 {
-  static void  resize(type*& container, const std::size_t _size)
+  static void  resize(type (&container) [size], const std::size_t _size)
   {
     // Do nothing.
   }
-  static type* data  (type*& container)
+  static type* data  (type (&container) [size])
   {
     return container;
   }
@@ -79,7 +80,25 @@ struct container_adapter<std::basic_string<type>>
   }
   static type* data  (std::basic_string<type>& container)
   {
-    return container.data();
+    return &container[0];
   }
 };
+
+template <typename type, std::size_t extent>
+struct container_adapter<std::span<type, extent>>
+{
+  static void  resize(std::span<type, extent>& container, const std::size_t size)
+  {
+    // Do nothing.
+  }
+  static type* data  (std::span<type, extent>& container)
+  {
+    return &container[0];
+  }
+};
+
+// The following are omitted due to not being contiguous:
+// - Sequence              containers: std::deque, std::forward_list, std::list
+// - Associative           containers: std::set, std::map, std::multiset, std::multimap
+// - Unordered associative containers: std::unordered_set, std::unordered_map, std::unordered_multiset, std::unordered_multimap.
 }

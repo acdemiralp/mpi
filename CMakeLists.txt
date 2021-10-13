@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project               (mpi VERSION 1.0 LANGUAGES C CXX)
 list                  (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
-set                   (CMAKE_CXX_STANDARD 17)
+set                   (CMAKE_CXX_STANDARD 20)
 
 include               (set_max_warning_level)
 set_max_warning_level ()
