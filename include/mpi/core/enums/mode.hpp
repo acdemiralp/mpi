@@ -16,6 +16,7 @@ enum class mode : std::int32_t
   no_succeed = MPI_MODE_NOSUCCEED
 };
 
+template <>
 struct is_bitset_enum<mode>
 {
   static const bool enable = true;

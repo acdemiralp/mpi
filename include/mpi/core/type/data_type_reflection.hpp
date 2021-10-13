@@ -7,7 +7,6 @@
 
 #include <mpi/core/type/data_type.hpp>
 #include <mpi/core/utility/missing_implementation.hpp>
-#include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/third_party/pfr.hpp>
 
@@ -27,19 +26,25 @@
 namespace mpi
 {
 template <typename type>
-struct is_tuple                      : std::false_type {};
+struct is_array                           : std::is_array<type> {};
+template <typename type, std::size_t size>
+struct is_array<std::array<type, size>>   : std::true_type      {};
+template <typename type>
+inline constexpr bool is_array_v = is_array<type>::value;
+
+template <typename type>
+struct is_tuple                           : std::false_type     {};
 template <typename... type>
-struct is_tuple<std::tuple<type...>> : std::true_type  {};
+struct is_tuple<std::tuple<type...>>      : std::true_type      {};
+template <typename first, typename second>
+struct is_tuple<std::pair<first, second>> : std::true_type      {};
 template <typename type>
 inline constexpr bool is_tuple_v = is_tuple<type>::value;
 
 template<typename tuple_type, typename function_type>
 void tuple_for_each(tuple_type&& tuple, function_type&& function)
 {
-  std::apply([&function] <typename... lambda_type> (lambda_type&&... value)
-  {
-    (function(std::forward<lambda_type>(value)), ...);
-  }, std::forward<tuple_type>(tuple));
+  std::apply([&function] (auto&&... value) { (function(value), ...); }, tuple);
 }
 
 // Given a typename, retrieves the associated MPI data type at runtime.
@@ -94,78 +99,6 @@ struct type_traits<type, std::enable_if_t<std::is_enum_v<type>>>
   static data_type get_data_type()
   {
     return type_traits<typename std::underlying_type<type>::type>::get_data_type();
-  }
-};
-// Specialization for tuples (using MPI_Type_create_struct).
-template <typename type>
-struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
-{
-  static data_type get_data_type()
-  {
-    const auto count = std::tuple_size<type>::value;
-  
-    std::vector<data_type>    data_types   ; data_types   .reserve(count);
-    std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
-    std::vector<std::int64_t> displacements; displacements.reserve(count);
-    std::int64_t              displacement (0);
-
-    tuple_for_each(type(), [&] <typename lambda_type> (lambda_type& field)
-    {
-      using member_type = std::remove_reference<lambda_type>;
-  
-      data_types   .push_back(type_traits<member_type>::get_data_type());
-      block_lengths.push_back(1);
-      displacements.push_back(displacement);
-      displacement += sizeof(field);
-    });
-  
-    return data_type(data_types, block_lengths, displacements);
-  }
-};
-// Specialization for non-arithmetic, non-enum, non-tuple, aggregate types (using MPI_Type_create_struct).
-template <typename type>
-struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_tuple_v<type> &&  std::is_aggregate_v<type>>>
-{
-  static data_type get_data_type()
-  {
-    const auto count = pfr::tuple_size<type>::value;
-  
-    std::vector<data_type>    data_types   ; data_types   .reserve(count);
-    std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
-    std::vector<std::int64_t> displacements; displacements.reserve(count);
-    std::int64_t              displacement (0);
-  
-    pfr::for_each_field(type(), [&] <typename lambda_type> (lambda_type& field)
-    {
-      using member_type = std::remove_reference<lambda_type>;
-  
-      data_types   .push_back(type_traits<member_type>::get_data_type());
-      block_lengths.push_back(1);
-      displacements.push_back(displacement);
-      displacement += sizeof(field);
-    });
-  
-    return data_type(data_types, block_lengths, displacements);
-  }
-};
-// Specialization for non-arithmetic, non-enum, non-tuple, non-aggregate types (must be manually implemented for user types, partially implemented for std::byte and std::complex<T>).
-template <typename type>
-struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_tuple_v<type> && !std::is_aggregate_v<type>>>
-{
-  static data_type get_data_type()
-  {
-    if      constexpr (std::is_same_v<type, std::complex<float      >>) return data_type(MPI_CXX_FLOAT_COMPLEX      );
-    else if constexpr (std::is_same_v<type, std::complex<double     >>) return data_type(MPI_CXX_DOUBLE_COMPLEX     );
-    else if constexpr (std::is_same_v<type, std::complex<long double>>) return data_type(MPI_CXX_LONG_DOUBLE_COMPLEX);
-    //else if constexpr (std::is_same_v<type, float       _Complex   >) return data_type(MPI_C_FLOAT_COMPLEX        );
-    //else if constexpr (std::is_same_v<type, double      _Complex   >) return data_type(MPI_C_DOUBLE_COMPLEX       );
-    //else if constexpr (std::is_same_v<type, long double _Complex   >) return data_type(MPI_C_LONG_DOUBLE_COMPLEX  );
-    //else if constexpr (std::is_same_v<type, _Packed                >) return data_type(MPI_PACKED                 );
-    else
-    {
-      static_assert(missing_implementation<type>::value, "Missing get_data_type() implementation for non-aggregate type.");
-      return data_type(MPI_DATATYPE_NULL);
-    }
   }
 };
 // Specialization for C-style arrays (using MPI_Type_contiguous).
@@ -234,16 +167,80 @@ struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, si
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
   }
 };
+// Specialization for std::tuples (using MPI_Type_create_struct).
+template <typename type>
+struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
+{
+  static data_type get_data_type()
+  {
+    const auto count = std::tuple_size<type>::value;
+  
+    std::vector<data_type>    data_types   ; data_types   .reserve(count);
+    std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
+    std::vector<std::int64_t> displacements; displacements.reserve(count);
+    std::int64_t              displacement (0);
 
-// TODO: Span, pair, valarray, vector, basic_string (runtime size), cast to byte array.
-//template <typename type>
-//struct type_traits<std::basic_string<type>>
-//{
-//  static data_type get_data_type()
-//  {
-//    return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
-//  }
-//};
+    tuple_for_each(type(), [&] <typename lambda_type>(lambda_type& field)
+    {
+      using member_type = std::remove_reference<lambda_type>;
+  
+      data_types   .push_back(type_traits<member_type>::get_data_type());
+      block_lengths.push_back(1);
+      displacements.push_back(displacement);
+      displacement += sizeof(field);
+    });
+  
+    return data_type(data_types, block_lengths, displacements);
+  }
+};
+// Specialization for non-arithmetic, non-enumeration, non-array, non-tuple, aggregate types (using MPI_Type_create_struct).
+template <typename type>
+struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_array_v<type> && !is_tuple_v<type> && std::is_aggregate_v<type>>>
+{
+  static data_type get_data_type()
+  {
+    const auto count = pfr::tuple_size<type>::value;
+  
+    std::vector<data_type>    data_types   ; data_types   .reserve(count);
+    std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
+    std::vector<std::int64_t> displacements; displacements.reserve(count);
+    std::int64_t              displacement (0);
+  
+    pfr::for_each_field(type(), [&] <typename lambda_type>(lambda_type& field)
+    {
+      using member_type = std::remove_reference<lambda_type>;
+  
+      data_types   .push_back(type_traits<member_type>::get_data_type());
+      block_lengths.push_back(1);
+      displacements.push_back(displacement);
+      displacement += sizeof(field);
+    });
+  
+    return data_type(data_types, block_lengths, displacements);
+  }
+};
+// Specialization for non-arithmetic, non-enumeration, non-array, non-tuple, non-aggregate types (must be manually implemented for user types, implemented for std::byte and std::complex<T>).
+template <typename type>
+struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_array_v<type> && !is_tuple_v<type> && !std::is_aggregate_v<type>>>
+{
+  static data_type get_data_type()
+  {
+    if      constexpr (std::is_same_v<type, std::complex<float      >>) return data_type(MPI_CXX_FLOAT_COMPLEX      );
+    else if constexpr (std::is_same_v<type, std::complex<double     >>) return data_type(MPI_CXX_DOUBLE_COMPLEX     );
+    else if constexpr (std::is_same_v<type, std::complex<long double>>) return data_type(MPI_CXX_LONG_DOUBLE_COMPLEX);
+    //else if constexpr (std::is_same_v<type, float       _Complex   >) return data_type(MPI_C_FLOAT_COMPLEX        );
+    //else if constexpr (std::is_same_v<type, double      _Complex   >) return data_type(MPI_C_DOUBLE_COMPLEX       );
+    //else if constexpr (std::is_same_v<type, long double _Complex   >) return data_type(MPI_C_LONG_DOUBLE_COMPLEX  );
+    //else if constexpr (std::is_same_v<type, _Packed                >) return data_type(MPI_PACKED                 );
+    else
+    {
+      static_assert(missing_implementation<type>::value, "Missing get_data_type() implementation for non-aggregate type.");
+      return data_type(MPI_DATATYPE_NULL);
+    }
+  }
+};
+
+// TODO: Variable size structures: String, span, valarray, vector. If nothing works, cast to byte array.
 
 // Given a MPI data type, retrieves the associated typename at compile time.
 template <MPI_Datatype data_type>
