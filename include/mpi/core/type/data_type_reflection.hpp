@@ -47,7 +47,7 @@ void tuple_for_each(tuple_type&& tuple, function_type&& function)
   std::apply([&function] (auto&&... value) { (function(value), ...); }, tuple);
 }
 
-// Given a typename, retrieves the associated MPI data type at runtime.
+// Given a typename, retrieves the associated MPI data type.
 template <typename type, typename = void>
 struct type_traits;
 
@@ -242,7 +242,7 @@ struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::i
 
 // TODO: Variable size structures: String, span, valarray, vector. If nothing works, cast to byte array.
 
-// Given a MPI data type, retrieves the associated typename at compile time.
+// Given a MPI data type, retrieves the associated typename.
 template <MPI_Datatype data_type>
 struct data_type_traits { };
 
