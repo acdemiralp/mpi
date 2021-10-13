@@ -55,7 +55,7 @@ struct container_adapter<std::valarray<type>>
   }
   static type* data  (std::valarray<type>& container)
   {
-    return &container[0];
+    return container.data();
   }
 };
 template <typename type>
