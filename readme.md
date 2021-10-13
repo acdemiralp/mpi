@@ -3,7 +3,8 @@ Modern C++20 message passing interface wrapper.
 
 ### Usage Notes
 - Define MPI_USE_EXCEPTIONS to check the return values of all viable functions against MPI_SUCCESS and throw an exception otherwise.
-- MPI data types are automatically generated for arithmetic, enumeration, array, tuple, pairs and types which satisfy std::is_aggregate<T>. If your type is not one of these, you must specialize `template <> struct mpi::type_traits<TYPE> { static data_type get_data_type() { return DATA_TYPE; } };` to enable inference. 
+- MPI data types are automatically generated for arithmetic types, enumerations, arrays, tuples, pairs and types which satisfy `std::is_aggregate<T>`. 
+- If your type is not one of the above, specialize `template <> struct mpi::type_traits<TYPE> { static data_type get_data_type() { return DATA_TYPE; } };` to enable inference. 
 
 ### Design Notes
 - Constructors:
