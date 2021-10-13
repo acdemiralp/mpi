@@ -4,23 +4,15 @@
 #include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <deque>
-#include <forward_list>
-#include <list>
-#include <map>
-#include <set>
-#include <span>
-#include <string>
 #include <tuple>
 #include <type_traits>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
-#include <valarray>
 #include <vector>
 
 #include <mpi/core/type/data_type.hpp>
+#include <mpi/core/utility/array_traits.hpp>
 #include <mpi/core/utility/missing_implementation.hpp>
+#include <mpi/core/utility/tuple_traits.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/third_party/pfr.hpp>
 
@@ -39,64 +31,6 @@
 // See https://www.boost.org/doc/libs/1_76_0/doc/html/boost_pfr/limitations_and_configuration.html for further detail.
 namespace mpi
 {
-template <typename type>
-struct is_array                           : std::is_array<type> {};
-template <typename type, std::size_t size>
-struct is_array<std::array<type, size>>   : std::true_type      {};
-template <typename type>
-inline constexpr bool is_array_v = is_array<type>::value;
-
-template <typename type>
-struct is_tuple                           : std::false_type     {};
-template <typename... type>
-struct is_tuple<std::tuple<type...>>      : std::true_type      {};
-template <typename first, typename second>
-struct is_tuple<std::pair<first, second>> : std::true_type      {};
-template <typename type>
-inline constexpr bool is_tuple_v = is_tuple<type>::value;
-
-template<typename tuple_type, typename function_type>
-void tuple_for_each(tuple_type&& tuple, function_type&& function)
-{
-  std::apply([&function] (auto&&... value) { (function(value), ...); }, tuple);
-}
-
-// The four type categories:
-//
-// 1- Basic Types:
-//    - Arithmetic types and enumerations are basic types.
-//    - Arrays, pairs, tuples, and aggregates consisting of other basic types are also basic types.
-//    - Each basic type has a corresponding MPI data type.
-//
-// 2- Non-contiguous Containers:
-//    - STL containers which do not have a contiguous memory layout are non-contiguous containers.
-//    - Specifically: std::deque, std::forward_list, std::list, std::vector<bool>, std::map, std::multimap, std::set, std::multiset, std::unordered_map, std::unordered_multimap, std::unordered_set, std::unordered_multiset.
-//    - Non-contiguous containers do not have a corresponding MPI data type.
-//    - Assuming its elements are basic types, a non-contiguous container can nevertheless be used with MPI.
-//    - The elements are first copied to a contiguous container using .begin() and .end(). It is then possible to obtain the MPI data type of the value_type, and pass it along with .data() and .size() to MPI functions.
-//
-// 3- Contiguous Containers:
-//    - STL containers which have a contiguous memory layout are contiguous containers.
-//    - Specifically: std::vector, std::valarray.
-//    - Contiguous containers do not have a corresponding MPI data type.
-//    - Assuming its elements are basic types, a contiguous container can nevertheless be used with MPI.
-//    - It is possible to obtain the MPI data type of the value_type, and pass it along with .data() and .size() to MPI functions.
-//
-// 4- Constant Contiguous Containers:
-//    - STL containers which have a contiguous memory layout and only provide a constant reference .data() function are constant contiguous containers.
-//    - Specifically: std::basic_string, std::span.
-//    - Constant contiguous containers do not have a corresponding MPI data type.
-//    - Assuming its elements are basic types, a constant contiguous container can nevertheless be used with MPI.
-//    - It is possible to obtain the MPI data type of the value_type, and pass it along with &[0] and .size() to MPI functions.
-
-namespace type_category
-{
-struct basic_type                     {};
-struct stl_container                  {};
-struct contiguous_stl_container       {};
-struct contiguous_const_stl_container {};
-}
-
 // Given a typename, retrieves the associated MPI data type.
 template <typename type, typename = void>
 struct type_traits;
@@ -105,8 +39,6 @@ struct type_traits;
 template <typename type>
 struct type_traits<type, std::enable_if_t<std::is_arithmetic_v<type>>>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     if      constexpr (std::is_same_v<type, char                     >) return data_type(MPI_CHAR                   );
@@ -149,8 +81,6 @@ struct type_traits<type, std::enable_if_t<std::is_arithmetic_v<type>>>
 template <typename type>
 struct type_traits<type, std::enable_if_t<std::is_enum_v<type>>>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     return type_traits<std::underlying_type_t<type>>::get_data_type();
@@ -160,8 +90,6 @@ struct type_traits<type, std::enable_if_t<std::is_enum_v<type>>>
 template <typename type, std::size_t size>
 struct type_traits<type[size]>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
@@ -170,8 +98,6 @@ struct type_traits<type[size]>
 template <typename type, std::size_t size_1, std::size_t size_2>
 struct type_traits<type[size_1][size_2]>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2));
@@ -180,8 +106,6 @@ struct type_traits<type[size_1][size_2]>
 template <typename type, std::size_t size_1, std::size_t size_2, std::size_t size_3>
 struct type_traits<type[size_1][size_2][size_3]>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3));
@@ -190,8 +114,6 @@ struct type_traits<type[size_1][size_2][size_3]>
 template <typename type, std::size_t size_1, std::size_t size_2, std::size_t size_3, std::size_t size_4>
 struct type_traits<type[size_1][size_2][size_3][size_4]>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
@@ -201,8 +123,6 @@ struct type_traits<type[size_1][size_2][size_3][size_4]>
 template <typename type, std::size_t size>
 struct type_traits<std::array<type, size>>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
@@ -211,8 +131,6 @@ struct type_traits<std::array<type, size>>
 template <typename type, std::size_t size_1, std::size_t size_2>
 struct type_traits<std::array<std::array<type, size_2>, size_1>>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2));
@@ -221,8 +139,6 @@ struct type_traits<std::array<std::array<type, size_2>, size_1>>
 template <typename type, std::size_t size_1, std::size_t size_2, std::size_t size_3>
 struct type_traits<std::array<std::array<std::array<type, size_3>, size_2>, size_1>>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3));
@@ -231,8 +147,6 @@ struct type_traits<std::array<std::array<std::array<type, size_3>, size_2>, size
 template <typename type, std::size_t size_1, std::size_t size_2, std::size_t size_3, std::size_t size_4>
 struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, size_3>, size_2>, size_1>>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
@@ -242,8 +156,6 @@ struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, si
 template <typename type>
 struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     const auto count = std::tuple_size<type>::value;
@@ -253,7 +165,7 @@ struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
     std::vector<std::int64_t> displacements; displacements.reserve(count);
     std::int64_t              displacement (0);
 
-    tuple_for_each(type(), [&] <typename lambda_type>(lambda_type& field)
+    tuple_for_each([&] <typename lambda_type>(lambda_type& field)
     {
       using member_type = std::remove_reference<lambda_type>;
   
@@ -261,7 +173,7 @@ struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
       block_lengths.push_back(1);
       displacements.push_back(displacement);
       displacement += sizeof(field);
-    });
+    }, type());
   
     return data_type(data_types, block_lengths, displacements);
   }
@@ -270,8 +182,6 @@ struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
 template <typename type>
 struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_array_v<type> && !is_tuple_v<type> &&  std::is_aggregate_v<type>>>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     const auto count = pfr::tuple_size<type>::value;
@@ -298,8 +208,6 @@ struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::i
 template <typename type>
 struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_array_v<type> && !is_tuple_v<type> && !std::is_aggregate_v<type>>>
 {
-  using category = type_category::basic_type;
-
   static data_type get_data_type()
   {
     if      constexpr (std::is_same_v<type, std::complex<float      >>) return data_type(MPI_CXX_FLOAT_COMPLEX      );
@@ -315,93 +223,6 @@ struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::i
       return data_type(MPI_DATATYPE_NULL);
     }
   }
-};
-
-// Specialization for standard sequential containers (using tag dispatching to be handled by the caller).
-template <typename type, typename allocator>
-struct type_traits<std::deque<type, allocator>>
-{
-  using category = type_category::stl_container;
-};
-template <typename type, typename allocator>
-struct type_traits<std::forward_list<type, allocator>>
-{
-  using category = type_category::stl_container;
-};
-template <typename type, typename allocator>
-struct type_traits<std::list<type, allocator>>
-{
-  using category = type_category::stl_container;
-};
-template <typename type, typename allocator>
-struct type_traits<std::vector<type, allocator>>
-{
-  using category = type_category::contiguous_stl_container;
-};
-template<typename allocator>
-struct type_traits<std::vector<bool, allocator>>
-{
-  using category = type_category::stl_container;
-};
-// Specialization for standard associative containers (using tag dispatching to be handled by the caller).
-template<typename key_type, typename value_type, typename compare, typename allocator>
-struct type_traits<std::map<key_type, value_type, compare, allocator>>
-{
-  using category = type_category::stl_container;
-};
-template<typename key_type, typename value_type, typename compare, typename allocator>
-struct type_traits<std::multimap<key_type, value_type, compare, allocator>>
-{
-  using category = type_category::stl_container;
-};
-template<typename type, typename compare, typename allocator>
-struct type_traits<std::set<type, compare, allocator>>
-{
-  using category = type_category::stl_container;
-};
-template<typename type, typename compare, typename allocator>
-struct type_traits<std::multiset<type, compare, allocator>>
-{
-  using category = type_category::stl_container;
-};
-// Specialization for standard unordered associative containers (using tag dispatching to be handled by the caller).
-template<typename key_type, typename value_type, typename hash, typename key_equal, typename allocator>
-struct type_traits<std::unordered_map<key_type, value_type, hash, key_equal, allocator>>
-{
-  using category = type_category::stl_container;
-};
-template<typename key_type, typename value_type, typename hash, typename key_equal, typename allocator>
-struct type_traits<std::unordered_multimap<key_type, value_type, hash, key_equal, allocator>>
-{
-  using category = type_category::stl_container;
-};
-template<typename type, typename hash, typename key_equal, typename allocator>
-struct type_traits<std::unordered_set<type, hash, key_equal, allocator>>
-{
-  using category = type_category::stl_container;
-};
-template<typename type, typename hash, typename key_equal, typename allocator>
-struct type_traits<std::unordered_multiset<type, hash, key_equal, allocator>>
-{
-  using category = type_category::stl_container;
-};
-// Specialization for standard string.
-template<typename type, typename traits, typename allocator>
-struct type_traits<std::basic_string<type, traits, allocator>>
-{
-  using category = type_category::contiguous_const_stl_container;
-};
-// Specialization for standard span.
-template<typename type, std::size_t size>
-struct type_traits<std::span<type, size>>
-{
-  using category = type_category::contiguous_const_stl_container;
-};
-// Specialization for standard valarray.
-template<typename type>
-struct type_traits<std::valarray<type>>
-{
-  using category = type_category::contiguous_stl_container;
 };
 
 // Given a MPI data type, retrieves the associated typename.
