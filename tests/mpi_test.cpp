@@ -19,7 +19,7 @@ TEST_CASE("MPI Test")
 {
   mpi::environment environment;
 
-  static_assert(mpi::is_basic_v<user_type>, "The user type is not basic.");
+  static_assert(mpi::is_compliant_v<user_type>, "The user type is not compliant.");
 
-  //auto user_data_type = mpi::type_traits<user_type>::get_data_type();
+  auto user_data_type = mpi::type_traits<user_type>::get_data_type();
 }

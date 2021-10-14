@@ -1,106 +1,88 @@
 #pragma once
 
-#include <array>
-#include <cstddef>
-#include <span>
-#include <string>
+#include <type_traits>
 #include <valarray>
 #include <vector>
 
+#include <mpi/core/type/data_type_category.hpp>
+#include <mpi/core/type/data_type_reflection.hpp>
+
 namespace mpi
 {
-// TODO: Implement according to data_type category.
+template <typename type, typename = void>
+struct container_adapter;
 
 template <typename type>
-struct container_adapter
+struct container_adapter<type, std::enable_if_t<is_compliant_v                    <type>>>
 {
-  static void  resize(type& container, const std::size_t size)
+  static void        resize(type& container, const std::size_t size)
   {
-    // Do nothing.
+    // Do nothing. Compliant types are not resizable.
   }
-  static type* data  (type& container)
+  static std::size_t size  (type& container)
+  {
+    return 1;
+  }
+  static type*       data  (type& container)
   {
     return &container;
   }
 };
-template <typename type, std::size_t size>
-struct container_adapter<type[size]>
-{
-  static void  resize(type (&container) [size], const std::size_t _size)
-  {
-    // Do nothing.
-  }
-  static type* data  (type (&container) [size])
-  {
-    return container;
-  }
-};
 
-template <typename type, std::size_t size>
-struct container_adapter<std::array<type, size>>
-{
-  static void  resize(std::array<type, size>& container, const std::size_t _size)
-  {
-    // Do nothing.
-  }
-  static type* data  (std::array<type, size>& container)
-  {
-    return container.data();
-  }
-};
 template <typename type>
-struct container_adapter<std::valarray<type>>
+struct container_adapter<type, std::enable_if_t<is_non_contiguous_container_v     <type>>>
 {
-  static void  resize(std::valarray<type>& container, const std::size_t size)
+  static void        resize(type& container, const std::size_t size)
   {
-    container.resize(size);
+    // TODO: Fix bad abstraction!
+    // Resizable    : std::deque, std::forward_list, std::list, std::vector<bool>,
+    // Not resizable: std::map, std::multimap, std::set, std::multiset, std::unordered_map, std::unordered_multimap, std::unordered_set, std::unordered_multiset.
   }
-  static type* data  (std::valarray<type>& container)
+  static std::size_t size  (type& container)
   {
-    return container.data();
+    return container.size();
   }
-};
-template <typename type>
-struct container_adapter<std::vector<type>>
-{
-  static void  resize(std::vector<type>& container, const std::size_t size)
+  static type*       data  (type& container)
   {
-    container.resize(size);
-  }
-  static type* data  (std::vector<type>& container)
-  {
-    return container.data();
+    // TODO: Copy the elements to a contiguous buffer and return a pointer to that instead!
+    std::vector<typename type::value_type> contiguous(container.begin(), container.end());
   }
 };
 
 template <typename type>
-struct container_adapter<std::basic_string<type>>
+struct container_adapter<type, std::enable_if_t<is_contiguous_container_v         <type>>>
 {
-  static void  resize(std::basic_string<type>& container, const std::size_t size)
+  static void        resize(type& container, const std::size_t size)
   {
     container.resize(size);
   }
-  static type* data  (std::basic_string<type>& container)
+  static std::size_t size  (type& container)
   {
-    return &container[0];
+    return container.size();
+  }
+  static type*       data  (type& container)
+  {
+    if constexpr (std::is_same_v<type, std::valarray<typename type::value_type>>)
+      return &container[0];  // std::valarray does not have a .data() function.
+    else
+      return container.data();
   }
 };
 
-template <typename type, std::size_t extent>
-struct container_adapter<std::span<type, extent>>
+template <typename type>
+struct container_adapter<type, std::enable_if_t<is_constant_contiguous_container_v<type>>>
 {
-  static void  resize(std::span<type, extent>& container, const std::size_t size)
+  static void        resize(type& container, const std::size_t size)
   {
-    // Do nothing.
+    // Do nothing. Constant containers are not resizable.
   }
-  static type* data  (std::span<type, extent>& container)
+  static std::size_t size  (type& container)
   {
-    return &container[0];
+    return container.size();
+  }
+  static type*       data  (type& container)
+  {
+    return container.data();
   }
 };
-
-// The following are omitted due to not being contiguous:
-// - Sequence              containers: std::deque, std::forward_list, std::list
-// - Associative           containers: std::set, std::map, std::multiset, std::multimap
-// - Unordered associative containers: std::unordered_set, std::unordered_map, std::unordered_multiset, std::unordered_multimap.
 }

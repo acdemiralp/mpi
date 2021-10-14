@@ -4,6 +4,7 @@
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -13,6 +14,7 @@
 #include <mpi/core/type/data_type_category.hpp>
 #include <mpi/core/utility/array_traits.hpp>
 #include <mpi/core/utility/missing_implementation.hpp>
+#include <mpi/core/utility/span_traits.hpp>
 #include <mpi/core/utility/tuple_traits.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/third_party/pfr.hpp>
@@ -95,7 +97,7 @@ struct type_traits<type[size]>
 {
   static data_type get_data_type()
   {
-    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
+    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
   }
 };
@@ -104,7 +106,7 @@ struct type_traits<type[size_1][size_2]>
 {
   static data_type get_data_type()
   {
-    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
+    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2));
   }
 };
@@ -113,7 +115,7 @@ struct type_traits<type[size_1][size_2][size_3]>
 {
   static data_type get_data_type()
   {
-    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
+    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3));
   }
 };
@@ -122,7 +124,7 @@ struct type_traits<type[size_1][size_2][size_3][size_4]>
 {
   static data_type get_data_type()
   {
-    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
+    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
   }
 };
@@ -133,7 +135,7 @@ struct type_traits<std::array<type, size>>
 {
   static data_type get_data_type()
   {
-    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
+    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
   }
 };
@@ -142,7 +144,7 @@ struct type_traits<std::array<std::array<type, size_2>, size_1>>
 {
   static data_type get_data_type()
   {
-    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
+    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2));
   }
 };
@@ -151,7 +153,7 @@ struct type_traits<std::array<std::array<std::array<type, size_3>, size_2>, size
 {
   static data_type get_data_type()
   {
-    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
+    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3));
   }
 };
@@ -160,8 +162,19 @@ struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, si
 {
   static data_type get_data_type()
   {
-    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
+    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
+  }
+};
+
+// Specialization for static std::spans (using MPI_Type_contiguous).
+template <typename type, std::size_t size>
+struct type_traits<std::span<type, size>, std::enable_if_t<is_static_span_v<std::span<type, size>>>>
+{
+  static data_type get_data_type()
+  {
+    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
+    return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
   }
 };
 
@@ -180,7 +193,7 @@ struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
 
     tuple_for_each([&] <typename lambda_type> (lambda_type& field)
     {
-      static_assert(is_basic_v<lambda_type>, "Element does not satisfy mpi::is_basic<type>.");
+      static_assert(is_compliant_v<lambda_type>, "Element does not satisfy mpi::is_compliant<type>.");
       data_types   .push_back(type_traits<lambda_type>::get_data_type());
       block_lengths.push_back(1);
       displacements.push_back(displacement);
@@ -206,7 +219,7 @@ struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::i
   
     pfr::for_each_field(type(), [&] <typename lambda_type> (lambda_type& field)
     {
-      static_assert(is_basic_v<lambda_type>, "Member does not satisfy mpi::is_basic<type>.");
+      static_assert(is_compliant_v<lambda_type>, "Member does not satisfy mpi::is_compliant<type>.");
       data_types   .push_back(type_traits<lambda_type>::get_data_type());
       block_lengths.push_back(1);
       displacements.push_back(displacement);
