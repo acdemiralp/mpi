@@ -8,12 +8,10 @@ namespace mpi
 {
 template <typename type>
 struct is_tuple : std::false_type {};
-
 template <typename... type>
 struct is_tuple<std::tuple<type...>> : std::true_type {};
-
 template <typename first, typename second>
-struct is_tuple<std::pair<first, second>> : std::true_type {}; // "A pair is a specific case of a std::tuple with two elements."
+struct is_tuple<std::pair<first, second>> : std::true_type {}; // "... A pair is a specific case of a std::tuple with two elements. ..."
 
 template <typename type>
 inline constexpr bool is_tuple_v = is_tuple<type>::value;

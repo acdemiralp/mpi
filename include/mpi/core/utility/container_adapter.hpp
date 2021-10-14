@@ -30,13 +30,29 @@ struct container_adapter<type, std::enable_if_t<is_compliant_v                  
 };
 
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_non_contiguous_container_v     <type>>>
+struct container_adapter<type, std::enable_if_t<is_associative_container_v     <type>>>
 {
   static void        resize(type& container, const std::size_t size)
   {
-    // TODO: Fix bad abstraction!
-    // Resizable    : std::deque, std::forward_list, std::list, std::vector<bool>,
-    // Not resizable: std::map, std::multimap, std::set, std::multiset, std::unordered_map, std::unordered_multimap, std::unordered_set, std::unordered_multiset.
+    // Do nothing. Associative containers are not resizable.
+  }
+  static std::size_t size  (type& container)
+  {
+    return container.size();
+  }
+  static type*       data  (type& container)
+  {
+    // TODO: Copy the elements to a contiguous buffer and return a pointer to that instead!
+    std::vector<typename type::value_type> contiguous(container.begin(), container.end());
+  }
+};
+  
+template <typename type>
+struct container_adapter<type, std::enable_if_t<is_non_contiguous_sequential_container_v     <type>>>
+{
+  static void        resize(type& container, const std::size_t size)
+  {
+    container.resize(size);
   }
   static std::size_t size  (type& container)
   {
@@ -50,7 +66,7 @@ struct container_adapter<type, std::enable_if_t<is_non_contiguous_container_v   
 };
 
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_contiguous_container_v         <type>>>
+struct container_adapter<type, std::enable_if_t<is_contiguous_sequential_container_v         <type>>>
 {
   static void        resize(type& container, const std::size_t size)
   {
@@ -70,11 +86,11 @@ struct container_adapter<type, std::enable_if_t<is_contiguous_container_v       
 };
 
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_constant_contiguous_container_v<type>>>
+struct container_adapter<type, std::enable_if_t<is_fixed_size_contiguous_sequential_container_v<type>>>
 {
   static void        resize(type& container, const std::size_t size)
   {
-    // Do nothing. Constant containers are not resizable.
+    // Do nothing. Fixed size containers are not resizable.
   }
   static std::size_t size  (type& container)
   {

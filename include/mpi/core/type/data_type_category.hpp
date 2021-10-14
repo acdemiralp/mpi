@@ -17,6 +17,7 @@
 #include <mpi/core/utility/array_traits.hpp>
 #include <mpi/core/utility/span_traits.hpp>
 #include <mpi/core/utility/tuple_traits.hpp>
+#include <mpi/third_party/pfr.hpp>
 
 // There are five data type categories:
 //
@@ -52,15 +53,52 @@
 //    - It is possible to obtain the MPI data type of the value_type, and pass it along with .data() and .size() to MPI functions.
 namespace mpi
 {
-// TODO: ARRAYS, SPANS, TUPLES, AGGREGATES SHOULD ONLY CONSIST OF COMPLIANTS TO BE IS_COMPLIANT. CONTAINERS SHOULD ALSO HOLD IS_COMPLIANT TYPES.
+template<typename type>
+struct is_compliant;
+
+template <typename type, typename = void>
+struct is_compliant_array : std::false_type {};
+template <typename type, std::size_t size>
+struct is_compliant_array <type[size]            , std::enable_if_t<is_compliant<type>::value>> : std::true_type {};
+template <typename type, std::size_t size>
+struct is_compliant_array <std::array<type, size>, std::enable_if_t<is_compliant<type>::value>> : std::true_type {};
+
+template <typename type, typename = void>
+struct is_compliant_static_span : std::false_type {};
+template <typename type, std::size_t size>
+struct is_compliant_static_span <std::span<type, size>, std::enable_if_t<size != std::dynamic_extent && is_compliant<type>::value>> : std::true_type {};
+
+template <typename type, typename = void>
+struct is_compliant_tuple : std::false_type {};
+template <typename... types>
+struct is_compliant_tuple <std::tuple<types...>    , std::enable_if_t<(is_compliant<types>::value && ...)>> : std::true_type {}; // MSVC does not yet support fold expressions in templates (tested and works on GCC 11.2).
+template <typename first, typename second>
+struct is_compliant_tuple <std::pair<first, second>, std::enable_if_t< is_compliant<first>::value && is_compliant<second>::value>> : std::true_type {}; // "A pair is a specific case of a std::tuple with two elements."
+
+template <typename type, typename = void>
+struct is_compliant_aggregate : std::false_type {};
+template <typename type>
+struct is_compliant_aggregate <type, std::enable_if_t<
+  !std::is_arithmetic_v    <type>        && 
+  !std::is_enum_v          <type>        && 
+  !is_compliant_array      <type>::value && 
+  !is_compliant_static_span<type>::value && 
+  !is_compliant_tuple      <type>::value && 
+  std::is_aggregate        <type>::value && 
+  is_compliant_tuple<decltype(pfr::structure_to_tuple(type()))>::value>> : std::true_type {};
+
 template<typename type>
 struct is_compliant : std::integral_constant<bool,
-  std::is_arithmetic_v<type>  || 
-  std::is_enum_v      <type>  || 
-  is_array_v          <type>  || 
-  is_static_span_v    <type>  || 
-  is_tuple_v          <type>  || 
-  std::is_aggregate_v <type>> {}; 
+  std::is_arithmetic_v    <type>         || 
+  std::is_enum_v          <type>         || 
+  is_compliant_array      <type>::value  ||
+  is_compliant_static_span<type>::value  ||
+  is_compliant_tuple      <type>::value  ||
+  is_compliant_aggregate  <type>::value  > {};
+
+// TODO: SOLVE THE PROBLEM OF ARRAY/SPAN/TUPLE RESOLVING TO AGGREGATE.
+// TODO: CONTAINERS SHOULD ALSO HOLD IS_COMPLIANT TYPES.
+// TODO: BYTE ARRAYS.
 
 template <typename type>
 struct is_associative_container                                                                                                             : std::false_type {};
@@ -116,4 +154,8 @@ template <typename type>
 inline constexpr bool is_contiguous_sequential_container_v            = is_contiguous_sequential_container           <type>::value;
 template <typename type>
 inline constexpr bool is_fixed_size_contiguous_sequential_container_v = is_fixed_size_contiguous_sequential_container<type>::value;
+
+// TODO
+template<typename type>
+struct is_compliant_associative_container : std::integral_constant<bool, is_associative_container<type>::value&& is_compliant<typename type::value_type>::value> {};
 }

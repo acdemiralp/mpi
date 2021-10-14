@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdint>
+#include <iostream>
 #include <string>
 
 #include <mpi/core/type/data_type.hpp>
@@ -19,7 +20,8 @@ TEST_CASE("MPI Test")
 {
   mpi::environment environment;
 
-  static_assert(mpi::is_compliant_v<user_type>, "The user type is not compliant.");
+  //static_assert(mpi::is_compliant_aggregate<user_type>::value, "Not compliant.");
 
-  auto user_data_type = mpi::type_traits<user_type>::get_data_type();
+  static_assert(mpi::is_compliant<float>               ::value, "Is not compliant.");
+  //static_assert(mpi::is_compliant<std::array<float, 4>>::value, "Is not compliant.");
 }
