@@ -9,6 +9,8 @@
 
 namespace mpi
 {
+// TODO: Implement according to data_type category.
+
 template <typename type>
 struct container_adapter
 {

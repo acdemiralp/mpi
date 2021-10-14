@@ -46,8 +46,9 @@
 //    - It is possible to obtain the MPI data type of the value_type, and pass it along with &[0] and .size() to MPI functions.
 namespace mpi
 {
+// TODO: ARRAYS, TUPLES, AGGREGATES SHOULD ONLY CONSIST OF BASICS TO BE IS_BASIC.
 template<typename type>
-struct is_basic : std::integral_constant<bool, std::is_arithmetic_v<type> || std::is_enum_v<type> || is_array_v<type> || is_tuple_v<type>> {}; // TODO: ARRAY/TUPLE SHOULD ONLY CONSIST OF BASICS, AGGREGATES CONSISTING OF BASICS
+struct is_basic : std::integral_constant<bool, std::is_arithmetic_v<type> || std::is_enum_v<type> || is_array_v<type> || is_tuple_v<type> || std::is_aggregate_v<type>> {}; 
 
 template <typename type>
 struct is_non_contiguous_container                                                                                 : std::false_type {};
@@ -89,4 +90,13 @@ template <typename type, typename traits, typename allocator>
 struct is_constant_contiguous_container<std::basic_string<type, traits, allocator>>                                : std::true_type  {};
 template <typename type, std::size_t extent>
 struct is_constant_contiguous_container<std::span        <type, extent>>                                           : std::true_type  {};
+
+template <typename type>
+inline constexpr bool is_basic_v                         = is_basic                        <type>::value;
+template <typename type>
+inline constexpr bool is_non_contiguous_container_v      = is_non_contiguous_container     <type>::value;
+template <typename type>
+inline constexpr bool is_contiguous_container_v          = is_contiguous_container         <type>::value;
+template <typename type>
+inline constexpr bool is_constant_contiguous_container_v = is_constant_contiguous_container<type>::value;
 }

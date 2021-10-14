@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <mpi/core/type/data_type.hpp>
+#include <mpi/core/type/data_type_category.hpp>
 #include <mpi/core/utility/array_traits.hpp>
 #include <mpi/core/utility/missing_implementation.hpp>
 #include <mpi/core/utility/tuple_traits.hpp>
@@ -77,6 +78,7 @@ struct type_traits<type, std::enable_if_t<std::is_arithmetic_v<type>>>
     }
   }
 };
+
 // Specialization for enumeration types (using standard MPI types, by forwarding the underlying arithmetic type).
 template <typename type>
 struct type_traits<type, std::enable_if_t<std::is_enum_v<type>>>
@@ -86,12 +88,14 @@ struct type_traits<type, std::enable_if_t<std::is_enum_v<type>>>
     return type_traits<std::underlying_type_t<type>>::get_data_type();
   }
 };
+
 // Specialization for C-style arrays (using MPI_Type_contiguous).
 template <typename type, std::size_t size>
 struct type_traits<type[size]>
 {
   static data_type get_data_type()
   {
+    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
   }
 };
@@ -100,6 +104,7 @@ struct type_traits<type[size_1][size_2]>
 {
   static data_type get_data_type()
   {
+    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2));
   }
 };
@@ -108,6 +113,7 @@ struct type_traits<type[size_1][size_2][size_3]>
 {
   static data_type get_data_type()
   {
+    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3));
   }
 };
@@ -116,15 +122,18 @@ struct type_traits<type[size_1][size_2][size_3][size_4]>
 {
   static data_type get_data_type()
   {
+    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
   }
 };
+
 // Specialization for std::arrays (using MPI_Type_contiguous).
 template <typename type, std::size_t size>
 struct type_traits<std::array<type, size>>
 {
   static data_type get_data_type()
   {
+    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
   }
 };
@@ -133,6 +142,7 @@ struct type_traits<std::array<std::array<type, size_2>, size_1>>
 {
   static data_type get_data_type()
   {
+    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2));
   }
 };
@@ -141,6 +151,7 @@ struct type_traits<std::array<std::array<std::array<type, size_3>, size_2>, size
 {
   static data_type get_data_type()
   {
+    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3));
   }
 };
@@ -149,9 +160,11 @@ struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, si
 {
   static data_type get_data_type()
   {
+    static_assert(is_basic_v<type>, "Element does not satisfy mpi::is_basic<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
   }
 };
+
 // Specialization for std::tuples (using MPI_Type_create_struct).
 template <typename type>
 struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
@@ -165,11 +178,10 @@ struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
     std::vector<std::int64_t> displacements; displacements.reserve(count);
     std::int64_t              displacement (0);
 
-    tuple_for_each([&] <typename lambda_type>(lambda_type& field)
+    tuple_for_each([&] <typename lambda_type> (lambda_type& field)
     {
-      using member_type = std::remove_reference<lambda_type>;
-  
-      data_types   .push_back(type_traits<member_type>::get_data_type());
+      static_assert(is_basic_v<lambda_type>, "Element does not satisfy mpi::is_basic<type>.");
+      data_types   .push_back(type_traits<lambda_type>::get_data_type());
       block_lengths.push_back(1);
       displacements.push_back(displacement);
       displacement += sizeof(field);
@@ -178,9 +190,10 @@ struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
     return data_type(data_types, block_lengths, displacements);
   }
 };
-// Specialization for non-arithmetic, non-enumeration, non-array, non-tuple, aggregate types (using MPI_Type_create_struct).
+
+// Specialization for aggregate types (using MPI_Type_create_struct).
 template <typename type>
-struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_array_v<type> && !is_tuple_v<type> &&  std::is_aggregate_v<type>>>
+struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_array_v<type> && !is_tuple_v<type> && std::is_aggregate_v<type>>>
 {
   static data_type get_data_type()
   {
@@ -191,11 +204,10 @@ struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::i
     std::vector<std::int64_t> displacements; displacements.reserve(count);
     std::int64_t              displacement (0);
   
-    pfr::for_each_field(type(), [&] <typename lambda_type>(lambda_type& field)
+    pfr::for_each_field(type(), [&] <typename lambda_type> (lambda_type& field)
     {
-      using member_type = std::remove_reference<lambda_type>;
-
-      data_types   .push_back(type_traits<member_type>::get_data_type());
+      static_assert(is_basic_v<lambda_type>, "Member does not satisfy mpi::is_basic<type>.");
+      data_types   .push_back(type_traits<lambda_type>::get_data_type());
       block_lengths.push_back(1);
       displacements.push_back(displacement);
       displacement += sizeof(field);
@@ -204,63 +216,30 @@ struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::i
     return data_type(data_types, block_lengths, displacements);
   }
 };
-// Specialization for non-arithmetic, non-enumeration, non-array, non-tuple, non-aggregate types (must be manually implemented for user types, already implemented for std::complex<T>).
-template <typename type>
-struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_array_v<type> && !is_tuple_v<type> && !std::is_aggregate_v<type>>>
+
+// Specialization for std::complex (using standard MPI types).
+template <>
+struct type_traits<std::complex<float>>
 {
   static data_type get_data_type()
   {
-    if      constexpr (std::is_same_v<type, std::complex<float      >>) return data_type(MPI_CXX_FLOAT_COMPLEX      );
-    else if constexpr (std::is_same_v<type, std::complex<double     >>) return data_type(MPI_CXX_DOUBLE_COMPLEX     );
-    else if constexpr (std::is_same_v<type, std::complex<long double>>) return data_type(MPI_CXX_LONG_DOUBLE_COMPLEX);
-    //else if constexpr (std::is_same_v<type, float       _Complex   >) return data_type(MPI_C_FLOAT_COMPLEX        );
-    //else if constexpr (std::is_same_v<type, double      _Complex   >) return data_type(MPI_C_DOUBLE_COMPLEX       );
-    //else if constexpr (std::is_same_v<type, long double _Complex   >) return data_type(MPI_C_LONG_DOUBLE_COMPLEX  );
-    //else if constexpr (std::is_same_v<type, _Packed                >) return data_type(MPI_PACKED                 );
-    else
-    {
-      static_assert(missing_implementation<type>::value, "Missing get_data_type() implementation for non-aggregate type.");
-      return data_type(MPI_DATATYPE_NULL);
-    }
+    return data_type(MPI_CXX_FLOAT_COMPLEX);
   }
 };
-
-// Given a MPI data type, retrieves the associated typename.
-template <MPI_Datatype data_type> struct data_type_traits { };
-template <> struct data_type_traits<MPI_CHAR                   > { using type = char                     ; };
-template <> struct data_type_traits<MPI_SHORT                  > { using type = std::int16_t             ; };
-template <> struct data_type_traits<MPI_INT                    > { using type = std::int32_t             ; };
-template <> struct data_type_traits<MPI_LONG                   > { using type = long                     ; };
-template <> struct data_type_traits<MPI_LONG_LONG              > { using type = std::int64_t             ; };
-template <> struct data_type_traits<MPI_SIGNED_CHAR            > { using type = std::int8_t              ; };
-template <> struct data_type_traits<MPI_UNSIGNED_CHAR          > { using type = std::uint8_t             ; };
-template <> struct data_type_traits<MPI_UNSIGNED_SHORT         > { using type = std::uint16_t            ; };
-template <> struct data_type_traits<MPI_UNSIGNED               > { using type = std::uint32_t            ; };
-template <> struct data_type_traits<MPI_UNSIGNED_LONG          > { using type = unsigned long            ; };
-template <> struct data_type_traits<MPI_UNSIGNED_LONG_LONG     > { using type = std::uint64_t            ; };
-template <> struct data_type_traits<MPI_FLOAT                  > { using type = float                    ; };
-template <> struct data_type_traits<MPI_DOUBLE                 > { using type = double                   ; };
-template <> struct data_type_traits<MPI_LONG_DOUBLE            > { using type = long double              ; };
-template <> struct data_type_traits<MPI_WCHAR                  > { using type = wchar_t                  ; };
-template <> struct data_type_traits<MPI_INT8_T                 > { using type = std::int8_t              ; };
-template <> struct data_type_traits<MPI_INT16_T                > { using type = std::int16_t             ; };
-template <> struct data_type_traits<MPI_INT32_T                > { using type = std::int32_t             ; };
-template <> struct data_type_traits<MPI_INT64_T                > { using type = std::int64_t             ; };
-template <> struct data_type_traits<MPI_UINT8_T                > { using type = std::uint8_t             ; };
-template <> struct data_type_traits<MPI_UINT16_T               > { using type = std::uint16_t            ; };
-template <> struct data_type_traits<MPI_UINT32_T               > { using type = std::uint32_t            ; };
-template <> struct data_type_traits<MPI_UINT64_T               > { using type = std::uint64_t            ; };
-template <> struct data_type_traits<MPI_AINT                   > { using type = std::int64_t             ; };
-template <> struct data_type_traits<MPI_COUNT                  > { using type = std::int64_t             ; };
-template <> struct data_type_traits<MPI_OFFSET                 > { using type = std::int64_t             ; };
-template <> struct data_type_traits<MPI_BYTE                   > { using type = std::byte                ; };
-template <> struct data_type_traits<MPI_CXX_BOOL               > { using type = bool                     ; };
-template <> struct data_type_traits<MPI_CXX_FLOAT_COMPLEX      > { using type = std::complex<float      >; };
-template <> struct data_type_traits<MPI_CXX_DOUBLE_COMPLEX     > { using type = std::complex<double     >; };
-template <> struct data_type_traits<MPI_CXX_LONG_DOUBLE_COMPLEX> { using type = std::complex<long double>; };
-//template <> struct data_type_traits<MPI_C_BOOL               > { using type = _Bool                    ; };
-//template <> struct data_type_traits<MPI_C_FLOAT_COMPLEX      > { using type = float       _Complex     ; };
-//template <> struct data_type_traits<MPI_C_DOUBLE_COMPLEX     > { using type = double      _Complex     ; };
-//template <> struct data_type_traits<MPI_C_LONG_DOUBLE_COMPLEX> { using type = long double _Complex     ; };
-//template <> struct data_type_traits<MPI_PACKED               > { using type = _Packed                  ; };
+template <>
+struct type_traits<std::complex<double>>
+{
+  static data_type get_data_type()
+  {
+    return data_type(MPI_CXX_DOUBLE_COMPLEX);
+  }
+};
+template <>
+struct type_traits<std::complex<long double>>
+{
+  static data_type get_data_type()
+  {
+    return data_type(MPI_CXX_LONG_DOUBLE_COMPLEX);
+  }
+};
 }
