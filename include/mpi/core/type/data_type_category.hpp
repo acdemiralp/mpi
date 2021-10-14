@@ -78,25 +78,22 @@ struct is_compliant_tuple <std::pair<first, second>, std::enable_if_t< is_compli
 template <typename type, typename = void>
 struct is_compliant_aggregate : std::false_type {};
 template <typename type>
-struct is_compliant_aggregate <type, std::enable_if_t<
-  !std::is_arithmetic_v    <type>        && 
-  !std::is_enum_v          <type>        && 
-  !is_compliant_array      <type>::value && 
-  !is_compliant_static_span<type>::value && 
-  !is_compliant_tuple      <type>::value && 
-  std::is_aggregate        <type>::value && 
-  is_compliant_tuple<decltype(pfr::structure_to_tuple(type()))>::value>> : std::true_type {};
+struct is_compliant_aggregate <type, std::enable_if_t<!std::is_aggregate_v<type>>> : std::false_type {};
+template <typename type>
+struct is_compliant_aggregate <type, std::enable_if_t<std::conjunction_v<std::is_aggregate<type>, is_compliant_tuple<decltype(pfr::structure_to_tuple(type()))>>>> : std::true_type {};
+
+//  std::is_aggregate<type>::value && !std::is_polymorphic<type>::value && is_compliant_tuple<decltype(pfr::structure_to_tuple(type()))>::value >> : std::true_type{};
 
 template<typename type>
-struct is_compliant : std::integral_constant<bool,
-  std::is_arithmetic_v    <type>         || 
-  std::is_enum_v          <type>         || 
-  is_compliant_array      <type>::value  ||
-  is_compliant_static_span<type>::value  ||
-  is_compliant_tuple      <type>::value  ||
-  is_compliant_aggregate  <type>::value  > {};
+struct is_compliant : std::disjunction<
+  std::is_arithmetic      <type> , 
+  std::is_enum            <type> , 
+  is_compliant_array      <type> ,
+  is_compliant_static_span<type> ,
+  is_compliant_tuple      <type> ,
+  is_compliant_aggregate  <type> > {};
 
-// TODO: SOLVE THE PROBLEM OF ARRAY/SPAN/TUPLE RESOLVING TO AGGREGATE.
+// TODO: SOLVE THE PROBLEM OF ARRAY/SPAN/TUPLE MEMBERS RESOLVING TO AGGREGATE.
 // TODO: CONTAINERS SHOULD ALSO HOLD IS_COMPLIANT TYPES.
 // TODO: BYTE ARRAYS.
 

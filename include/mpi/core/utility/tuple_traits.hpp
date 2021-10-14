@@ -6,17 +6,24 @@
 
 namespace mpi
 {
-template <typename type>
-struct is_tuple : std::false_type {};
-template <typename... type>
-struct is_tuple<std::tuple<type...>> : std::true_type {};
+template <typename>
+inline constexpr bool is_pair_v                            = false;
 template <typename first, typename second>
-struct is_tuple<std::pair<first, second>> : std::true_type {}; // "... A pair is a specific case of a std::tuple with two elements. ..."
+inline constexpr bool is_pair_v<std::pair<first, second>>  = true ;
 
-template <typename type>
-inline constexpr bool is_tuple_v = is_tuple<type>::value;
+template <typename>
+inline constexpr bool is_tuple_v                           = false;
+template <typename... type>
+inline constexpr bool is_tuple_v<std::tuple<type...>>      = true ;
+template <typename first, typename second>
+inline constexpr bool is_tuple_v<std::pair<first, second>> = true ; // "... A pair is a specific case of a std::tuple with two elements. ..."
 
-template<typename tuple_type, typename function_type>
+template <class type>
+struct is_pair  : std::bool_constant<is_pair_v <type>> {};
+template <class type>
+struct is_tuple : std::bool_constant<is_tuple_v<type>> {};
+
+template<typename function_type, typename tuple_type>
 void tuple_for_each(function_type&& function, tuple_type&& tuple)
 {
   std::apply([&function] (auto&&... value) { (function(value), ...); }, tuple);

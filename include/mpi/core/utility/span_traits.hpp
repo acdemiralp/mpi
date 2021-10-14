@@ -6,25 +6,25 @@
 
 namespace mpi
 {
-template <typename type>
-struct is_span : std::false_type {};
+template <typename>
+inline constexpr bool is_span_v                                                 = false;
 template <typename type, std::size_t size>
-struct is_span<std::span<type, size>> : std::true_type {};
+inline constexpr bool is_span_v<std::span<type, size>>                          = true ;
 
-template <typename type, typename = void>
-struct is_dynamic_span : std::false_type {};
+template <typename>
+inline constexpr bool is_bounded_span_v                                         = false;
 template <typename type, std::size_t size>
-struct is_dynamic_span<std::span<type, size>, std::enable_if_t<size == std::dynamic_extent>> : std::true_type {};
+inline constexpr bool is_bounded_span_v  <std::span<type, size>>                = size != std::dynamic_extent;
 
-template <typename type, typename = void>
-struct is_static_span : std::false_type {};
-template <typename type, std::size_t size>
-struct is_static_span <std::span<type, size>, std::enable_if_t<size != std::dynamic_extent>> : std::true_type {};
+template <typename>
+inline constexpr bool is_unbounded_span_v                                       = false;
+template <typename type>
+inline constexpr bool is_unbounded_span_v<std::span<type, std::dynamic_extent>> = true ;
 
-template <typename type>
-inline constexpr bool is_span_v         = is_span<type>::value;
-template <typename type>
-inline constexpr bool is_dynamic_span_v = is_dynamic_span<type>::value;
-template <typename type>
-inline constexpr bool is_static_span_v  = is_static_span<type>::value;
+template <class type>
+struct is_span           : std::bool_constant<is_span_v          <type>> {};
+template <class type>
+struct is_bounded_span   : std::bool_constant<is_bounded_span_v  <type>> {};
+template <class type>
+struct is_unbounded_span : std::bool_constant<is_unbounded_span_v<type>> {};
 }
