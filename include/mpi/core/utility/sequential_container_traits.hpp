@@ -45,9 +45,9 @@ template <typename type>
 inline constexpr bool is_sequential_container_v = std::disjunction_v<is_contiguous_sequential_container_v<type>, is_non_contiguous_sequential_container_v<type>>;
 
 template <class type>
-struct is_contiguous_sequential_container     : std::bool_constant<is_contiguous_sequential_container_v  <type>> {};
+struct is_contiguous_sequential_container     : std::bool_constant<is_contiguous_sequential_container_v    <type>> {};
 template <class type>
-struct is_non_contiguous_sequential_container : std::bool_constant<is_non_contiguous_sequential_container<type>> {};
+struct is_non_contiguous_sequential_container : std::bool_constant<is_non_contiguous_sequential_container_v<type>> {};
 template <class type>
-struct is_sequential_container                : std::bool_constant<is_sequential_container_v             <type>> {};
+struct is_sequential_container                : std::bool_constant<is_sequential_container_v               <type>> {};
 }

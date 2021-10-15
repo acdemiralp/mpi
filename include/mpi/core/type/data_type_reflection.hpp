@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include <mpi/core/type/compliant_traits.hpp>
 #include <mpi/core/type/data_type.hpp>
-#include <mpi/core/type/data_type_category.hpp>
 #include <mpi/core/utility/array_traits.hpp>
 #include <mpi/core/utility/missing_implementation.hpp>
 #include <mpi/core/utility/span_traits.hpp>
@@ -169,7 +169,7 @@ struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, si
 
 // Specialization for static std::spans (using MPI_Type_contiguous).
 template <typename type, std::size_t size>
-struct type_traits<std::span<type, size>, std::enable_if_t<is_static_span_v<std::span<type, size>>>>
+struct type_traits<std::span<type, size>, std::enable_if_t<is_compliant_span_v<std::span<type, size>>>>
 {
   static data_type get_data_type()
   {

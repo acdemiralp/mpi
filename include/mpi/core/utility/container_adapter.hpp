@@ -85,20 +85,20 @@ struct container_adapter<type, std::enable_if_t<is_contiguous_sequential_contain
   }
 };
 
-template <typename type>
-struct container_adapter<type, std::enable_if_t<is_fixed_size_contiguous_sequential_container_v<type>>>
-{
-  static void        resize(type& container, const std::size_t size)
-  {
-    // Do nothing. Fixed size containers are not resizable.
-  }
-  static std::size_t size  (type& container)
-  {
-    return container.size();
-  }
-  static type*       data  (type& container)
-  {
-    return container.data();
-  }
-};
+//template <typename type>
+//struct container_adapter<type, std::enable_if_t<is_fixed_size_contiguous_sequential_container_v<type>>>
+//{
+//  static void        resize(type& container, const std::size_t size)
+//  {
+//    // Do nothing. Fixed size containers are not resizable.
+//  }
+//  static std::size_t size  (type& container)
+//  {
+//    return container.size();
+//  }
+//  static type*       data  (type& container)
+//  {
+//    return container.data();
+//  }
+//};
 }
