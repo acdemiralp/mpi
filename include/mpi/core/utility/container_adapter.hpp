@@ -7,12 +7,19 @@
 #include <mpi/core/type/compliant_container_traits.hpp>
 #include <mpi/core/type/type_traits.hpp>
 
-// Container adapter is responsible for routing data from raw objects and STL containers to MPI and vice verse.
-// It takes a different action for the four data type categories:
-// - is_compliant
-// - is_compliant_associative_container
-// - is_compliant_non_contiguous_sequential_container
-// - is_compliant_contiguous_sequential_container
+// Container adapter provides a uniform interface for accessing different data type categories.
+//
+// - For basic compliant types:
+//   - Stateless.
+//   - Exposes .size() = 1 and .data() = &object for read and write operations.
+//
+// - For compliant associative containers and non contiguous sequential containers:
+//   - Stateful: Copies the contents of the container into a contiguous std::vector<value_type> using .begin() and .end().
+//   - Exposes .size() and .data() for read and write operations.
+//
+// - For compliant contiguous sequential containers:
+//   - Stateless.
+//   - Exposes .size() and .data() for read and write operations.
 namespace mpi
 {
 template <typename type, typename = void>
@@ -32,7 +39,7 @@ struct container_adapter<type, std::enable_if_t<is_compliant_v<type>>>
 };
 
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_compliant_associative_container_v<type>>>
+struct container_adapter<type, std::enable_if_t<std::conjunction_v<std::negation<is_compliant<type>>, is_compliant_associative_container<type>>>>
 {
   static std::size_t size  (type& container)
   {
@@ -46,7 +53,7 @@ struct container_adapter<type, std::enable_if_t<is_compliant_associative_contain
 };
   
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_compliant_non_contiguous_sequential_container_v<type>>>
+struct container_adapter<type, std::enable_if_t<std::conjunction_v<std::negation<is_compliant<type>>, is_compliant_non_contiguous_sequential_container<type>>>>
 {
   static std::size_t size  (type& container)
   {
@@ -60,7 +67,7 @@ struct container_adapter<type, std::enable_if_t<is_compliant_non_contiguous_sequ
 };
 
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_compliant_contiguous_sequential_container_v<type>>>
+struct container_adapter<type, std::enable_if_t<std::conjunction_v<std::negation<is_compliant<type>>, is_compliant_contiguous_sequential_container<type>>>>
 {
   static std::size_t size  (type& container)
   {

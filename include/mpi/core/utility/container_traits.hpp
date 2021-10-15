@@ -6,7 +6,7 @@
 namespace mpi
 {
 template <typename type>
-inline constexpr bool is_container_v = std::disjunction_v<is_associative_container_v<type>, is_sequential_container_v<type>>;
+inline constexpr bool is_container_v = std::disjunction_v<is_associative_container<type>, is_sequential_container<type>>;
 
 template <class type>
 struct is_container : std::bool_constant<is_container_v<type>> {};
