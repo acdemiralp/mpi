@@ -4,7 +4,7 @@
 #include <valarray>
 #include <vector>
 
-#include <mpi/core/type/data_type_category.hpp>
+#include <mpi/core/type/compliant_container_traits.hpp>
 #include <mpi/core/type/data_type_reflection.hpp>
 
 namespace mpi
@@ -13,12 +13,8 @@ template <typename type, typename = void>
 struct container_adapter;
 
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_compliant_v                    <type>>>
+struct container_adapter<type, std::enable_if_t<is_compliant_v<type>>>
 {
-  static void        resize(type& container, const std::size_t size)
-  {
-    // Do nothing. Compliant types are not resizable.
-  }
   static std::size_t size  (type& container)
   {
     return 1;
@@ -30,12 +26,8 @@ struct container_adapter<type, std::enable_if_t<is_compliant_v                  
 };
 
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_associative_container_v     <type>>>
+struct container_adapter<type, std::enable_if_t<is_compliant_associative_container_v<type>>>
 {
-  static void        resize(type& container, const std::size_t size)
-  {
-    // Do nothing. Associative containers are not resizable.
-  }
   static std::size_t size  (type& container)
   {
     return container.size();
@@ -48,12 +40,8 @@ struct container_adapter<type, std::enable_if_t<is_associative_container_v     <
 };
   
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_non_contiguous_sequential_container_v     <type>>>
+struct container_adapter<type, std::enable_if_t<is_compliant_non_contiguous_sequential_container_v<type>>>
 {
-  static void        resize(type& container, const std::size_t size)
-  {
-    container.resize(size);
-  }
   static std::size_t size  (type& container)
   {
     return container.size();
@@ -66,12 +54,8 @@ struct container_adapter<type, std::enable_if_t<is_non_contiguous_sequential_con
 };
 
 template <typename type>
-struct container_adapter<type, std::enable_if_t<is_contiguous_sequential_container_v         <type>>>
+struct container_adapter<type, std::enable_if_t<is_compliant_contiguous_sequential_container_v<type>>>
 {
-  static void        resize(type& container, const std::size_t size)
-  {
-    container.resize(size);
-  }
   static std::size_t size  (type& container)
   {
     return container.size();
@@ -84,21 +68,4 @@ struct container_adapter<type, std::enable_if_t<is_contiguous_sequential_contain
       return container.data();
   }
 };
-
-//template <typename type>
-//struct container_adapter<type, std::enable_if_t<is_fixed_size_contiguous_sequential_container_v<type>>>
-//{
-//  static void        resize(type& container, const std::size_t size)
-//  {
-//    // Do nothing. Fixed size containers are not resizable.
-//  }
-//  static std::size_t size  (type& container)
-//  {
-//    return container.size();
-//  }
-//  static type*       data  (type& container)
-//  {
-//    return container.data();
-//  }
-//};
 }

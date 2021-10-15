@@ -1,21 +1,15 @@
 #pragma once
 
 #include <array>
-#include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <span>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include <mpi/core/type/compliant_traits.hpp>
 #include <mpi/core/type/data_type.hpp>
-#include <mpi/core/utility/array_traits.hpp>
 #include <mpi/core/utility/missing_implementation.hpp>
-#include <mpi/core/utility/span_traits.hpp>
-#include <mpi/core/utility/tuple_traits.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/third_party/pfr.hpp>
 
@@ -91,13 +85,32 @@ struct type_traits<type, std::enable_if_t<std::is_enum_v<type>>>
   }
 };
 
+// Specialization for std::complex (using standard MPI types).
+template <typename type>
+struct type_traits<type, std::enable_if_t<is_complex_v<type>>>
+{
+  static data_type get_data_type()
+  {
+    if      constexpr (std::is_same_v<type, float      >)
+      return data_type(MPI_CXX_FLOAT_COMPLEX);
+    else if constexpr (std::is_same_v<type, double     >)
+      return data_type(MPI_CXX_DOUBLE_COMPLEX);
+    else if constexpr (std::is_same_v<type, long double>)
+      return data_type(MPI_CXX_LONG_DOUBLE_COMPLEX);
+    else 
+    {
+      static_assert(missing_implementation<type>::value, "Missing get_data_type() implementation for complex type.");
+      return data_type(MPI_DATATYPE_NULL);
+    }
+  }
+};
+
 // Specialization for C-style arrays (using MPI_Type_contiguous).
 template <typename type, std::size_t size>
 struct type_traits<type[size]>
 {
   static data_type get_data_type()
   {
-    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
   }
 };
@@ -106,7 +119,6 @@ struct type_traits<type[size_1][size_2]>
 {
   static data_type get_data_type()
   {
-    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2));
   }
 };
@@ -115,7 +127,6 @@ struct type_traits<type[size_1][size_2][size_3]>
 {
   static data_type get_data_type()
   {
-    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3));
   }
 };
@@ -124,7 +135,6 @@ struct type_traits<type[size_1][size_2][size_3][size_4]>
 {
   static data_type get_data_type()
   {
-    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
   }
 };
@@ -135,7 +145,6 @@ struct type_traits<std::array<type, size>>
 {
   static data_type get_data_type()
   {
-    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
   }
 };
@@ -144,7 +153,6 @@ struct type_traits<std::array<std::array<type, size_2>, size_1>>
 {
   static data_type get_data_type()
   {
-    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2));
   }
 };
@@ -153,7 +161,6 @@ struct type_traits<std::array<std::array<std::array<type, size_3>, size_2>, size
 {
   static data_type get_data_type()
   {
-    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3));
   }
 };
@@ -162,7 +169,6 @@ struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, si
 {
   static data_type get_data_type()
   {
-    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
   }
 };
@@ -173,18 +179,17 @@ struct type_traits<std::span<type, size>, std::enable_if_t<is_compliant_span_v<s
 {
   static data_type get_data_type()
   {
-    static_assert(is_compliant_v<type>, "Element does not satisfy mpi::is_compliant<type>.");
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
   }
 };
 
 // Specialization for std::tuples (using MPI_Type_create_struct).
 template <typename type>
-struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
+struct type_traits<type, std::enable_if_t<is_compliant_tuple_v<type>>>
 {
   static data_type get_data_type()
   {
-    const auto count = std::tuple_size<type>::value;
+    const auto count = std::tuple_size_v<type>;
   
     std::vector<data_type>    data_types   ; data_types   .reserve(count);
     std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
@@ -193,7 +198,6 @@ struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
 
     tuple_for_each([&] <typename lambda_type> (lambda_type& field)
     {
-      static_assert(is_compliant_v<lambda_type>, "Element does not satisfy mpi::is_compliant<type>.");
       data_types   .push_back(type_traits<lambda_type>::get_data_type());
       block_lengths.push_back(1);
       displacements.push_back(displacement);
@@ -206,11 +210,11 @@ struct type_traits<type, std::enable_if_t<is_tuple_v<type>>>
 
 // Specialization for aggregate types (using MPI_Type_create_struct).
 template <typename type>
-struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::is_enum_v<type> && !is_array_v<type> && !is_tuple_v<type> && std::is_aggregate_v<type>>>
+struct type_traits<type, std::enable_if_t<is_compliant_aggregate_v<type>>>
 {
   static data_type get_data_type()
   {
-    const auto count = pfr::tuple_size<type>::value;
+    const auto count = pfr::tuple_size_v<type>;
   
     std::vector<data_type>    data_types   ; data_types   .reserve(count);
     std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
@@ -219,7 +223,6 @@ struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::i
   
     pfr::for_each_field(type(), [&] <typename lambda_type> (lambda_type& field)
     {
-      static_assert(is_compliant_v<lambda_type>, "Member does not satisfy mpi::is_compliant<type>.");
       data_types   .push_back(type_traits<lambda_type>::get_data_type());
       block_lengths.push_back(1);
       displacements.push_back(displacement);
@@ -227,32 +230,6 @@ struct type_traits<type, std::enable_if_t<!std::is_arithmetic_v<type> && !std::i
     });
   
     return data_type(data_types, block_lengths, displacements);
-  }
-};
-
-// Specialization for std::complex (using standard MPI types).
-template <>
-struct type_traits<std::complex<float>>
-{
-  static data_type get_data_type()
-  {
-    return data_type(MPI_CXX_FLOAT_COMPLEX);
-  }
-};
-template <>
-struct type_traits<std::complex<double>>
-{
-  static data_type get_data_type()
-  {
-    return data_type(MPI_CXX_DOUBLE_COMPLEX);
-  }
-};
-template <>
-struct type_traits<std::complex<long double>>
-{
-  static data_type get_data_type()
-  {
-    return data_type(MPI_CXX_LONG_DOUBLE_COMPLEX);
   }
 };
 }

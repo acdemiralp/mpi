@@ -91,6 +91,4 @@ template <typename type>
 inline constexpr bool is_compliant_aggregate_v = is_compliant_aggregate<type>::value;
 template <typename type>
 inline constexpr bool is_compliant_v           = is_compliant          <type>::value;
-
-// TODO: BYTE ARRAYS.
 }
