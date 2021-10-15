@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 
-#include <mpi/core/type/data_type_reflection.hpp>
+#include <mpi/core/type/type_traits.hpp>
 #include <mpi/core/environment.hpp>
 
 struct aggregate

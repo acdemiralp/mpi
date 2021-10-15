@@ -3,8 +3,8 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <type_traits>
-#include <utility>
 #include <vector>
 
 #include <mpi/core/type/compliant_traits.hpp>

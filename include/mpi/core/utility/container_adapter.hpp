@@ -5,8 +5,14 @@
 #include <vector>
 
 #include <mpi/core/type/compliant_container_traits.hpp>
-#include <mpi/core/type/data_type_reflection.hpp>
+#include <mpi/core/type/type_traits.hpp>
 
+// Container adapter is responsible for routing data from raw objects and STL containers to MPI and vice verse.
+// It takes a different action for the four data type categories:
+// - is_compliant
+// - is_compliant_associative_container
+// - is_compliant_non_contiguous_sequential_container
+// - is_compliant_contiguous_sequential_container
 namespace mpi
 {
 template <typename type, typename = void>
