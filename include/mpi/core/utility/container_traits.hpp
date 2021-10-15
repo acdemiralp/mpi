@@ -10,4 +10,7 @@ inline constexpr bool is_container_v = std::disjunction_v<is_associative_contain
 
 template <class type>
 struct is_container : std::bool_constant<is_container_v<type>> {};
+
+template <typename type>
+concept container = is_container_v<type>;
 }

@@ -28,4 +28,9 @@ void tuple_for_each(function_type&& function, tuple_type&& tuple)
 {
   std::apply([&function] (auto&&... value) { (function(value), ...); }, tuple);
 }
+
+template <typename type>
+concept pair  = is_pair_v <type>;
+template <typename type>
+concept tuple = is_tuple_v<type>;
 }

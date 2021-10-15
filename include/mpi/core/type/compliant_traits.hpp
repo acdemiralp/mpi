@@ -91,4 +91,15 @@ template <typename type>
 inline constexpr bool is_compliant_aggregate_v = is_compliant_aggregate<type>::value;
 template <typename type>
 inline constexpr bool is_compliant_v           = is_compliant          <type>::value;
+
+template <typename type>
+concept compliant_array     = is_compliant_array_v     <type>;
+template <typename type>
+concept compliant_span      = is_compliant_span_v      <type>;
+template <typename type>
+concept compliant_tuple     = is_compliant_tuple_v     <type>;
+template <typename type>
+concept compliant_aggregate = is_compliant_aggregate_v <type>;
+template <typename type>
+concept compliant           = is_compliant_v           <type>;
 }

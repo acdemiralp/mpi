@@ -20,4 +20,11 @@ template <class type>
 struct is_compliant_non_contiguous_sequential_container : std::bool_constant<is_compliant_non_contiguous_sequential_container_v<type>> {};
 template <class type>
 struct is_compliant_contiguous_sequential_container     : std::bool_constant<is_compliant_contiguous_sequential_container_v    <type>> {};
+
+template <typename type>
+concept compliant_associative_container               = is_compliant_associative_container_v              <type>;
+template <typename type>
+concept compliant_non_contiguous_sequential_container = is_compliant_non_contiguous_sequential_container_v<type>;
+template <typename type>
+concept compliant_contiguous_sequential_container     = is_compliant_contiguous_sequential_container_v    <type>;
 }

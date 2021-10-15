@@ -27,4 +27,11 @@ template <class type>
 struct is_bounded_span   : std::bool_constant<is_bounded_span_v  <type>> {};
 template <class type>
 struct is_unbounded_span : std::bool_constant<is_unbounded_span_v<type>> {};
+
+template <typename type>
+concept span           = is_span_v          <type>;
+template <typename type>
+concept bounded_span   = is_bounded_span_v  <type>;
+template <typename type>
+concept unbounded_span = is_unbounded_span_v<type>;
 }

@@ -41,4 +41,11 @@ inline constexpr bool is_associative_container_v = std::disjunction_v<is_ordered
 
 template <class type>
 struct is_associative_container : std::bool_constant<is_associative_container_v<type>> {};
+
+template <typename type>
+concept ordered_associative_container   = is_ordered_associative_container_v  <type>;
+template <typename type>
+concept unordered_associative_container = is_unordered_associative_container_v<type>;
+template <typename type>
+concept associative_container           = is_associative_container_v          <type>;
 }

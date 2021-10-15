@@ -52,4 +52,11 @@ inline constexpr bool is_sequential_container_v = std::disjunction_v<is_contiguo
 
 template <class type>
 struct is_sequential_container : std::bool_constant<is_sequential_container_v<type>> {};
+
+template <typename type>
+concept contiguous_sequential_container     = is_contiguous_sequential_container_v    <type>;
+template <typename type>
+concept non_contiguous_sequential_container = is_non_contiguous_sequential_container_v<type>;
+template <typename type>
+concept sequential_container                = is_sequential_container_v               <type>;
 }

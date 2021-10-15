@@ -34,4 +34,11 @@ template <class type>
 struct is_bounded_array   : std::bool_constant<is_bounded_array_v  <type>> {};
 template <class type>
 struct is_unbounded_array : std::bool_constant<is_unbounded_array_v<type>> {};
+
+template <typename type>
+concept array           = is_array_v          <type>;
+template <typename type>
+concept bounded_array   = is_bounded_array_v  <type>;
+template <typename type>
+concept unbounded_array = is_unbounded_array_v<type>;
 }

@@ -12,4 +12,7 @@ inline constexpr bool is_complex_v<std::complex<type>> = true ;
 
 template <class type>
 struct is_complex : std::bool_constant<is_complex_v<type>> {};
+
+template <typename type>
+concept complex = is_complex_v<type>;
 }
