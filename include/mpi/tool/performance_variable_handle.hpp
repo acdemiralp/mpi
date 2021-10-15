@@ -65,17 +65,19 @@ public:
   template <typename type>
   type                                 read      () const
   {
-    type result;
-    container_adapter<type>::resize(result, count_);
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_read     , (session_.native(), native_, container_adapter<type>::data(result)))
+    type                    result;
+    container_adapter<type> adapter(result);
+    adapter.resize(count_);
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_read     , (session_.native(), native_, adapter.data()))
     return result;
   }
   template <typename type>
   type                                 read_reset() const
   {
-    type result;
-    container_adapter<type>::resize(result, count_);
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_readreset, (session_.native(), native_, container_adapter<type>::data(result)))
+    type                    result;
+    container_adapter<type> adapter(result);
+    adapter.resize(count_);
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_readreset, (session_.native(), native_, adapter.data()))
     return result;
   }
   template <typename type>

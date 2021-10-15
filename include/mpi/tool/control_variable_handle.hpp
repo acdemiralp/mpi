@@ -86,14 +86,8 @@ public:
   {
     type                    result;
     container_adapter<type> adapter(result);
-
     adapter.resize(count_);
-
     MPI_CHECK_ERROR_CODE(MPI_T_cvar_read , (native_, adapter.data()))
-
-    // TODO: PERSISTENCE OF ADAPTER VECTOR ACROSS ASYNC CALLS ???
-    // TODO: COPY BACK TO RESULT FROM ADAPTER VECTOR FOR ASSOC CONTAINERS ???
-
     return result;
   }
   template <typename type>
