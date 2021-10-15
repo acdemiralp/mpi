@@ -17,7 +17,7 @@
 // - For compliant contiguous sequential containers:
 //   - Exposes .size() and .data() of the container for read and write operations.
 //
-// Before proceeding on a solution, it is necessary to understand how adapters are used.
+// New Solution:
 //
 // What are container adapters?
 // - Container adapters are an abstraction to provide a uniform interface for accessing and mutating:
@@ -33,6 +33,11 @@
 // - Associative and non-contiguous sequential containers do not guarantee contiguous memory but `buffer` is expected to be contiguous.
 //   Container adapters copy these containers to a contiguous std::vector<value_type> and provide the `buffer` as a pointer to this vector.
 //
+// - Criticism to the creation of an intermediate vector: Is this even possible? Can the created vector's lifetime be controlled during e.g. asynchronous calls? Should adapters not be stateless?
+//   - It is true that the specialization for associative and non-contiguous sequential containers is adding the burden of creating a std::vector whose lifetime matches the asynchronous call's.
+//   - It is nevertheless possible if the asynchronous call transfers the ownership of the adapter to the caller, by returning it along with the request object.
+//   - It does not have to be stateless if the state is transferred to the user.
+// 
 // Where are container adapters used?
 // - Point-to-Point Communication:
 //   - MPI_Send    , MPI_Bsend , MPI_Rsend , MPI_Ssend
