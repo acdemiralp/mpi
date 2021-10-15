@@ -70,7 +70,9 @@
 //  - MPI_T_cvar_read, MPI_T_cvar_write, MPI_T_pvar_read, MPI_T_pvar_readreset, MPI_T_pvar_write
 //
 // How are container adapters used?
-// - TODO
+// - For synchronous  functions, container adapters are a fully internal feature, hidden from the user.
+// - For asynchronous functions, container adapters are objects which are immediately returned along with the mpi::request. It is the user's responsibility to ensure the adapter's lifetime exceeds the request's.
+
 namespace mpi
 {
 template <typename type, typename = void>
