@@ -81,7 +81,7 @@ public:
   template <typename type>
   void                                 write     (const type& value) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_T_pvar_write    , (session_.native(), native_, container_adapter<type>::data(value)))
+    MPI_CHECK_ERROR_CODE(MPI_T_pvar_write    , (session_.native(), native_, container_adapter(value).data()))
   }
 
   void                                 start     () const
