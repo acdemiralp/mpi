@@ -2,14 +2,19 @@
 Modern C++20 message passing interface wrapper.
 
 ### Usage Notes
-- Define MPI_USE_EXCEPTIONS to check the return values of all viable functions against MPI_SUCCESS and throw an exception otherwise.
-- Define MPI_RELAXED_TRAITS to prevent the library from checking the types of aggregate elements and triggering static asserts for non-aggregates.
-- MPI data types are automatically generated for arithmetic types, enumerations, complexes, arrays, spans, tuples, pairs and types which satisfy `std::is_aggregate<T>`. 
-- If your type is not one of the above, specialize `template <> struct mpi::type_traits<TYPE> { static data_type get_data_type() { return DATA_TYPE; } };` to enable inference. 
+- Define `MPI_USE_EXCEPTIONS` to check the return values of all viable functions against `MPI_SUCCESS` and throw an exception otherwise.
+- Define `MPI_RELAXED_TRAITS` to prevent the library from checking the types of aggregate elements and triggering static asserts for non-aggregates.
+- Compliant types (satisfying `mpi::is_compliant`) are types whose corresponding `mpi::data_type` can be automatically generated:
+  - Arithmetic types (satisfying `std::is_arithmetic`), enumerations (satisfying `std::is_enum`), specializations of `std::complex` are compliant types.
+  - Static C-style arrays, static `std::array`, static `std::span`, `std::pair`, `std::tuple`, and aggregate types (satisfying `std::is_aggregate`) consisting of other compliant types are also compliant types.
+  - If your type is none of the above, you can specialize `template <> struct mpi::type_traits<TYPE> { static data_type get_data_type() { return DATA_TYPE; } };` manually.
+- The MPI functions accepting buffers may be used with:
+  - Compliant types.
+  - Contiguous sequential containers (i.e. dynamic C-style arrays, dynamic `std::array`, dynamic `std::span`, `std::valarray`, `std::vector<!bool>`) of compliant types.
 
 ### Design Notes
 - Constructors:
-  - Copy constructors are deleted unless MPI provides duplication functions (ending with _dup) for the object.
+  - Copy constructors are deleted unless MPI provides duplication functions (ending with `_dup`) for the object.
   - Move constructors are available whenever possible.
   - The object wrappers have two types of constructors:
     - Managed   constructors: Construct a  new      MPI object, and     be responsible for its destruction.
