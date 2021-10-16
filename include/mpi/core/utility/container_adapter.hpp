@@ -7,18 +7,6 @@
 #include <mpi/core/type/compliant_container_traits.hpp>
 #include <mpi/core/type/type_traits.hpp>
 
-// Old Solution:
-//
-// - For basic compliant types:
-//   - Exposes .size() = 1 and .data() = &object for read and write operations.
-// - For compliant associative containers and non contiguous sequential containers:
-//   - Copies the contents of the container to a vector<container::value_type> using .begin() and .end().
-//   - Exposes .size() and .data() of the vector for read and write operations.
-// - For compliant contiguous sequential containers:
-//   - Exposes .size() and .data() of the container for read and write operations.
-//
-// New Solution:
-//
 // What are container adapters?
 // - Container adapters are an abstraction to provide a uniform interface for accessing and mutating:
 //   - Compliant types.
@@ -72,7 +60,19 @@
 // How are container adapters used?
 // - For synchronous  functions, container adapters are a fully internal feature, hidden from the user.
 // - For asynchronous functions, container adapters are objects which are immediately returned along with the mpi::request. It is the user's responsibility to ensure the adapter's lifetime exceeds the request's.
-
+// - Example send wrapper:
+//   - The user provides an object or container `data` of type `type`.
+//   - The function constructs a `container_adapter adapter(data)`.
+//   - The function uses `adapter.data_type()`, `adapter.data()` and `adapter.size()` to fill the arguments of MPI_Send.
+//   - If asynchronous, the function returns the MPI_Request and std::move(adapter) to the user.
+// - Example receive wrapper:
+//   - The user provides the type `type`.
+//   - The function constructs a default object or container `data` of type `type`.
+//   - The function constructs a `container_adapter adapter(data)`.
+//   - If external information on size `size` is available, the function uses `adapter.resize(size)`.
+//   - The function uses `adapter.data_type()`, `adapter.data()` and `adapter.size()` to fill the arguments of MPI_Recv.
+//   - TODO (retrieve from adapter back to the associate container)
+//   - If asynchronous, the function returns the MPI_Request and std::move(adapter) to the user.
 namespace mpi
 {
 template <typename type, typename = void>
@@ -95,17 +95,23 @@ public:
   container_adapter& operator=(      container_adapter&& temp) = default;
 
   [[nodiscard]]
-  std::size_t size  () const
+  data_type   data_type() const
+  {
+    return type_traits<value_type>::get_data_type();
+  }
+
+  [[nodiscard]]
+  std::size_t size     () const
   {
     return 1;
   }
   [[nodiscard]]
-  value_type* data  ()
+  value_type* data     ()
   {
     return &container_;
   }
 
-  void        resize(const std::size_t size)
+  void        resize   (const std::size_t size)
   {
     // Do nothing. Compliant types are not resizable.
   }
@@ -114,7 +120,7 @@ protected:
   type& container_;
 };
 
-// TODO: Persistence of adapter vector across async calls. Copying back from the adapter vector to the original container.
+// TODO: Copying back from the adapter vector to the original container.
 template <compliant_associative_container type>
 class container_adapter<type>
 {
@@ -133,17 +139,23 @@ public:
   container_adapter& operator=(      container_adapter&& temp) = default;
 
   [[nodiscard]]
-  std::size_t size  () const
+  data_type   data_type() const
+  {
+    return type_traits<value_type>::get_data_type();
+  }
+
+  [[nodiscard]]
+  std::size_t size     () const
   {
     return contiguous_container_.size();
   }
   [[nodiscard]]
-  value_type* data  ()
+  value_type* data     ()
   {
     return contiguous_container_.data();
   }
 
-  void        resize(const std::size_t size)
+  void        resize   (const std::size_t size)
   {
     contiguous_container_.resize(size);
   }
@@ -153,7 +165,7 @@ protected:
   contiguous_container_type contiguous_container_;
 };
 
-// TODO: Persistence of adapter vector across async calls. Copying back from the adapter vector to the original container.
+// TODO: Copying back from the adapter vector to the original container.
 template <compliant_non_contiguous_sequential_container type>
 class container_adapter<type>
 {
@@ -172,17 +184,23 @@ public:
   container_adapter& operator=(      container_adapter&& temp) = default;
 
   [[nodiscard]]
-  std::size_t size  () const
+  data_type   data_type() const
+  {
+    return type_traits<value_type>::get_data_type();
+  }
+
+  [[nodiscard]]
+  std::size_t size     () const
   {
     return contiguous_container_.size();
   }
   [[nodiscard]]
-  value_type* data  ()
+  value_type* data     ()
   {
     return contiguous_container_.data();
   }
 
-  void        resize(const std::size_t size)
+  void        resize   (const std::size_t size)
   {
     contiguous_container_.resize(size);
   }
@@ -196,7 +214,7 @@ template <compliant_contiguous_sequential_container type>
 class container_adapter<type>
 {
 public:
-  using value_type = typename type::value_type;
+  using value_type  = typename type::value_type;
 
   explicit container_adapter  (type& container) : container_(container)
   {
@@ -209,12 +227,18 @@ public:
   container_adapter& operator=(      container_adapter&& temp) = default;
 
   [[nodiscard]]
-  std::size_t size  () const
+  data_type   data_type() const
+  {
+    return type_traits<value_type>::get_data_type();
+  }
+
+  [[nodiscard]]
+  std::size_t size     () const
   {
     return container_.size();
   }
   [[nodiscard]]
-  value_type* data  ()
+  value_type* data     ()
   {
     if constexpr (std::is_same_v<type, std::valarray<value_type>>)
       return &container_[0];  // std::valarray does not have a .data() function.
@@ -222,7 +246,7 @@ public:
       return container_.data();
   }
 
-  void        resize(const std::size_t size)
+  void        resize   (const std::size_t size)
   {
     container_.resize(size);
   }
