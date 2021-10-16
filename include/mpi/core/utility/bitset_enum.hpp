@@ -5,55 +5,58 @@
 namespace mpi
 {
 template<typename type>
-struct is_bitset_enum
-{
-  static constexpr bool enable = false;
-};
+struct is_bitset_enum : std::false_type {};
+
+template <typename type>
+inline constexpr bool is_bitset_enum_v = is_bitset_enum<type>::value;
+
+template <typename type>
+concept bitset_enum = is_bitset_enum_v<type>;
 }
 
-template<typename type>
-typename std::enable_if<mpi::is_bitset_enum<type>::enable, type >::type  operator & (const type&  lhs, const type& rhs)
+template<mpi::bitset_enum type>
+type operator & (const type& lhs, const type& rhs)
 {
-  using underlying = typename std::underlying_type<type>::type;
+  using underlying = std::underlying_type_t<type>;
   return static_cast<type> (static_cast<underlying>(lhs) & static_cast<underlying>(rhs));
 }
-template<typename type>
-typename std::enable_if<mpi::is_bitset_enum<type>::enable, type >::type  operator ^ (const type&  lhs, const type& rhs)
+template<mpi::bitset_enum type>
+type operator ^ (const type& lhs, const type& rhs)
 {
-  using underlying = typename std::underlying_type<type>::type;
+  using underlying = std::underlying_type_t<type>;
   return static_cast<type> (static_cast<underlying>(lhs) ^ static_cast<underlying>(rhs));
 }
-template<typename type>
-typename std::enable_if<mpi::is_bitset_enum<type>::enable, type >::type  operator | (const type&  lhs, const type& rhs)
+template<mpi::bitset_enum type>
+type operator | (const type& lhs, const type& rhs)
 {
-  using underlying = typename std::underlying_type<type>::type;
+  using underlying = std::underlying_type_t<type>;
   return static_cast<type> (static_cast<underlying>(lhs) | static_cast<underlying>(rhs));
 }
-template<typename type>
-typename std::enable_if<mpi::is_bitset_enum<type>::enable, type >::type  operator ~ (const type&  lhs)
+template<mpi::bitset_enum type>
+type operator ~ (const type& lhs)
 {
-  using underlying = typename std::underlying_type<type>::type;
+  using underlying = std::underlying_type_t<type>;
   return static_cast<type> (~static_cast<underlying>(lhs));
 }
 
-template<typename type>
-typename std::enable_if<mpi::is_bitset_enum<type>::enable, type >::type& operator &=(type& lhs, const type& rhs)
+template<mpi::bitset_enum type>
+type& operator &=(type& lhs, const type& rhs)
 {
-  using underlying = typename std::underlying_type<type>::type;
+  using underlying = std::underlying_type_t<type>;
   lhs = static_cast<type> (static_cast<underlying>(lhs) & static_cast<underlying>(rhs));
   return lhs;
 }
-template<typename type>
-typename std::enable_if<mpi::is_bitset_enum<type>::enable, type >::type& operator ^=(type& lhs, const type& rhs)
+template<mpi::bitset_enum type>
+type& operator ^=(type& lhs, const type& rhs)
 {
-  using underlying = typename std::underlying_type<type>::type;
+  using underlying = std::underlying_type_t<type>;
   lhs = static_cast<type> (static_cast<underlying>(lhs) ^ static_cast<underlying>(rhs));
   return lhs;
 }
-template<typename type>
-typename std::enable_if<mpi::is_bitset_enum<type>::enable, type&>::type  operator |=(type& lhs, const type& rhs)
+template<mpi::bitset_enum type>
+type& operator |=(type& lhs, const type& rhs)
 {
-  using underlying = typename std::underlying_type<type>::type;
+  using underlying = std::underlying_type_t<type>;
   lhs = static_cast<type> (static_cast<underlying>(lhs) | static_cast<underlying>(rhs));
   return lhs;
 }

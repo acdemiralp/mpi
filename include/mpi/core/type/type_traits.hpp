@@ -13,19 +13,6 @@
 #include <mpi/core/mpi.hpp>
 #include <mpi/third_party/pfr.hpp>
 
-// Limitations of automatic data type inference:
-//
-// The class/struct must be an aggregate:
-// - No user-declared or inherited constructors.
-// - No private or protected direct non-static data members.
-// - No virtual functions.
-// - No virtual, private or protected base classes.
-// Additionally:
-// - No const fields.
-// - No references.
-// - Static data members are ignored.
-//
-// See https://www.boost.org/doc/libs/1_76_0/doc/html/boost_pfr/limitations_and_configuration.html for further detail.
 namespace mpi
 {
 // Given a typename, retrieves the associated MPI data type.
@@ -86,8 +73,8 @@ struct type_traits<type, std::enable_if_t<std::is_enum_v<type>>>
 };
 
 // Specialization for std::complex (using standard MPI types).
-template <typename type>
-struct type_traits<type, std::enable_if_t<is_complex_v<type>>>
+template <complex type>
+struct type_traits<type>
 {
   static data_type get_data_type()
   {
@@ -174,18 +161,18 @@ struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, si
 };
 
 // Specialization for static std::spans (using MPI_Type_contiguous).
-template <typename type, std::size_t size>
-struct type_traits<std::span<type, size>, std::enable_if_t<is_compliant_span_v<std::span<type, size>>>>
+template <compliant_span type>
+struct type_traits<type>
 {
   static data_type get_data_type()
   {
-    return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size));
+    return data_type(type_traits<typename type::value_type>::get_data_type(), static_cast<std::int32_t>(type::extent));
   }
 };
 
 // Specialization for std::tuples (using MPI_Type_create_struct).
-template <typename type>
-struct type_traits<type, std::enable_if_t<is_compliant_tuple_v<type>>>
+template <compliant_tuple type>
+struct type_traits<type>
 {
   static data_type get_data_type()
   {
@@ -201,7 +188,7 @@ struct type_traits<type, std::enable_if_t<is_compliant_tuple_v<type>>>
       data_types   .push_back(type_traits<lambda_type>::get_data_type());
       block_lengths.push_back(1);
       displacements.push_back(displacement);
-      displacement += sizeof(field);
+      displacement += sizeof field;
     }, type());
   
     return data_type(data_types, block_lengths, displacements);
@@ -209,8 +196,8 @@ struct type_traits<type, std::enable_if_t<is_compliant_tuple_v<type>>>
 };
 
 // Specialization for aggregate types (using MPI_Type_create_struct).
-template <typename type>
-struct type_traits<type, std::enable_if_t<is_compliant_aggregate_v<type>>>
+template <compliant_aggregate type>
+struct type_traits<type>
 {
   static data_type get_data_type()
   {
@@ -226,7 +213,7 @@ struct type_traits<type, std::enable_if_t<is_compliant_aggregate_v<type>>>
       data_types   .push_back(type_traits<lambda_type>::get_data_type());
       block_lengths.push_back(1);
       displacements.push_back(displacement);
-      displacement += sizeof(field);
+      displacement += sizeof field;
     });
   
     return data_type(data_types, block_lengths, displacements);

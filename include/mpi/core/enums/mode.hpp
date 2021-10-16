@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 
 #include <mpi/core/mpi.hpp>
 #include <mpi/core/utility/bitset_enum.hpp>
@@ -17,8 +18,5 @@ enum class mode : std::int32_t
 };
 
 template <>
-struct is_bitset_enum<mode>
-{
-  static constexpr bool enable = true;
-};
+struct is_bitset_enum<mode> : std::true_type {};
 }

@@ -10,9 +10,7 @@
 
 namespace mpi
 {
-// Standard:
-// "... It stores an unordered set of (key, value) pairs (both key and value are strings). A key can have only one value. ..."
-//
+// Standard: "... It stores an unordered set of (key, value) pairs (both key and value are strings). A key can have only one value. ..."
 // This interface is loosely based on associative containers such as std::unordered_map (it is not STL compliant).
 // It can additionally be converted from/to std::unordered_map<std::string, std::string>.
 class information

@@ -27,7 +27,7 @@ public:
   : managed_(temp.managed_), name_(std::move(temp.name_))
   {
     temp.managed_ = false;
-    temp.name_    = std::string();
+    temp.name_.clear();
   }
   virtual ~port  ()
   {
@@ -46,7 +46,7 @@ public:
       name_         = std::move(temp.name_);
 
       temp.managed_ = false;
-      temp.name_    = std::string();
+      temp.name_.clear();
     }
     return *this;
   }

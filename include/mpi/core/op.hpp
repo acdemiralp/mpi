@@ -15,7 +15,7 @@ public:
   explicit op  (const function_type function, const bool commutative)
   : managed_(true)
   {
-    MPI_CHECK_ERROR_CODE(MPI_Op_create, (function, static_cast<std::int32_t>(commutative), &native_))
+    MPI_CHECK_ERROR_CODE(MPI_Op_create, (function, commutative, &native_))
   }
   explicit op  (const MPI_Op native)
   : native_(native)

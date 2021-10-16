@@ -67,7 +67,7 @@ public:
   }
   void         set_cancelled           (const bool cancelled)
   {
-    MPI_CHECK_ERROR_CODE(MPI_Status_set_cancelled, (this, static_cast<std::int32_t>(cancelled)))
+    MPI_CHECK_ERROR_CODE(MPI_Status_set_cancelled, (this, cancelled))
   }
 
   [[nodiscard]]

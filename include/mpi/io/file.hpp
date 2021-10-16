@@ -124,7 +124,7 @@ public:
   }
   void               set_atomic        (const bool value) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_File_set_atomicity, (native_, static_cast<std::int32_t>(value)))
+    MPI_CHECK_ERROR_CODE(MPI_File_set_atomicity, (native_, value))
   }
 
   [[nodiscard]]
@@ -148,7 +148,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_File_sync, (native_))
   }
 
-  // The type and data_type must match. It is possible to automate this by implementing get_data_type<type> to map type to a data_type.
+  // The type and data_type must match. It is possible to automate this by implementing get_data_type<type> to map type to a data_type (see below).
   template <typename type>
   std::pair<std::vector<type>, status> read    (const std::int32_t count, const data_type& data_type)
   {

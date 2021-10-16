@@ -8,7 +8,6 @@
 
 namespace mpi
 {
-// Given a MPI data type, retrieves the associated typename.
 template <MPI_Datatype data_type>
 struct data_type_traits {};
 

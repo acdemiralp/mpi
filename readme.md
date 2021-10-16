@@ -19,7 +19,7 @@ Modern C++20 message passing interface wrapper.
 - Statics:
   - Namespace functions are preferred over static member functions whenever possible.
 - Reflection:
-  - The data_type for aggregate classes/structs can be automatically created through reflection.
+  - The data type for aggregates are created automatically through reflection.
   - Survey of reflection libraries:
     | Library                                            | Built | Extra step | Manual | Dependencies |
     |----------------------------------------------------|-------|------------|--------|--------------|
@@ -42,10 +42,18 @@ Modern C++20 message passing interface wrapper.
     | https://github.com/Leandros/metareflect            | False | True       | True   | True         |
     | https://github.com/Cylix/Reflex                    | False | False      | True   | True         |
     | https://github.com/boostorg/describe               | False | False      | True   | True         |
-  - PFR and Cista are candidates satisfying all four requirements above.
-  - PFR is suitable for reflecting MPI data types as justified in https://www.youtube.com/watch?v=abdeAew3gmQ.
-  - Cista emphasizes serialization, which is a use case of reflection. It feels inaccurate to include it only for reflection.
-  - Decided on PFR, specifically https://github.com/apolukhin/pfr_non_boost without the boost namespace.
+  - Decided on PFR after watching https://www.youtube.com/watch?v=abdeAew3gmQ, specifically https://github.com/apolukhin/pfr_non_boost without the boost namespace. 
+  - Limitations:
+    - The type must be an aggregate (satisfy `std::is_aggregate<type>`): 
+      - No user-declared or inherited constructors.
+      - No private or protected direct non-static data members.
+      - No virtual functions.
+      - No virtual, private or protected base classes.
+    - Additionally:
+      - No const fields.
+      - No references.
+      - Static data members are ignored.
+    - See https://www.boost.org/doc/libs/1_76_0/doc/html/boost_pfr/limitations_and_configuration.html for further detail.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] MPI                         

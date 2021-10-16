@@ -7,34 +7,11 @@
 #include <mpi/core/utility/span_traits.hpp>
 #include <mpi/third_party/pfr.hpp>
 
-// There are four data type categories:
-//
-// 1- Compliant types:
-//    - Arithmetic types, enumerations and complexes are compliant types.
-//    - Static arrays, static spans, pairs, tuples, and aggregates consisting of other compliant types are also compliant types.
-//    - Each compliant type has a corresponding MPI data type.
-//
-// 2- Associative containers:
-//    - Specifically: std::map, std::multimap, std::set, std::multiset, std::unordered_map, std::unordered_multimap, std::unordered_set, std::unordered_multiset.
-//    - Each associative container has the following functions: .begin(), .end(), .size().
-//    - They do not have a corresponding MPI data type, yet can be used with MPI assuming their elements are compliant types.
-//    - The elements are first copied to a contiguous container using .begin() and .end().
-//    - It is then possible to obtain the MPI data type of the value_type, and pass it along with .data() and .size() to MPI functions.
-//
-// 3- Non-contiguous sequential containers:
-//    - Specifically: std::deque, std::forward_list, std::list, std::vector<bool>.
-//    - Each non-contiguous sequential container has the following functions: .begin(), .end(), .size().
-//    - They do not have a corresponding MPI data type, yet can be used with MPI assuming their elements are compliant types.
-//    - The elements are first copied to a contiguous container using .begin() and .end().
-//    - It is then possible to obtain the MPI data type of the value_type, and pass it along with .data() and .size() to MPI functions.
-//
-// 4- Contiguous sequential containers:
-//    - Specifically: std::basic_string, std::span, std::valarray, std::vector<!bool>.
-//    - Each contiguous sequential container has the following functions: .begin(), .end(), .data(), .size().
-//    - They do not have a corresponding MPI data type, yet can be used with MPI assuming their elements are compliant types.
-//    - It is possible to obtain the MPI data type of the value_type, and pass it along with .data() and .size() to MPI functions.
 namespace mpi
 {
+// Arithmetic types, enumerations and complexes are compliant types.
+// Static arrays, static spans, pairs, tuples, and aggregates consisting of other compliant types are also compliant types.
+// Each compliant type has a corresponding MPI data type.
 template <typename type, typename = void>
 struct is_compliant : std::false_type {};
 

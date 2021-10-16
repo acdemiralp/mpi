@@ -108,6 +108,6 @@ inline category::category(const std::int32_t index) : index(index)
 
   control_variables     = tool::control_variables    (control_variable_indices    );
   performance_variables = tool::performance_variables(performance_variable_indices);
-  subcategories         = tool::categories           (subcategory_indices         );
+  subcategories         = categories                 (subcategory_indices         );
 }
 }
