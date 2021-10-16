@@ -7,7 +7,7 @@ namespace mpi
 template<typename type>
 struct is_bitset_enum
 {
-  static const bool enable = false;
+  static constexpr bool enable = false;
 };
 }
 

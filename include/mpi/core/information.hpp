@@ -116,7 +116,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Info_get_valuelen, (native_, key.c_str(), &size, &exists))
 
     if (!static_cast<bool>(exists))
-      return std::optional<std::string>(std::nullopt);
+      return {std::nullopt};
 
     std::string result(size, ' ');
     MPI_CHECK_ERROR_CODE(MPI_Info_get, (native_, key.c_str(), size, &result[0], &exists))

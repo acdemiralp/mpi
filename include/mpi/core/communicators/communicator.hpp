@@ -73,7 +73,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Comm_spawn, (spawn_info.command.c_str(), arguments.data(), spawn_info.process_count, spawn_info.information.native(), root, that.native(), &native_, error_codes.data()))
 
     if (check_error_codes)
-      for (auto& code : error_codes)
+      for (const auto& code : error_codes)
         if (code != MPI_SUCCESS)
           throw exception("spawn", error_code(code));
   }
@@ -106,7 +106,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Comm_spawn_multiple, (static_cast<std::int32_t>(spawn_info.size()), commands.data(), raw_arguments.data(), process_counts.data(), infos.data(), root, that.native(), &native_, error_codes.data()))
 
     if (check_error_codes)
-      for (auto& code : error_codes)
+      for (const auto& code : error_codes)
         if (code != MPI_SUCCESS)
           throw exception("spawn_multiple", error_code(code));
   }

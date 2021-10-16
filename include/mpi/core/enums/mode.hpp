@@ -19,6 +19,6 @@ enum class mode : std::int32_t
 template <>
 struct is_bitset_enum<mode>
 {
-  static const bool enable = true;
+  static constexpr bool enable = true;
 };
 }

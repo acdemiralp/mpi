@@ -26,7 +26,7 @@ public:
     managed_ = true;
 
     std::vector<std::int32_t> sizes(periodic.size()), periods(periodic.size());
-    std::transform(periodic.begin(), periodic.end(), periods.begin(), [ ] (const bool value)
+    std::ranges::transform(periodic, periods.begin(), [ ] (const bool value)
     {
       return static_cast<std::int32_t>(value);
     });
@@ -55,7 +55,7 @@ public:
     managed_ = true;
 
     std::vector<std::int32_t> remain_dims(keep.size());
-    std::transform(keep.begin(), keep.end(), remain_dims.begin(), [ ] (const bool value)
+    std::ranges::transform(keep, remain_dims.begin(), [ ] (const bool value)
     {
       return static_cast<std::int32_t>(value);
     });

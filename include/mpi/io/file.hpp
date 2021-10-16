@@ -5,7 +5,7 @@
 #include <mpi/core/communicators/communicator.hpp>
 #include <mpi/core/error/error_handler.hpp>
 #include <mpi/core/type/data_type.hpp>
-#include <mpi/core/type/data_type_reflection.hpp>
+#include <mpi/core/type/type_traits.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/information.hpp>
 #include <mpi/core/mpi.hpp>
@@ -167,12 +167,12 @@ public:
   template <typename type>
   std::pair<std::vector<type>, status> read    (const std::int32_t count)
   {
-    return read    <type>(count, get_data_type<type>());
+    return read    <type>(count, type_traits<type>::get_data_type());
   }
   template <typename type>
   std::pair<std::vector<type>, status> read_all(const std::int32_t count)
   {
-    return read_all<type>(count, get_data_type<type>());
+    return read_all<type>(count, type_traits<type>::get_data_type());
   }
 
 

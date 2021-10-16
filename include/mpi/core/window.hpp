@@ -27,7 +27,7 @@ public:
     else
       MPI_CHECK_ERROR_CODE(MPI_Win_allocate       , (size, displacement_unit, information.native(), communicator.native(), &base_pointer_, &native_))
   }
-  template <typename type, typename = std::enable_if_t<!std::is_same<type, void>::value>>
+  template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void>>>
   explicit window  (const communicator& communicator, const std::int64_t size,                                           const bool shared = false, const information& information = mpi::information())
   : managed_(true)
   {
@@ -42,7 +42,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_create, (base_pointer, size, displacement_unit, information.native(), communicator.native(), &native_))
   }
-  template <typename type, typename = std::enable_if_t<!std::is_same<type, void>::value>>
+  template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void>>>
   explicit window  (const communicator& communicator, type* base_pointer, const std::int64_t size,                                           const information& information = mpi::information())
   : managed_(true), base_pointer_(base_pointer)
   {
@@ -172,13 +172,13 @@ public:
     base_pointer_ = value;
     MPI_CHECK_ERROR_CODE(MPI_Win_attach, (native_, value, size))
   }
-  template <typename type, typename = std::enable_if_t<!std::is_same<type, void>::value>>
+  template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void>>>
   void                 attach            (type* value, const std::int64_t size)
   {
     base_pointer_ = value;
     MPI_CHECK_ERROR_CODE(MPI_Win_attach, (native_, static_cast<void*>(value), sizeof(type) * size))
   }
-  void                 detach            (void* value) const
+  void                 detach            (const void* value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_detach, (native_, value))
   }

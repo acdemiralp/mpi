@@ -107,7 +107,7 @@ inline std::optional<std::vector<status>>               test_all (const std::vec
   std::int32_t             complete    (0);
   std::vector<status>      result      (requests.size());
 
-  std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
+  std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });
@@ -122,7 +122,7 @@ inline std::optional<std::tuple <std::int32_t, status>> test_any (const std::vec
   std::int32_t                     complete    (0);
   std::tuple<std::int32_t, status> result;
 
-  std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
+  std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });
@@ -138,7 +138,7 @@ inline std::vector  <std::tuple <std::int32_t, status>> test_some(const std::vec
   std::vector<std::int32_t> indices     (requests.size());
   std::vector<status>       stati       (requests.size());
 
-  std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
+  std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });
@@ -146,7 +146,7 @@ inline std::vector  <std::tuple <std::int32_t, status>> test_some(const std::vec
   MPI_CHECK_ERROR_CODE(MPI_Testsome, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &count, indices.data(), stati.data()))
 
   if (count == MPI_UNDEFINED)
-    return std::vector<std::tuple<std::int32_t, status>>();
+    return {};
 
   indices.resize(static_cast<std::size_t>(count));
   stati  .resize(static_cast<std::size_t>(count));
@@ -164,7 +164,7 @@ inline std::vector<status>                              wait_all (const std::vec
   std::vector<MPI_Request> raw_requests(requests.size());
   std::vector<status>      result      (requests.size());
 
-  std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
+  std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });
@@ -178,7 +178,7 @@ inline std::tuple <std::int32_t, status>                wait_any (const std::vec
   std::vector<MPI_Request>         raw_requests(requests.size());
   std::tuple<std::int32_t, status> result;
 
-  std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
+  std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });
@@ -194,7 +194,7 @@ inline std::vector<std::tuple<std::int32_t, status>>    wait_some(const std::vec
   std::vector<std::int32_t> indices     (requests.size());
   std::vector<status>       stati       (requests.size());
 
-  std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
+  std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });
@@ -202,7 +202,7 @@ inline std::vector<std::tuple<std::int32_t, status>>    wait_some(const std::vec
   MPI_CHECK_ERROR_CODE(MPI_Waitsome, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &count, indices.data(), stati.data()))
 
   if (count == MPI_UNDEFINED)
-    return std::vector<std::tuple<std::int32_t, status>>();
+    return {};
 
   indices.resize(static_cast<std::size_t>(count));
   stati  .resize(static_cast<std::size_t>(count));
@@ -219,7 +219,7 @@ inline void                                             start_all(const std::vec
 {
   std::vector<MPI_Request> raw_requests(requests.size());
 
-  std::transform(requests.begin(), requests.end(), raw_requests.begin(), [ ] (const auto& request)
+  std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });

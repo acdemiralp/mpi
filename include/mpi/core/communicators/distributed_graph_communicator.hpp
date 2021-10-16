@@ -33,8 +33,8 @@ public:
       graph.degrees     .data(), 
       graph.destinations.data(), 
       graph.weights ? graph.weights->data() : MPI_UNWEIGHTED,
-      info .native(), 
-      static_cast<std::int32_t>(reorder), 
+      info .native(),
+      reorder, 
       &native_))
   }
   explicit distributed_graph_communicator   (const communicator& that, const neighbor_information& graph, const mpi::information& info = mpi::information(), const bool reorder = true)
@@ -50,8 +50,8 @@ public:
       static_cast<std::int32_t>(graph.destinations.size()),
       graph.destinations.data(), 
       graph.destination_weights ? graph.destination_weights->data() : MPI_UNWEIGHTED,
-      info .native(), 
-      static_cast<std::int32_t>(reorder), 
+      info .native(),
+      reorder, 
       &native_))
   }
   distributed_graph_communicator            (const distributed_graph_communicator&  that)          = default;

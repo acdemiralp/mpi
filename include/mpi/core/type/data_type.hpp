@@ -29,7 +29,7 @@ public:
   : managed_(true)
   {
     std::vector<MPI_Datatype> raw_data_types(data_types.size());
-    std::transform(data_types.begin(), data_types.end(), raw_data_types.begin(), [ ] (const auto& request)
+    std::ranges::transform(data_types, raw_data_types.begin(), [ ] (const auto& request)
     {
       return request.native();
     });
