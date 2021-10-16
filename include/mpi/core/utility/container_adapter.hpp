@@ -40,7 +40,6 @@ public:
   }
 };
 
-// TODO: Specialization for C-style arrays. Std array of std array of ....
 template <compliant_contiguous_sequential_container type>
 class container_adapter<type>
 {
