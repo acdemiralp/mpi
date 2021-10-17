@@ -167,7 +167,7 @@ TEST_CASE("Trait Test")
   REQUIRE(!mpi::is_compliant_v<non_compliant_type                     >);
 
   REQUIRE( mpi::is_compliant_v<arithmetic_compliant_type              >);
-  // REQUIRE(!mpi::is_compliant_v<arithmetic_non_compliant_type          >); // BUG
+  REQUIRE(!mpi::is_compliant_v<arithmetic_non_compliant_type          >); // BUG
 
   REQUIRE( mpi::is_compliant_v<enum_compliant_type                    >);
 
@@ -221,8 +221,8 @@ TEST_CASE("Trait Test")
 
   REQUIRE( mpi::is_compliant_v<aggregate_compliant_type               >);
   REQUIRE( mpi::is_compliant_v<aggregate_compliant_type_2d            >);
-  // REQUIRE(!mpi::is_compliant_v<aggregate_non_compliant_type           >); // BUG
-  // REQUIRE(!mpi::is_compliant_v<aggregate_non_compliant_type_2d        >); // BUG
+  REQUIRE(!mpi::is_compliant_v<aggregate_non_compliant_type           >); // BUG
+  REQUIRE(!mpi::is_compliant_v<aggregate_non_compliant_type_2d        >); // BUG
 
   REQUIRE(!mpi::is_compliant_v<map_compliant_type                     >);
   REQUIRE(!mpi::is_compliant_v<map_compliant_type_2                   >);
@@ -319,14 +319,14 @@ TEST_CASE("Trait Test")
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<valarray_compliant_type                >);
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<valarray_compliant_type_2              >);
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<valarray_non_compliant_type            >);
-  // REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<valarray_non_compliant_type_2          >);
+  REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<valarray_non_compliant_type_2          >);
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<valarray_compliant_type_2d             >);
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<valarray_non_compliant_type_2d         >);
   
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<vector_compliant_type                  >);
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<vector_compliant_type_2                >);
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<vector_non_compliant_type              >);
-  // REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<vector_non_compliant_type_2            >);
+  REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<vector_non_compliant_type_2            >);
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<vector_compliant_type_2d               >);
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<vector_non_compliant_type_2d           >);
 
