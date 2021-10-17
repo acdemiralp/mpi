@@ -3,7 +3,6 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <span>
 #include <type_traits>
 #include <vector>
 
@@ -26,6 +25,9 @@ struct type_traits<type, std::enable_if_t<std::is_arithmetic_v<type>>>
   static data_type get_data_type()
   {
     if      constexpr (std::is_same_v<type, char                     >) return data_type(MPI_CHAR                   );
+    else if constexpr (std::is_same_v<type, char8_t                  >) return data_type(MPI_UNSIGNED_CHAR          );
+    else if constexpr (std::is_same_v<type, char16_t                 >) return data_type(MPI_UNSIGNED_SHORT         );
+    else if constexpr (std::is_same_v<type, char32_t                 >) return data_type(MPI_UNSIGNED               );
     else if constexpr (std::is_same_v<type, short                    >) return data_type(MPI_SHORT                  );
     else if constexpr (std::is_same_v<type, int                      >) return data_type(MPI_INT                    );
     else if constexpr (std::is_same_v<type, long                     >) return data_type(MPI_LONG                   );
@@ -78,12 +80,9 @@ struct type_traits<type>
 {
   static data_type get_data_type()
   {
-    if      constexpr (std::is_same_v<type, float      >)
-      return data_type(MPI_CXX_FLOAT_COMPLEX);
-    else if constexpr (std::is_same_v<type, double     >)
-      return data_type(MPI_CXX_DOUBLE_COMPLEX);
-    else if constexpr (std::is_same_v<type, long double>)
-      return data_type(MPI_CXX_LONG_DOUBLE_COMPLEX);
+    if      constexpr (std::is_same_v<type, float      >) return data_type(MPI_CXX_FLOAT_COMPLEX      );
+    else if constexpr (std::is_same_v<type, double     >) return data_type(MPI_CXX_DOUBLE_COMPLEX     );
+    else if constexpr (std::is_same_v<type, long double>) return data_type(MPI_CXX_LONG_DOUBLE_COMPLEX);
     else 
     {
       static_assert(missing_implementation<type>::value, "Missing get_data_type() implementation for complex type.");
@@ -157,16 +156,6 @@ struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, si
   static data_type get_data_type()
   {
     return data_type(type_traits<type>::get_data_type(), static_cast<std::int32_t>(size_1 * size_2 * size_3 * size_4));
-  }
-};
-
-// Specialization for static std::spans (using MPI_Type_contiguous).
-template <compliant_span type>
-struct type_traits<type>
-{
-  static data_type get_data_type()
-  {
-    return data_type(type_traits<typename type::value_type>::get_data_type(), static_cast<std::int32_t>(type::extent));
   }
 };
 
