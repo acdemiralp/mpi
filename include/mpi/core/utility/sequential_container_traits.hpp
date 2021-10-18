@@ -30,7 +30,7 @@ inline constexpr bool is_contiguous_sequential_container_v    <std::valarray    
 template <typename type, typename allocator>
 inline constexpr bool is_contiguous_sequential_container_v    <std::vector      <type, allocator>>         = !std::is_same_v<type, bool>;
 
-template <class type>
+template <typename type>
 struct is_contiguous_sequential_container : std::bool_constant<is_contiguous_sequential_container_v<type>> {};
 
 template <typename>
@@ -44,13 +44,13 @@ inline constexpr bool is_non_contiguous_sequential_container_v<std::list        
 template <typename allocator>
 inline constexpr bool is_non_contiguous_sequential_container_v<std::vector      <bool, allocator>>         = true ;
 
-template <class type>
+template <typename type>
 struct is_non_contiguous_sequential_container : std::bool_constant<is_non_contiguous_sequential_container_v<type>> {};
 
 template <typename type>
 inline constexpr bool is_sequential_container_v = std::disjunction_v<is_contiguous_sequential_container<type>, is_non_contiguous_sequential_container<type>>;
 
-template <class type>
+template <typename type>
 struct is_sequential_container : std::bool_constant<is_sequential_container_v<type>> {};
 
 template <typename type>

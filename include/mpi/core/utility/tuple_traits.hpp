@@ -18,9 +18,9 @@ inline constexpr bool is_tuple_v<std::tuple<type...>>      = true ;
 template <typename first, typename second>
 inline constexpr bool is_tuple_v<std::pair<first, second>> = true ; // "... A pair is a specific case of a std::tuple with two elements. ..."
 
-template <class type>
+template <typename type>
 struct is_pair  : std::bool_constant<is_pair_v <type>> {};
-template <class type>
+template <typename type>
 struct is_tuple : std::bool_constant<is_tuple_v<type>> {};
 
 template<typename function_type, typename tuple_type>

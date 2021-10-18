@@ -21,11 +21,11 @@ inline constexpr bool is_unbounded_span_v                                       
 template <typename type>
 inline constexpr bool is_unbounded_span_v<std::span<type, std::dynamic_extent>> = true ;
 
-template <class type>
+template <typename type>
 struct is_span           : std::bool_constant<is_span_v          <type>> {};
-template <class type>
+template <typename type>
 struct is_bounded_span   : std::bool_constant<is_bounded_span_v  <type>> {};
-template <class type>
+template <typename type>
 struct is_unbounded_span : std::bool_constant<is_unbounded_span_v<type>> {};
 
 template <typename type>

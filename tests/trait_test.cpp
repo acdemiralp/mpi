@@ -348,10 +348,4 @@ TEST_CASE("Trait Test")
 #endif
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<vector_compliant_type_2d               >);
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<vector_non_compliant_type_2d           >);
-
-  // TODO: Conflicting specializations of compliant_contiguous_sequential_container and compliant. Specialization for C-style arrays. Std array of std array of ....
-  // template <typename type, std::size_t size>
-  // inline constexpr bool is_contiguous_sequential_container_v    <type[size]>                                 = true ;
-  // template <typename type, std::size_t size>
-  // inline constexpr bool is_contiguous_sequential_container_v    <std::array       <type, size>>              = true ;
 }

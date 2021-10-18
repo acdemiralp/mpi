@@ -19,7 +19,7 @@ inline constexpr bool is_ordered_associative_container_v<std::set     <type, com
 template <typename type, typename compare, typename allocator>
 inline constexpr bool is_ordered_associative_container_v<std::multiset<type, compare, allocator>> = true;
 
-template <class type>
+template <typename type>
 struct is_ordered_associative_container : std::bool_constant<is_ordered_associative_container_v<type>> {};
 
 template <typename>
@@ -33,13 +33,13 @@ inline constexpr bool is_unordered_associative_container_v<std::unordered_set   
 template <typename type, typename hash, typename key_equal, typename allocator>
 inline constexpr bool is_unordered_associative_container_v<std::unordered_multiset<type, hash, key_equal, allocator>> = true;
 
-template <class type>
+template <typename type>
 struct is_unordered_associative_container : std::bool_constant<is_unordered_associative_container_v<type>> {};
 
 template <typename type>
 inline constexpr bool is_associative_container_v = std::disjunction_v<is_ordered_associative_container<type>, is_unordered_associative_container<type>>;
 
-template <class type>
+template <typename type>
 struct is_associative_container : std::bool_constant<is_associative_container_v<type>> {};
 
 template <typename type>

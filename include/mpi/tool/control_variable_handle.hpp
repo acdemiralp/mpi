@@ -84,16 +84,15 @@ public:
   template <typename type>
   type                                 read       () const
   {
-    type                    result;
-    container_adapter<type> adapter(result);
-    adapter.resize(count_);
-    MPI_CHECK_ERROR_CODE(MPI_T_cvar_read , (native_, adapter.data()))
+    type result;
+    container_adapter<type>::resize(result, count_);
+    MPI_CHECK_ERROR_CODE(MPI_T_cvar_read , (native_, container_adapter<type>::data(result)))
     return result;
   }
   template <typename type>
   void                                 write      (const type& value) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_T_cvar_write, (native_, container_adapter(value).data()))
+    MPI_CHECK_ERROR_CODE(MPI_T_cvar_write, (native_, container_adapter<type>::data(value)))
   }
 
   [[nodiscard]]

@@ -28,11 +28,11 @@ inline constexpr bool is_unbounded_array_v                       = false;
 template <typename type>
 inline constexpr bool is_unbounded_array_v<type[]>               = true ;
 
-template <class type>
+template <typename type>
 struct is_array           : std::bool_constant<is_array_v          <type>> {};
-template <class type>
+template <typename type>
 struct is_bounded_array   : std::bool_constant<is_bounded_array_v  <type>> {};
-template <class type>
+template <typename type>
 struct is_unbounded_array : std::bool_constant<is_unbounded_array_v<type>> {};
 
 template <typename type>

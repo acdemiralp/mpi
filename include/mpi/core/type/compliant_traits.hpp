@@ -10,7 +10,7 @@
 namespace mpi
 {
 // Arithmetic types, enumerations and complexes are compliant types.
-// Static arrays, pairs, tuples, and aggregates consisting of other compliant types are also compliant types.
+// Arrays, pairs, tuples, and aggregates consisting of other compliant types are also compliant types.
 // Each compliant type has a corresponding MPI data type.
 template <typename type, typename = void>
 struct is_compliant : std::false_type {};

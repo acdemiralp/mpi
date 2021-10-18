@@ -6,13 +6,14 @@
 
 #include <mpi/core/type/compliant_container_traits.hpp>
 #include <mpi/core/type/type_traits.hpp>
+#include <mpi/core/utility/span_traits.hpp>
 
 // Send and receive, as well as most collectives accept data using the signature `(const) void* buffer, std::int32_t count, MPI_Datatype data_type`
 // where the buffer is a C pointer or array to `count` many objects of type `data_type`.
 // Container adapters unify the interface to obtain the `buffer`, `count` and `data_type` of single compliant objects and contiguous sequential containers.
 namespace mpi
 {
-template <typename type, typename = void>
+template <typename type>
 class container_adapter;
 
 template <compliant type>
@@ -53,7 +54,7 @@ public:
   static value_type* data     (type& container)
   {
     if constexpr (std::is_same_v<type, std::valarray<value_type>>)
-      return &container[0];  // std::valarray does not have a .data() function.
+      return &container[0]; // std::valarray does not have a .data() function.
     else
       return container.data();
   }
@@ -64,7 +65,9 @@ public:
   
   static void        resize   (type& container, const std::size_t size)
   {
-    container.resize(size);
+    // Spans are not resizable.
+    if constexpr (!is_span_v<type>)
+      container.resize(size);
   }
 };
 }
