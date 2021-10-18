@@ -32,27 +32,27 @@ public:
   {
     
   }
-  communicator            (const communicator&  that, const group&                          group      )
+  communicator            (const communicator&  that , const group&                          group       )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create       , (that.native_, group      .native(),      &native_))
   }
-  communicator            (const communicator&  that, const group&                          group      , const std::int32_t tag)
+  communicator            (const communicator&  that , const group&                          group       , const std::int32_t  tag)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_group , (that.native_, group      .native(), tag, &native_))
   }
-  communicator            (const communicator&  that, const std::int32_t                    color      , const std::int32_t key)
+  communicator            (const communicator&  that , const std::int32_t                    color       , const std::int32_t  key)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_split        , (that.native_, color, key, &native_))
   }
-  communicator            (const communicator&  that, const std::int32_t                    split_type , const std::int32_t key      , const information& information)
+  communicator            (const communicator&  that , const std::int32_t                    split_type  , const std::int32_t  key      , const information& information)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_split_type   , (that.native_, split_type, key, information.native(), &native_))
   }
-  communicator            (const communicator&  that, const port&                           port       , const bool         accept   , const information& information       = mpi::information(), const std::int32_t root = 0)
+  communicator            (const communicator&  that , const port&                           port        , const bool          accept   , const information& information       = mpi::information(), const std::int32_t root = 0)
   : managed_(true)
   {
     if (accept)
@@ -60,7 +60,7 @@ public:
     else
       MPI_CHECK_ERROR_CODE(MPI_Comm_connect, (port.name().c_str(), information.native(), root, that.native(), &native_))
   }
-  communicator            (const communicator&  that, const spawn_information&              spawn_info , const std::int32_t root  = 0, const bool         check_error_codes = true)
+  communicator            (const communicator&  that , const spawn_information&              spawn_info  , const std::int32_t  root  = 0, const bool         check_error_codes = true)
   : managed_(true)
   {
     std::vector<char*> arguments(spawn_info.arguments.size());
@@ -78,7 +78,7 @@ public:
         if (code != MPI_SUCCESS)
           throw exception("spawn", error_code(code));
   }
-  communicator            (const communicator&  that, const std::vector<spawn_information>& spawn_info , const std::int32_t root  = 0, const bool         check_error_codes = true)
+  communicator            (const communicator&  that , const std::vector<spawn_information>& spawn_info  , const std::int32_t  root  = 0, const bool         check_error_codes = true)
   : managed_(true)
   {
     std::vector<char*>              commands      (spawn_info.size());
@@ -111,7 +111,17 @@ public:
         if (code != MPI_SUCCESS)
           throw exception("spawn_multiple", error_code(code));
   }
-  communicator            (const communicator&  that, const information&                    information)
+  communicator            (const communicator&  local, const std::int32_t                    local_leader, const communicator& peer     , const std::int32_t peer_leader, const std::int32_t tag = 0)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Intercomm_create, (local.native_, local_leader, peer.native_, peer_leader, tag, &native_))
+  }
+  communicator            (const communicator&  that , const bool                            high        )
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Intercomm_merge, (that.native_, high, &native_))
+  }
+  communicator            (const communicator&  that , const information&                    information )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_dup_with_info, (that.native_, information.native(), &native_))
@@ -306,10 +316,6 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Abort, (native_, error_code.native()))
   }
-  void                               barrier             () const
-  {
-    MPI_CHECK_ERROR_CODE(MPI_Barrier, (native_))
-  }
   // Disconnect must currently be called explicitly. It is possible to state keep whether the accept/connect constructor has been used and call disconnect in the destructor if so.
   void                               disconnect          ()
   {
@@ -317,13 +323,25 @@ public:
   }
 
   [[nodiscard]]
-  std::pair<communicator, request>   duplicate           () const
+  std::pair<communicator, request>   async_duplicate     () const
   {
     std::pair result { communicator(), request() };
     MPI_CHECK_ERROR_CODE(MPI_Comm_idup, (native_, &result.first.native_, &result.second.native_))
     return result;
   }
 
+  void                               barrier             () const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Barrier, (native_))
+  }
+  [[nodiscard]]
+  request                            async_barrier       () const
+  {
+    request request;
+    MPI_CHECK_ERROR_CODE(MPI_Ibarrier, (native_, &request.native_))
+    return request;
+  }
+  
   // Point-to-point operations.
   void                               send                (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
@@ -336,19 +354,22 @@ public:
     send(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
   }
 
+  [[nodiscard]]
   request                            async_send          (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
     request result;
     MPI_CHECK_ERROR_CODE(MPI_Isend, (data, size, data_type.native(), destination, tag, native_, &result.native_))
     return result;
   }
-  template <typename type>           
+  template <typename type> 
+  [[nodiscard]]          
   request                            async_send          (const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0) const
   {
     using adapter = container_adapter<type>;
     return async_send(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
   }
 
+  [[nodiscard]]
   status                             receive             (      void* data, const std::int32_t size, const data_type& data_type, const std::int32_t source     , const std::int32_t tag = 0) const
   {
     status result;
@@ -356,12 +377,14 @@ public:
     return result;
   }
   template <typename type>           
+  [[nodiscard]]
   status                             receive             (      type& data,                                                      const std::int32_t source     , const std::int32_t tag = 0) const
   {
     using adapter = container_adapter<type>;
     return receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), source, tag);
   }
-    
+
+  [[nodiscard]]
   request                            async_receive       (      void* data, const std::int32_t size, const data_type& data_type, const std::int32_t source     , const std::int32_t tag = 0) const
   {
     request result;
@@ -369,25 +392,28 @@ public:
     return result;
   }
   template <typename type>           
+  [[nodiscard]]
   std::pair<status, request>         async_receive       (      type& data,                                                      const std::int32_t source     , const std::int32_t tag = 0) const
   {
     using adapter = container_adapter<type>;
     return async_receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), source, tag);
   }
-                                     
-  status                             send_receive        (const void* send_buffer   , const std::int32_t send_size   , const data_type& send_data_type   , const std::int32_t destination, 
-                                                                void* receive_buffer, const std::int32_t receive_size, const data_type& receive_data_type, const std::int32_t source     , 
-                                                          const std::int32_t send_tag = 0, const std::int32_t receive_tag = 0) const
+
+  [[nodiscard]]
+  status                             send_receive        (const void*         send_data       , const std::int32_t send_size   , const data_type& send_data_type   , const std::int32_t destination, 
+                                                                void*         receive_data    , const std::int32_t receive_size, const data_type& receive_data_type, const std::int32_t source     , 
+                                                          const std::int32_t  send_tag     = 0, const std::int32_t receive_tag = 0) const
   {
     status result;
-    MPI_CHECK_ERROR_CODE(MPI_Sendrecv, (send_buffer   , send_size   , send_data_type   .native(), destination, send_tag   ,
-                                        receive_buffer, receive_size, receive_data_type.native(), source     , receive_tag, native_, &result))
+    MPI_CHECK_ERROR_CODE(MPI_Sendrecv, (send_data   , send_size   , send_data_type   .native(), destination, send_tag   ,
+                                        receive_data, receive_size, receive_data_type.native(), source     , receive_tag, native_, &result))
     return result;
   }
   template <typename send_type, typename receive_type>
-  status                             send_receive        (const send_type&    send_data   , const std::int32_t destination, 
-                                                                receive_type& receive_data, const std::int32_t source     , 
-                                                          const std::int32_t  send_tag = 0, const std::int32_t receive_tag = 0) const
+  [[nodiscard]]
+  status                             send_receive        (const send_type&    send_data       , const std::int32_t destination , 
+                                                                receive_type& receive_data    , const std::int32_t source      , 
+                                                          const std::int32_t  send_tag     = 0, const std::int32_t receive_tag = 0) const
   {
     using send_adapter    = container_adapter<send_type   >;
     using receive_adapter = container_adapter<receive_type>;
@@ -396,7 +422,42 @@ public:
       static_cast<      void*>(receive_adapter::data(receive_data)), static_cast<std::int32_t>(receive_adapter::size(receive_data)), receive_adapter::data_type(), source     ,
       send_tag, receive_tag);
   }
-                                     
+
+  [[nodiscard]]
+  status                             send_receive_replace(      void*         data            , const std::int32_t size        , const data_type& data_type, 
+                                                          const std::int32_t  destination     , const std::int32_t source      , 
+                                                          const std::int32_t  send_tag     = 0, const std::int32_t receive_tag = 0) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_Sendrecv_replace, (data, size, data_type.native(), destination, send_tag, source, receive_tag, native_, &result))
+    return result;
+  }
+  template <typename type>                                                                                                     
+  [[nodiscard]]                                                                                                                
+  status                             send_receive_replace(const type&         data            ,                                
+                                                          const std::int32_t  destination     , const std::int32_t source      , 
+                                                          const std::int32_t  send_tag     = 0, const std::int32_t receive_tag = 0) const
+  {
+    using adapter = container_adapter<type>;
+    return send_receive_replace(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, source, send_tag, receive_tag);
+  }
+
+  [[nodiscard]]
+  status                             probe               (const std::int32_t source, const std::int32_t tag = 0) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_Probe, (source, tag, native_, &result))
+    return result;
+  }
+  [[nodiscard]]
+  std::optional<status>              async_probe         (const std::int32_t source, const std::int32_t tag = 0) const
+  {
+    status       result;
+    std::int32_t exists;
+    MPI_CHECK_ERROR_CODE(MPI_Iprobe, (source, tag, native_, &exists, &result))
+    return static_cast<bool>(exists) ? result : std::optional<status>(std::nullopt);
+  }
+
   [[nodiscard]]                      
   bool                               managed             () const
   {

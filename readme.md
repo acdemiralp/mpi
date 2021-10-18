@@ -273,7 +273,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Ialltoall                
 - [ ] MPI_Ialltoallv               
 - [ ] MPI_Ialltoallw               
-- [ ] MPI_Ibarrier                 
+- [x] MPI_Ibarrier                 
 - [ ] MPI_Ibcast                   
 - [ ] MPI_Ibsend                   
 - [ ] MPI_Iexscan                  
@@ -301,9 +301,9 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Init                      
 - [x] MPI_Init_thread               
 - [x] MPI_Initialized               
-- [ ] MPI_Intercomm_create          
-- [ ] MPI_Intercomm_merge           
-- [ ] MPI_Iprobe                    
+- [x] MPI_Intercomm_create          
+- [x] MPI_Intercomm_merge           
+- [x] MPI_Iprobe                    
 - [x] MPI_Irecv                     
 - [ ] MPI_Ireduce                   
 - [ ] MPI_Ireduce_scatter           
@@ -338,7 +338,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Pack_external_size        
 - [ ] MPI_Pack_size                 
 - [x] MPI_Pcontrol                  
-- [ ] MPI_Probe                     
+- [x] MPI_Probe                     
 - [x] MPI_Publish_name              
 - [ ] MPI_Put                       
 - [x] MPI_Query_thread              
@@ -365,7 +365,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Send                      
 - [ ] MPI_Send_init                 
 - [x] MPI_Sendrecv                  
-- [ ] MPI_Sendrecv_replace          
+- [x] MPI_Sendrecv_replace          
 - [x] ~~MPI_Sizeof~~                    
 - [ ] MPI_Ssend                     
 - [ ] MPI_Ssend_init                
