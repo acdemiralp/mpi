@@ -22,20 +22,20 @@ class container_adapter<type>
 public:
   using value_type = type;
 
-  static data_type   data_type()
+  static const data_type& data_type()
   {
     return type_traits<value_type>::get_data_type();
   }
-  static value_type* data     (type& container)
+  static value_type*      data     (type& container)
   {
     return &container;
   }
-  static std::size_t size     (type& container)
+  static std::size_t      size     (type& container)
   {
     return 1;
   }
 
-  static void        resize   (type& container, const std::size_t size)
+  static void             resize   (type& container, const std::size_t size)
   {
     // Do nothing. Compliant types are not resizable.
   }
@@ -47,23 +47,23 @@ class container_adapter<type>
 public:
   using value_type  = typename type::value_type;
 
-  static data_type   data_type()
+  static const data_type& data_type()
   {
     return type_traits<value_type>::get_data_type();
   }
-  static value_type* data     (type& container)
+  static value_type*      data     (type& container)
   {
     if constexpr (std::is_same_v<type, std::valarray<value_type>>)
       return &container[0]; // std::valarray does not have a .data() function.
     else
       return container.data();
   }
-  static std::size_t size     (type& container)
+  static std::size_t      size     (type& container)
   {
     return container.size();
   }
   
-  static void        resize   (type& container, const std::size_t size)
+  static void             resize   (type& container, const std::size_t size)
   {
     // Spans are not resizable.
     if constexpr (!is_span_v<type>)
