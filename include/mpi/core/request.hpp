@@ -96,6 +96,7 @@ public:
 
 protected:
   friend class communicator;
+  friend class message;
 
   request() : managed_(true) { } // Default constructor is only available to sub classes who control the member variables explicitly.
 

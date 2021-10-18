@@ -104,7 +104,7 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Attr_get~~                   
 - [x] ~~MPI_Attr_put~~                   
 - [x] MPI_Barrier                    
-- [ ] MPI_Bcast                      
+- [x] MPI_Bcast                      
 - [ ] MPI_Bsend                      
 - [ ] MPI_Bsend_init                 
 - [ ] MPI_Buffer_attach              
@@ -274,13 +274,13 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Ialltoallv               
 - [ ] MPI_Ialltoallw               
 - [x] MPI_Ibarrier                 
-- [ ] MPI_Ibcast                   
+- [x] MPI_Ibcast                   
 - [ ] MPI_Ibsend                   
 - [ ] MPI_Iexscan                  
 - [ ] MPI_Igather                  
 - [ ] MPI_Igatherv                 
-- [ ] MPI_Improbe                  
-- [ ] MPI_Imrecv           
+- [x] MPI_Improbe                  
+- [x] MPI_Imrecv           
 - [ ] MPI_Ineighbor_allgather       
 - [ ] MPI_Ineighbor_allgatherv      
 - [ ] MPI_Ineighbor_alltoall        
@@ -311,7 +311,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Irsend                    
 - [x] MPI_Is_thread_main            
 - [ ] MPI_Iscan                     
-- [ ] MPI_Iscatter                  
+- [x] MPI_Iscatter                  
 - [ ] MPI_Iscatterv                 
 - [x] MPI_Isend                     
 - [ ] MPI_Issend                    
@@ -320,8 +320,8 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Lookup_name               
 - [x] ~~MPI_Message_c2f~~               
 - [x] ~~MPI_Message_f2c~~               
-- [ ] MPI_Mprobe                    
-- [ ] MPI_Mrecv                     
+- [x] MPI_Mprobe                    
+- [x] MPI_Mrecv                     
 - [ ] MPI_Neighbor_allgather        
 - [ ] MPI_Neighbor_allgatherv       
 - [ ] MPI_Neighbor_alltoall         
@@ -360,7 +360,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Rsend                     
 - [ ] MPI_Rsend_init                
 - [ ] MPI_Scan                      
-- [ ] MPI_Scatter                   
+- [x] MPI_Scatter                   
 - [ ] MPI_Scatterv                  
 - [x] MPI_Send                      
 - [ ] MPI_Send_init                 
