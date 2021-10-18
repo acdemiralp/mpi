@@ -13,6 +13,7 @@
 #include <mpi/core/enums/topology.hpp>
 #include <mpi/core/error/error_handler.hpp>
 #include <mpi/core/structs/spawn_information.hpp>
+#include <mpi/core/utility/container_adapter.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/group.hpp>
 #include <mpi/core/information.hpp>
@@ -313,6 +314,23 @@ public:
   void                       disconnect          ()
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_disconnect, (&native_))
+  }
+
+  // Point-to-point operations.
+  void                       send                (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Send, (data, size, data_type.native(), destination, tag, native_))
+  }
+  template <typename type>
+  void                       send                (const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    using adapter = container_adapter<type>;
+    send(
+      static_cast<void*>       (adapter::data(data)), 
+      static_cast<std::int32_t>(adapter::size(data)), 
+      adapter::data_type().native(), 
+      destination,
+      tag);
   }
 
   [[nodiscard]]

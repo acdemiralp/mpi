@@ -362,7 +362,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Scan                      
 - [ ] MPI_Scatter                   
 - [ ] MPI_Scatterv                  
-- [ ] MPI_Send                      
+- [x] MPI_Send                      
 - [ ] MPI_Send_init                 
 - [ ] MPI_Sendrecv                  
 - [ ] MPI_Sendrecv_replace          
