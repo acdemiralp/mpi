@@ -24,7 +24,7 @@ public:
   message& operator=(      message&&   temp) = default;
 
   [[nodiscard]]
-  status      receive      (void* data, const std::int32_t size, const data_type& data_type)
+  status      receive          (void* data, const std::int32_t size, const data_type& data_type)
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_Mrecv, (data, size, data_type.native(), &native_, &result))
@@ -32,14 +32,14 @@ public:
   }
   template <typename type>
   [[nodiscard]]
-  status      receive      (type& data)
+  status      receive          (type& data)
   {
     using adapter = container_adapter<type>;
     return receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 
   [[nodiscard]]
-  request     async_receive(void* data, const std::int32_t size, const data_type& data_type)
+  request     immediate_receive(void* data, const std::int32_t size, const data_type& data_type)
   {
     request result;
     MPI_CHECK_ERROR_CODE(MPI_Imrecv, (data, size, data_type.native(), &native_, &result.native_))
@@ -47,14 +47,14 @@ public:
   }
   template <typename type>
   [[nodiscard]]
-  request     async_receive(type& data)
+  request     immediate_receive(type& data)
   {
     using adapter = container_adapter<type>;
     return receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 
   [[nodiscard]]
-  MPI_Message native       () const
+  MPI_Message native           () const
   {
     return native_;
   }

@@ -105,7 +105,7 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Attr_put~~                   
 - [x] MPI_Barrier                    
 - [x] MPI_Bcast                      
-- [ ] MPI_Bsend                      
+- [x] MPI_Bsend                      
 - [ ] MPI_Bsend_init                 
 - [ ] MPI_Buffer_attach              
 - [ ] MPI_Buffer_detach              
@@ -275,7 +275,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Ialltoallw               
 - [x] MPI_Ibarrier                 
 - [x] MPI_Ibcast                   
-- [ ] MPI_Ibsend                   
+- [x] MPI_Ibsend                   
 - [ ] MPI_Iexscan                  
 - [ ] MPI_Igather                  
 - [ ] MPI_Igatherv                 
@@ -308,13 +308,13 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Ireduce                   
 - [ ] MPI_Ireduce_scatter           
 - [ ] MPI_Ireduce_scatter_block     
-- [ ] MPI_Irsend                    
+- [x] MPI_Irsend                    
 - [x] MPI_Is_thread_main            
 - [ ] MPI_Iscan                     
 - [x] MPI_Iscatter                  
 - [ ] MPI_Iscatterv                 
 - [x] MPI_Isend                     
-- [ ] MPI_Issend                    
+- [x] MPI_Issend                    
 - [x] ~~MPI_Keyval_create~~             
 - [x] ~~MPI_Keyval_free~~               
 - [x] MPI_Lookup_name               
@@ -357,7 +357,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Rget                      
 - [ ] MPI_Rget_accumulate           
 - [ ] MPI_Rput                      
-- [ ] MPI_Rsend                     
+- [x] MPI_Rsend                     
 - [ ] MPI_Rsend_init                
 - [ ] MPI_Scan                      
 - [x] MPI_Scatter                   
@@ -367,7 +367,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Sendrecv                  
 - [x] MPI_Sendrecv_replace          
 - [x] ~~MPI_Sizeof~~                    
-- [ ] MPI_Ssend                     
+- [x] MPI_Ssend                     
 - [ ] MPI_Ssend_init                
 - [x] MPI_Start                     
 - [x] MPI_Startall                  
