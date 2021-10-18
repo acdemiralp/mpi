@@ -23,8 +23,6 @@ public:
   cartesian_communicator            (const communicator&            that, const std::vector<bool>&      periodic  , const bool reorder = true)
   : communicator()
   {
-    managed_ = true;
-
     std::vector<std::int32_t> sizes(periodic.size()), periods(periodic.size());
     std::ranges::transform(periodic, periods.begin(), [ ] (const bool value)
     {
@@ -38,8 +36,6 @@ public:
   cartesian_communicator            (const communicator&            that, const std::vector<dimension>& dimensions, const bool reorder = true)
   : communicator()
   {
-    managed_ = true;
-
     std::vector<std::int32_t> sizes(dimensions.size()), periods(dimensions.size());
     for (std::size_t i = 0; i < dimensions.size(); ++i)
     {
@@ -52,8 +48,6 @@ public:
   cartesian_communicator            (const cartesian_communicator&  that, const std::vector<bool>&      keep)
   : communicator()
   {
-    managed_ = true;
-
     std::vector<std::int32_t> remain_dims(keep.size());
     std::ranges::transform(keep, remain_dims.begin(), [ ] (const bool value)
     {

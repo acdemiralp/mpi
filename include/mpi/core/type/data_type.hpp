@@ -29,9 +29,9 @@ public:
   : managed_(true)
   {
     std::vector<MPI_Datatype> raw_data_types(data_types.size());
-    std::ranges::transform(data_types, raw_data_types.begin(), [ ] (const auto& request)
+    std::ranges::transform(data_types, raw_data_types.begin(), [ ] (const auto& type)
     {
-      return request.native();
+      return type.native();
     });
 
     MPI_CHECK_ERROR_CODE(MPI_Type_create_struct  , (static_cast<std::int32_t>(block_lengths.size()), block_lengths.data(), displacements.data(), raw_data_types.data(), &native_))

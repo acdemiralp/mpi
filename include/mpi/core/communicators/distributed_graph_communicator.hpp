@@ -24,8 +24,6 @@ public:
   explicit distributed_graph_communicator   (const communicator& that, const distributed_graph&    graph, const mpi::information& info = mpi::information(), const bool reorder = true)
   : communicator()
   {
-    managed_ = true;
-
     MPI_CHECK_ERROR_CODE(MPI_Dist_graph_create, (
       that.native(), 
       static_cast<std::int32_t>(graph.sources.size()), 
@@ -40,8 +38,6 @@ public:
   explicit distributed_graph_communicator   (const communicator& that, const neighbor_information& graph, const mpi::information& info = mpi::information(), const bool reorder = true)
   : communicator()
   {
-    managed_ = true;
-
     MPI_CHECK_ERROR_CODE(MPI_Dist_graph_create_adjacent, (
       that.native(),
       static_cast<std::int32_t>(graph.sources.size()), 

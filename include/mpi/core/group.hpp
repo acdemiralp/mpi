@@ -86,21 +86,21 @@ public:
   }
 
   // Convenience for operation constructor.
-  group&& operator+ (const group&  that) const
+  group operator+ (const group&  that) const
   {
-    return std::move(group(*this, that, operation::union_));
+    return { *this, that, operation::union_ };
   }
-  group&& operator- (const group&  that) const
+  group operator- (const group&  that) const
   {
-    return std::move(group(*this, that, operation::difference));
+    return { *this, that, operation::difference };
   }
-  group&& operator| (const group&  that) const
+  group operator| (const group&  that) const
   {
-    return std::move(group(*this, that, operation::union_));
+    return { *this, that, operation::union_ };
   }
-  group&& operator& (const group&  that) const
+  group operator& (const group&  that) const
   {
-    return std::move(group(*this, that, operation::intersection));
+    return { *this, that, operation::intersection };
   }
 
   [[nodiscard]]

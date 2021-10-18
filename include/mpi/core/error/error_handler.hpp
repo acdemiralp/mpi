@@ -56,7 +56,7 @@ public:
   }
 
 protected:
-  error_handler() = default; // Default constructor is only available to sub classes who control the member variables explicitly.
+  error_handler() : managed_(true) { } // Default constructor is only available to sub classes who control the member variables explicitly.
 
   bool           managed_ = false;
   MPI_Errhandler native_  = MPI_ERRHANDLER_NULL;
@@ -69,7 +69,6 @@ public:
 
   explicit communicator_error_handler  (const function_type& function)
   {
-    managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_errhandler, (function, &native_))
   }
   explicit communicator_error_handler  (const MPI_Errhandler native)
@@ -91,7 +90,6 @@ public:
 
   explicit file_error_handler  (const function_type& function)
   {
-    managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_File_create_errhandler, (function, &native_))
   }
   explicit file_error_handler  (const MPI_Errhandler native)
@@ -113,7 +111,6 @@ public:
 
   explicit window_error_handler  (const function_type& function)
   {
-    managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_Win_create_errhandler, (function, &native_))
   }
   explicit window_error_handler  (const MPI_Errhandler native)

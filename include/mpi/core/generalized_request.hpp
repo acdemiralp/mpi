@@ -23,7 +23,6 @@ public:
     const cancel_function_type cancel_function, 
     void*                      extra_state    = nullptr)
   {
-    managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_Grequest_start, (query_function, free_function, cancel_function, extra_state, &native_))
   }
   explicit generalized_request  (
@@ -32,7 +31,6 @@ public:
     const std::function<error_code(bool)>&        cancel_function)
   : query_function_(query_function), free_function_(free_function), cancel_function_(cancel_function)
   {
-    managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_Grequest_start, (
       [ ] (void* this_pointer, MPI_Status* status)
       {

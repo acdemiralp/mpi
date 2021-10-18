@@ -141,7 +141,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Comm_get_name              
 - [x] MPI_Comm_get_parent            
 - [x] MPI_Comm_group                 
-- [ ] MPI_Comm_idup                  
+- [x] MPI_Comm_idup                  
 - [x] MPI_Comm_join                  
 - [x] MPI_Comm_rank                  
 - [x] MPI_Comm_remote_group          
@@ -304,7 +304,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Intercomm_create          
 - [ ] MPI_Intercomm_merge           
 - [ ] MPI_Iprobe                    
-- [ ] MPI_Irecv                     
+- [x] MPI_Irecv                     
 - [ ] MPI_Ireduce                   
 - [ ] MPI_Ireduce_scatter           
 - [ ] MPI_Ireduce_scatter_block     
@@ -313,7 +313,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Iscan                     
 - [ ] MPI_Iscatter                  
 - [ ] MPI_Iscatterv                 
-- [ ] MPI_Isend                     
+- [x] MPI_Isend                     
 - [ ] MPI_Issend                    
 - [x] ~~MPI_Keyval_create~~             
 - [x] ~~MPI_Keyval_free~~               

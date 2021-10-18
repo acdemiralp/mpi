@@ -22,8 +22,6 @@ public:
   explicit graph_communicator   (const communicator&        that, const graph& graph, const bool reorder = true)
   : communicator()
   {
-    managed_ = true;
-
     MPI_CHECK_ERROR_CODE(MPI_Graph_create, (that.native(), static_cast<std::int32_t>(graph.degrees.size()), graph.degrees.data(), graph.edges.data(), reorder, &native_))
   }
   graph_communicator            (const graph_communicator&  that)          = default;

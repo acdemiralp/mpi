@@ -38,7 +38,7 @@ public:
   }
 
 protected:
-  key_value() = default; // Default constructor is only available to sub classes who control the member variables explicitly.
+  key_value() : managed_(true) { } // Default constructor is only available to sub classes who control the member variables explicitly.
 
   bool         managed_ = false;
   std::int32_t native_  = MPI_KEYVAL_INVALID;
@@ -55,7 +55,6 @@ public:
     const delete_function_type delete_function = MPI_COMM_NULL_DELETE_FN,
     void*                      extra_state     = nullptr                )
   {
-    managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_keyval, (copy_function, delete_function, &native_, extra_state))
   }
   explicit communicator_key_value  (const std::int32_t native)
@@ -99,7 +98,6 @@ public:
     const delete_function_type delete_function = MPI_TYPE_NULL_DELETE_FN,
     void*                      extra_state     = nullptr                )
   {
-    managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_Type_create_keyval, (copy_function, delete_function, &native_, extra_state))
   }
   explicit data_type_key_value  (const std::int32_t native)
@@ -143,7 +141,6 @@ public:
     const delete_function_type delete_function = MPI_WIN_NULL_DELETE_FN,
     void*                      extra_state     = nullptr               )
   {
-    managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_Win_create_keyval, (copy_function, delete_function, &native_, extra_state))
   }
   explicit window_key_value  (const std::int32_t native)
