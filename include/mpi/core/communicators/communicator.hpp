@@ -325,12 +325,42 @@ public:
   void                       send                (const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0) const
   {
     using adapter = container_adapter<type>;
-    send(
-      static_cast<void*>       (adapter::data(data)), 
-      static_cast<std::int32_t>(adapter::size(data)), 
-      adapter::data_type().native(), 
-      destination,
-      tag);
+    send(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
+  }
+
+  status                     receive             (      void* data, const std::int32_t size, const data_type& data_type, const std::int32_t source     , const std::int32_t tag = 0) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_Recv, (data, size, data_type.native(), source, tag, native_, &result))
+    return result;
+  }
+  template <typename type>
+  status                     receive             (      type& data,                                                      const std::int32_t source     , const std::int32_t tag = 0) const
+  {
+    using adapter = container_adapter<type>;
+    return receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), source, tag);
+  }
+
+  status                     send_receive        (const void* send_buffer   , const std::int32_t send_size   , const data_type& send_data_type   , const std::int32_t destination, 
+                                                        void* receive_buffer, const std::int32_t receive_size, const data_type& receive_data_type, const std::int32_t source     , 
+                                                  const std::int32_t send_tag = 0, const std::int32_t receive_tag = 0) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_Sendrecv, (send_buffer   , send_size   , send_data_type   .native(), destination, send_tag   ,
+                                        receive_buffer, receive_size, receive_data_type.native(), source     , receive_tag, native_, &result))
+    return result;
+  }
+  template <typename send_type, typename receive_type>
+  status                     send_receive        (const send_type&    send_data   , const std::int32_t destination, 
+                                                        receive_type& receive_data, const std::int32_t source     , 
+                                                  const std::int32_t  send_tag = 0, const std::int32_t receive_tag = 0) const
+  {
+    using send_adapter    = container_adapter<send_type   >;
+    using receive_adapter = container_adapter<receive_type>;
+    return send_receive(
+      static_cast<const void*>(send_adapter   ::data(send_data   )), static_cast<std::int32_t>(send_adapter   ::size(send_data   )), send_adapter   ::data_type(), destination,
+      static_cast<      void*>(receive_adapter::data(receive_data)), static_cast<std::int32_t>(receive_adapter::size(receive_data)), receive_adapter::data_type(), source     ,
+      send_tag, receive_tag);
   }
 
   [[nodiscard]]

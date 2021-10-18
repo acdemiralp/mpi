@@ -343,7 +343,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Put                       
 - [x] MPI_Query_thread              
 - [ ] MPI_Raccumulate               
-- [ ] MPI_Recv                      
+- [x] MPI_Recv                      
 - [ ] MPI_Recv_init                 
 - [ ] MPI_Reduce                    
 - [ ] MPI_Reduce_local              
@@ -364,7 +364,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Scatterv                  
 - [x] MPI_Send                      
 - [ ] MPI_Send_init                 
-- [ ] MPI_Sendrecv                  
+- [x] MPI_Sendrecv                  
 - [ ] MPI_Sendrecv_replace          
 - [x] ~~MPI_Sizeof~~                    
 - [ ] MPI_Ssend                     
