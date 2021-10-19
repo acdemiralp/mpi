@@ -95,7 +95,8 @@ public:
   [[nodiscard]]
   information        information       () const
   {
-    mpi::information result;
+    mpi::information result(MPI_INFO_NULL);
+    result.managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_File_get_info, (native_, &result.native_))
     return result;
   }
@@ -131,9 +132,9 @@ public:
   [[nodiscard]]
   file_error_handler error_handler     () const
   {
-    MPI_Errhandler result;
-    MPI_CHECK_ERROR_CODE(MPI_File_get_errhandler, (native_, &result))
-    return file_error_handler(result);
+    file_error_handler result;
+    MPI_CHECK_ERROR_CODE(MPI_File_get_errhandler, (native_, &result.native_))
+    return result;
   }
   void               set_error_handler (const file_error_handler& value) const
   {

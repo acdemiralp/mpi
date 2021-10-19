@@ -98,9 +98,10 @@ public:
   [[nodiscard]]
   group                group             () const
   {
-    MPI_Group result;
-    MPI_CHECK_ERROR_CODE(MPI_Win_get_group, (native_, &result))
-    return mpi::group(result);
+    mpi::group result;
+    result.managed_ = true;
+    MPI_CHECK_ERROR_CODE(MPI_Win_get_group, (native_, &result.native_))
+    return result;
   }
   [[nodiscard]]
   window_information   query_shared      (const std::int32_t rank) const
@@ -127,7 +128,8 @@ public:
   [[nodiscard]]
   information          information       () const
   {
-    mpi::information result;
+    mpi::information result(MPI_INFO_NULL);
+    result.managed_ = true;
     MPI_CHECK_ERROR_CODE(MPI_Win_get_info, (native_, &result.native_))
     return result;
   }
@@ -139,9 +141,9 @@ public:
   [[nodiscard]]
   window_error_handler error_handler     () const
   {
-    MPI_Errhandler result;
-    MPI_CHECK_ERROR_CODE(MPI_Win_get_errhandler, (native_, &result))
-    return window_error_handler(result);
+    window_error_handler result;
+    MPI_CHECK_ERROR_CODE(MPI_Win_get_errhandler, (native_, &result.native_))
+    return result;
   }
   void                 set_error_handler (const window_error_handler& value) const
   {

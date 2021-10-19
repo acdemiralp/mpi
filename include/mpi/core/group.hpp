@@ -156,6 +156,7 @@ public:
 
 protected:
   friend class communicator;
+  friend class window;
   friend class io::file;
 
   bool      managed_ = false;

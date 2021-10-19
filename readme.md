@@ -478,7 +478,6 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Win_wait
 - [x] MPI_Wtick
 - [x] MPI_Wtime
-
 - [ ] MPI_Allgather_init
 - [ ] MPI_Allgatherv_init
 - [ ] MPI_Allreduce_init
@@ -487,7 +486,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Alltoallw_init
 - [ ] MPI_Barrier_init
 - [ ] MPI_Bcast_init
-- [ ] MPI_Comm_create_from_group
+- [x] MPI_Comm_create_from_group
 - [x] MPI_Comm_idup_with_info
 - [ ] MPI_Exscan_init
 - [ ] MPI_Gather_init
@@ -495,9 +494,9 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Group_from_session_pset
 - [x] MPI_Info_create_env
 - [x] MPI_Info_get_string
-- [ ] MPI_Intercomm_create_from_groups
-- [ ] MPI_Isendrecv
-- [ ] MPI_Isendrecv_replace   
+- [x] MPI_Intercomm_create_from_groups
+- [x] MPI_Isendrecv
+- [x] MPI_Isendrecv_replace   
 - [ ] MPI_Neighbor_allgather_init
 - [ ] MPI_Neighbor_allgatherv_init
 - [ ] MPI_Neighbor_alltoall_init
@@ -522,9 +521,9 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Session_finalize
 - [x] MPI_Session_get_errhandler
 - [x] MPI_Session_get_info
-- [ ] MPI_Session_get_nth_pset
-- [ ] MPI_Session_get_num_psets
-- [ ] MPI_Session_get_pset_info
+- [x] MPI_Session_get_nth_pset
+- [x] MPI_Session_get_num_psets
+- [x] MPI_Session_get_pset_info
 - [x] MPI_Session_init
 - [x] MPI_Session_set_errhandler
 - [ ] MPI_T_category_get_events
@@ -552,8 +551,8 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_T_source_get_timestamp
 
 ### NIGHTS WORK
-Check GET_GROUP for comm whether to free
-MPI_SESSION_NULL, MPI_ERR_SESSION, MPI_MAX_PSET_NAME_LEN, MPI_MAX_STRINGTAG_LEN, MPI_T_BIND_MPI_SESSION
+MPI_MAX_PSET_NAME_LEN
+MPI_MAX_STRINGTAG_LEN
 MPI_ANY_SOURCE                    
 MPI_ANY_TAG                       
 MPI_APPNUM                        
@@ -620,71 +619,6 @@ MPI_WIN_SEPARATE
 MPI_WIN_SIZE
 MPI_WIN_UNIFIED
 MPI_WTIME_IS_GLOBAL
-
-MPI_TAG_UB
-MPI_HOST
-MPI_IO
-MPI_WTIME_IS_GLOBAL
-MPI_UNIVERSE_SIZE
-MPI_LASTUSEDCODE
-
-MPI_APPNUM
-MPI_ARGV_NULL
-MPI_ARGVS_NULL
-
-MPI_MAX_INFO_VAL
-MPI_UNDEFINED
-MPI_UNDEFINED_RANK
-MPI_KEYVAL_INVALID
-MPI_BSEND_OVERHEAD
-MPI_PROC_NULL
-MPI_ANY_SOURCE
-MPI_ANY_TAG
-MPI_BOTTOM
-MPI_IN_PLACE
-MPI_VERSION
-MPI_SUBVERSION
-
-MPI_UNWEIGHTED
-MPI_WEIGHTS_EMPTY
-
-File Displacement
-MPI_DISPLACEMENT_CURRENT
-
-Window attributes
-MPI_WIN_BASE
-MPI_WIN_SIZE
-MPI_WIN_DISP_UNIT
-MPI_WIN_CREATE_FLAVOR
-MPI_WIN_MODEL
-
-Window flavors
-MPI_WIN_FLAVOR_CREATE
-MPI_WIN_FLAVOR_ALLOCATE
-MPI_WIN_FLAVOR_DYNAMIC
-MPI_WIN_FLAVOR_SHARED
-
-Window Memory Model
-MPI_WIN_SEPARATE
-MPI_WIN_UNIFIED
-
-MPI_STATUS_IGNORE
-MPI_STATUSES_IGNORE
-
-MPI_Handler_function
-MPI_User_function
-MPI_Copy_function
-MPI_Delete_function
-
-MPI_COMM_NULL_COPY_FN
-MPI_COMM_NULL_DELETE_FN
-MPI_COMM_DUP_FN
-MPI_WIN_NULL_COPY_FN
-MPI_WIN_NULL_DELETE_FN
-MPI_WIN_DUP_FN
-MPI_TYPE_NULL_COPY_FN
-MPI_TYPE_NULL_DELETE_FN
-MPI_TYPE_DUP_FN
 
 ### Future Work
 - Tests.

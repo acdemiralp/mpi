@@ -23,6 +23,7 @@ public:
       MPI_File handle;
       MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
 
+      // Unmanaged construction.
       object_ = io::file(handle);
     }
     else
@@ -30,6 +31,7 @@ public:
       std::int32_t handle; // Abusing the fact that all native MPI object handles are std::int32_ts.
       MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
 
+      // Unmanaged construction.
       if      (variable.bind_type == bind_type::communicator ) object_ = communicator (handle);
       else if (variable.bind_type == bind_type::data_type    ) object_ = data_type    (handle);
       else if (variable.bind_type == bind_type::error_handler) object_ = error_handler(handle);
