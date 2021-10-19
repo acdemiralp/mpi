@@ -31,13 +31,13 @@ struct is_compliant_tuple<std::pair <first, second>, std::enable_if_t<std::conju
 
 template <typename type, typename = void>
 struct is_compliant_aggregate : std::false_type {};
-#ifdef MPI_RELAXED_TRAITS
+#ifdef MPI_USE_RELAXED_TRAITS
 template <typename type>
 struct is_compliant_aggregate<type, std::enable_if_t<std::conjunction_v<std::negation<is_array<type>>, std::is_aggregate<type>>>> : std::true_type {};
 #else
 // The pfr::structure_to_tuple triggers static asserts if the type is an aggregate but not a simple aggregate.
 // While this forces the user to pass valid types to the traits, it prevents querying validity of traits at runtime.
-// Hence it can be disabled by defining MPI_RELAXED_TRAITS.
+// Hence it can be disabled by defining MPI_USE_RELAXED_TRAITS.
 // See https://github.com/boostorg/pfr/issues/56 for a future alternative.
 template <typename type>
 struct is_compliant_aggregate<type, std::enable_if_t<std::conjunction_v<std::negation<is_array<type>>, std::is_aggregate<type>, is_compliant_tuple<decltype(pfr::structure_to_tuple(type()))>>>> : std::true_type {};

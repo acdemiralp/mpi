@@ -16,7 +16,7 @@ public:
   explicit session  (MPI_T_pvar_session native)
   : native_(native)
   {
-    
+
   }
   session           (const session&  that) = delete;
   session           (      session&& temp) noexcept

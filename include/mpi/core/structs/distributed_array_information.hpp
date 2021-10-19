@@ -17,4 +17,6 @@ struct distributed_array_information
   std::vector<std::int32_t> process_grid_sizes    ;
   bool                      fortran_order         = false;
 };
+
+inline constexpr std::int32_t distribution_default_arguments(MPI_DISTRIBUTE_DFLT_DARG);
 }

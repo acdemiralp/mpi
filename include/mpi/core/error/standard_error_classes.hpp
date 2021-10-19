@@ -49,7 +49,6 @@ inline const error_class not_same                                { MPI_ERR_NOT_S
 inline const error_class no_space                                { MPI_ERR_NO_SPACE             };
 inline const error_class no_such_file                            { MPI_ERR_NO_SUCH_FILE         };
 inline const error_class port                                    { MPI_ERR_PORT                 };
-inline const error_class process_aborted                         { MPI_ERR_PROC_ABORTED         };
 inline const error_class quota                                   { MPI_ERR_QUOTA                };
 inline const error_class read_only                               { MPI_ERR_READ_ONLY            };
 inline const error_class rma_attach                              { MPI_ERR_RMA_ATTACH           };
@@ -59,21 +58,16 @@ inline const error_class rma_shared                              { MPI_ERR_RMA_S
 inline const error_class rma_sync                                { MPI_ERR_RMA_SYNC             };
 inline const error_class rma_flavor                              { MPI_ERR_RMA_FLAVOR           };
 inline const error_class service                                 { MPI_ERR_SERVICE              };
-inline const error_class session                                 { MPI_ERR_SESSION              };
 inline const error_class size                                    { MPI_ERR_SIZE                 };
 inline const error_class spawn                                   { MPI_ERR_SPAWN                };
 inline const error_class unsupported_data_representation         { MPI_ERR_UNSUPPORTED_DATAREP  };
 inline const error_class unsupported_operation                   { MPI_ERR_UNSUPPORTED_OPERATION};
-inline const error_class value_too_large                         { MPI_ERR_VALUE_TOO_LARGE      };
 inline const error_class window                                  { MPI_ERR_WIN                  };
 inline const error_class tool_cannot_initialize                  { MPI_T_ERR_CANNOT_INIT        };
-inline const error_class tool_not_accessible                     { MPI_T_ERR_NOT_ACCESSIBLE     };
 inline const error_class tool_not_initialized                    { MPI_T_ERR_NOT_INITIALIZED    };
-inline const error_class tool_not_supported                      { MPI_T_ERR_NOT_SUPPORTED      };
 inline const error_class tool_memory                             { MPI_T_ERR_MEMORY             };
 inline const error_class invalid                                 { MPI_T_ERR_INVALID            };
 inline const error_class tool_invalid_index                      { MPI_T_ERR_INVALID_INDEX      };
-inline const error_class tool_invalid_item                       { MPI_T_ERR_INVALID_ITEM       };
 inline const error_class tool_invalid_session                    { MPI_T_ERR_INVALID_SESSION    };
 inline const error_class tool_invalid_handle                     { MPI_T_ERR_INVALID_HANDLE     };
 inline const error_class invalid_name                            { MPI_T_ERR_INVALID_NAME       };
@@ -85,4 +79,12 @@ inline const error_class tool_performance_variable_no_write      { MPI_T_ERR_PVA
 inline const error_class tool_performance_variable_no_start_stop { MPI_T_ERR_PVAR_NO_STARTSTOP  };
 inline const error_class tool_performance_variable_no_atomic     { MPI_T_ERR_PVAR_NO_ATOMIC     };
 inline const error_class last_code                               { MPI_ERR_LASTCODE             };
+
+#ifdef MPI_USE_LATEST
+inline const error_class process_aborted                         { MPI_ERR_PROC_ABORTED         };
+inline const error_class session                                 { MPI_ERR_SESSION              };
+inline const error_class value_too_large                         { MPI_ERR_VALUE_TOO_LARGE      };
+inline const error_class tool_not_accessible                     { MPI_T_ERR_NOT_ACCESSIBLE     };
+inline const error_class tool_not_supported                      { MPI_T_ERR_NOT_SUPPORTED      };
+#endif
 }

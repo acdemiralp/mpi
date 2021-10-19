@@ -10,6 +10,11 @@
 
 namespace mpi
 {
+namespace io
+{
+class file;
+}
+
 class group
 {
 public:
@@ -20,6 +25,11 @@ public:
     union_
   };
 
+  group             ()
+  : native_(MPI_GROUP_EMPTY)
+  {
+
+  }
   explicit group    (const MPI_Group native)
   : native_(native)
   {
@@ -145,6 +155,9 @@ public:
   }
 
 protected:
+  friend class communicator;
+  friend class io::file;
+
   bool      managed_ = false;
   MPI_Group native_  = MPI_GROUP_NULL;
 };

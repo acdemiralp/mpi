@@ -10,6 +10,7 @@
 
 #include <mpi/core/error/error_code.hpp>
 #include <mpi/core/enums/comparison.hpp>
+#include <mpi/core/enums/split_type.hpp>
 #include <mpi/core/enums/topology.hpp>
 #include <mpi/core/error/error_handler.hpp>
 #include <mpi/core/structs/spawn_information.hpp>
@@ -33,27 +34,27 @@ public:
   {
     
   }
-  communicator            (const communicator&  that , const group&                          group       )
+  communicator            (const communicator&  that , const group&                          group                          )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create       , (that.native_, group      .native(),      &native_))
   }
-  communicator            (const communicator&  that , const group&                          group       , const std::int32_t  tag)
+  communicator            (const communicator&  that , const group&                          group                          , const std::int32_t  tag)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_group , (that.native_, group      .native(), tag, &native_))
   }
-  communicator            (const communicator&  that , const std::int32_t                    color       , const std::int32_t  key)
+  communicator            (const communicator&  that , const std::int32_t                    color                          , const std::int32_t  key)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_split        , (that.native_, color, key, &native_))
   }
-  communicator            (const communicator&  that , const std::int32_t                    split_type  , const std::int32_t  key      , const information& information)
+  communicator            (const communicator&  that , const split_type                      split_type = split_type::shared, const std::int32_t  key   = 0, const information& information       = mpi::information())
   : managed_(true)
   {
-    MPI_CHECK_ERROR_CODE(MPI_Comm_split_type   , (that.native_, split_type, key, information.native(), &native_))
+    MPI_CHECK_ERROR_CODE(MPI_Comm_split_type   , (that.native_, static_cast<std::int32_t>(split_type), key, information.native(), &native_))
   }
-  communicator            (const communicator&  that , const port&                           port        , const bool          accept   , const information& information       = mpi::information(), const std::int32_t root = 0)
+  communicator            (const communicator&  that , const port&                           port                           , const bool          accept   , const information& information       = mpi::information(), const std::int32_t root = 0)
   : managed_(true)
   {
     if (accept)
@@ -61,7 +62,7 @@ public:
     else
       MPI_CHECK_ERROR_CODE(MPI_Comm_connect, (port.name().c_str(), information.native(), root, that.native(), &native_))
   }
-  communicator            (const communicator&  that , const spawn_information&              spawn_info  , const std::int32_t  root  = 0, const bool         check_error_codes = true)
+  communicator            (const communicator&  that , const spawn_information&              spawn_info                     , const std::int32_t  root  = 0, const bool         check_error_codes = true)
   : managed_(true)
   {
     std::vector<char*> arguments(spawn_info.arguments.size());
@@ -72,14 +73,14 @@ public:
 
     std::vector<std::int32_t> error_codes(spawn_info.process_count);
 
-    MPI_CHECK_ERROR_CODE(MPI_Comm_spawn, (spawn_info.command.c_str(), arguments.data(), spawn_info.process_count, spawn_info.information.native(), root, that.native(), &native_, error_codes.data()))
+    MPI_CHECK_ERROR_CODE(MPI_Comm_spawn, (spawn_info.command.c_str(), arguments.empty() ? MPI_ARGV_NULL : arguments.data(), spawn_info.process_count, spawn_info.information.native(), root, that.native(), &native_, check_error_codes ? error_codes.data() : MPI_ERRCODES_IGNORE))
 
     if (check_error_codes)
       for (const auto& code : error_codes)
         if (code != MPI_SUCCESS)
           throw exception("spawn", error_code(code));
   }
-  communicator            (const communicator&  that , const std::vector<spawn_information>& spawn_info  , const std::int32_t  root  = 0, const bool         check_error_codes = true)
+  communicator            (const communicator&  that , const std::vector<spawn_information>& spawn_info                     , const std::int32_t  root  = 0, const bool         check_error_codes = true)
   : managed_(true)
   {
     std::vector<char*>              commands      (spawn_info.size());
@@ -105,24 +106,24 @@ public:
 
     std::vector<std::int32_t> error_codes(total_count);
 
-    MPI_CHECK_ERROR_CODE(MPI_Comm_spawn_multiple, (static_cast<std::int32_t>(spawn_info.size()), commands.data(), raw_arguments.data(), process_counts.data(), infos.data(), root, that.native(), &native_, error_codes.data()))
+    MPI_CHECK_ERROR_CODE(MPI_Comm_spawn_multiple, (static_cast<std::int32_t>(spawn_info.size()), commands.data(), raw_arguments.data(), process_counts.data(), infos.data(), root, that.native(), &native_, check_error_codes ? error_codes.data() : MPI_ERRCODES_IGNORE))
 
     if (check_error_codes)
       for (const auto& code : error_codes)
         if (code != MPI_SUCCESS)
           throw exception("spawn_multiple", error_code(code));
   }
-  communicator            (const communicator&  local, const std::int32_t                    local_leader, const communicator& peer     , const std::int32_t peer_leader, const std::int32_t tag = 0)
+  communicator            (const communicator&  local, const std::int32_t                    local_leader                   , const communicator& peer     , const std::int32_t peer_leader, const std::int32_t tag = 0)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Intercomm_create, (local.native_, local_leader, peer.native_, peer_leader, tag, &native_))
   }
-  communicator            (const communicator&  that , const bool                            high        )
+  communicator            (const communicator&  that , const bool                            high                           )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Intercomm_merge, (that.native_, high, &native_))
   }
-  communicator            (const communicator&  that , const information&                    information )
+  communicator            (const communicator&  that , const information&                    information                    )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_dup_with_info, (that.native_, information.native(), &native_))
@@ -211,9 +212,9 @@ public:
   [[nodiscard]]                                                       
   group                                     group                     () const
   {
-    MPI_Group result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_group, (native_, &result))
-    return mpi::group(result);
+    mpi::group result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_group, (native_, &result.native_))
+    return result;
   }
   [[nodiscard]]                                                       
   topology                                  topology                  () const
@@ -270,9 +271,9 @@ public:
   [[nodiscard]]                                                       
   information                               information               () const
   {
-    MPI_Info result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_get_info, (native_, &result))
-    return mpi::information(result);
+    mpi::information result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_get_info, (native_, &result.native_))
+    return result;
   }
   void                                      set_information           (const mpi::information& value) const
   {
@@ -282,9 +283,9 @@ public:
   [[nodiscard]]                                                       
   communicator_error_handler                error_handler             () const
   {
-    MPI_Errhandler result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_get_errhandler, (native_, &result))
-    return communicator_error_handler(result);
+    communicator_error_handler result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_get_errhandler, (native_, &result.native_))
+    return result;
   }
   void                                      set_error_handler         (const communicator_error_handler& value) const
   {
@@ -330,7 +331,16 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Comm_idup, (native_, &result.first.native_, &result.second.native_))
     return result;
   }
-                                                                      
+#ifdef MPI_USE_LATEST                                                                 
+  [[nodiscard]]                                                       
+  std::pair<communicator, request>          immediate_duplicate       (const std::information& information) const
+  {
+    std::pair result { communicator(), request() };
+    MPI_CHECK_ERROR_CODE(MPI_Comm_idup_with_info, (native_, information.native(), &result.first.native_, &result.second.native_))
+    return result;
+  }
+#endif
+
   void                                      barrier                   () const
   {
     MPI_CHECK_ERROR_CODE(MPI_Barrier, (native_))
@@ -563,7 +573,74 @@ public:
     using adapter = container_adapter<type>;
     return immediate_broadcast(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root);
   }
-                                                                      
+
+  void                                      gather                    (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                             void*        received, const std::int32_t received_size, const data_type& received_data_type, 
+                                                                       const std::int32_t root    = 0) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Gather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_))
+  }
+  template <typename sent_type, typename received_type>                        
+  void                                      gather                    (sent_type& sent_data, received_type& received_data, const std::int32_t root = 0) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    gather(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type(), root);
+  }
+  [[nodiscard]]                                                       
+  request                                   immediate_gather          (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                             void*        received, const std::int32_t received_size, const data_type& received_data_type, 
+                                                                       const std::int32_t root    = 0) const
+  {
+    request result;
+    MPI_CHECK_ERROR_CODE(MPI_Igather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                                                       
+  request                                   immediate_gather          (sent_type& sent_data, received_type& received_data) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_gather(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type(), root);
+  }
+
+  void                                      all_gather                (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                             void*        received, const std::int32_t received_size, const data_type& received_data_type, 
+                                                                       const std::int32_t root    = 0) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Allgather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_))
+  }
+  template <typename sent_type, typename received_type>                        
+  void                                      all_gather                (sent_type& sent_data, received_type& received_data) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    all_gather(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type());
+  }
+  [[nodiscard]]                                                       
+  request                                   immediate_all_gather      (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                             void*        received, const std::int32_t received_size, const data_type& received_data_type) const
+  {
+    request result;
+    MPI_CHECK_ERROR_CODE(MPI_Iallgather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                                                       
+  request                                   immediate_all_gather      (sent_type& sent_data, received_type& received_data) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_all_gather(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type());
+  }
+
   void                                      scatter                   (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
                                                                              void*        received, const std::int32_t received_size, const data_type& received_data_type, 
                                                                        const std::int32_t root    = 0) const
@@ -588,8 +665,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Iscatter, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, &result.native_))
     return  result;
   }
-  template <typename sent_type, typename received_type>               
-  [[nodiscard]]                                                       
+  template <typename sent_type, typename received_type> [[nodiscard]]                                                       
   request                                   immediate_scatter         (sent_type& sent_data, received_type& received_data, const std::int32_t root = 0) const
   {
     using send_adapter    = container_adapter<sent_type>;

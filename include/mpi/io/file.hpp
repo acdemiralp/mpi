@@ -72,9 +72,10 @@ public:
   [[nodiscard]]
   group              group             () const
   {
-    MPI_Group result;
-    MPI_CHECK_ERROR_CODE(MPI_File_get_group, (native_, &result))
-    return mpi::group(result);
+    mpi::group result;
+    result.managed_ = true;
+    MPI_CHECK_ERROR_CODE(MPI_File_get_group, (native_, &result.native_))
+    return result;
   }
   [[nodiscard]]
   std::int64_t       position          () const
@@ -94,9 +95,9 @@ public:
   [[nodiscard]]
   information        information       () const
   {
-    MPI_Info result;
-    MPI_CHECK_ERROR_CODE(MPI_File_get_info, (native_, &result))
-    return mpi::information(result);
+    mpi::information result;
+    MPI_CHECK_ERROR_CODE(MPI_File_get_info, (native_, &result.native_))
+    return result;
   }
   void               set_information   (const mpi::information& value) const
   {

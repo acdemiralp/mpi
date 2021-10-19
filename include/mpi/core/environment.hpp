@@ -2,10 +2,13 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
 
 #include <mpi/core/enums/profiling_level.hpp>
 #include <mpi/core/enums/thread_support.hpp>
+#include <mpi/core/utility/container_adapter.hpp>
+#include <mpi/core/utility/sequential_container_traits.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
@@ -33,33 +36,33 @@ public:
   environment& operator=(      environment&& temp) noexcept = delete;
 };
 
-inline bool           initialized         ()
+inline bool                           initialized         ()
 {
   std::int32_t result;
   MPI_CHECK_ERROR_CODE(MPI_Initialized   , (&result))
   return static_cast<bool>(result);
 }
-inline bool           finalized           ()
+inline bool                           finalized           ()
 {
   std::int32_t result;
   MPI_CHECK_ERROR_CODE(MPI_Finalized     , (&result))
   return static_cast<bool>(result);
 }
 
-inline thread_support query_thread_support()
+inline thread_support                 query_thread_support()
 {
   std::int32_t result;
   MPI_CHECK_ERROR_CODE(MPI_Query_thread  , (&result))
   return static_cast<thread_support>(result);
 }
-inline bool           is_thread_main      ()
+inline bool                           is_thread_main      ()
 {
   std::int32_t result;
   MPI_CHECK_ERROR_CODE(MPI_Is_thread_main, (&result))
   return static_cast<bool>(result);
 }
 
-inline std::string    processor_name      ()
+inline std::string                    processor_name      ()
 {
   std::string  result(MPI_MAX_PROCESSOR_NAME, ' ');
   std::int32_t size  (0);
@@ -68,7 +71,25 @@ inline std::string    processor_name      ()
   return result;
 }
 
-inline void           set_profiling_level (const profiling_level level)
+inline void                           attach_buffer       (void* buffer, const std::int32_t size)
+{
+  MPI_CHECK_ERROR_CODE(MPI_Buffer_attach, (buffer, size))
+}
+template <sequential_container type>
+void                                  attach_buffer       (const type& buffer)
+{
+  using adapter = container_adapter<type>;
+  MPI_CHECK_ERROR_CODE(MPI_Buffer_attach, (adapter::data(buffer), static_cast<std::int32_t>(adapter::size(buffer) * sizeof adapter::data_type().size())))
+}
+inline std::span<std::byte>           detach_buffer       ()
+{
+  void*        buffer;
+  std::int32_t size  ;
+  MPI_CHECK_ERROR_CODE(MPI_Buffer_detach, (&buffer, &size))
+  return { static_cast<std::byte*>(buffer), static_cast<std::size_t>(size) };
+}
+
+inline void                           set_profiling_level (const profiling_level level)
 {
   MPI_CHECK_ERROR_CODE(MPI_Pcontrol, (static_cast<std::int32_t>(level)))
 }

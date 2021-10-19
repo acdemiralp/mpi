@@ -58,6 +58,7 @@ struct performance_variable
     if (enum_type != MPI_T_ENUM_NULL)
       enumeration.emplace(enum_type);
   }
+  explicit performance_variable  (const std::string& name , performance_variable_type type);
   performance_variable           (const performance_variable&  that) = delete ;
   performance_variable           (      performance_variable&& temp) = default;
   virtual ~performance_variable  ()                                  = default;
@@ -80,6 +81,12 @@ struct performance_variable
   std::optional<enumeration> enumeration;
 };
 
+inline std::int32_t                      performance_variable_index(const std::string& name, const performance_variable_type type)
+{
+  std::int32_t result;
+  MPI_CHECK_ERROR_CODE(MPI_T_pvar_get_index(name.c_str(), static_cast<std::int32_t>(type), &result))
+  return result;
+}
 inline std::int32_t                      performance_variable_count()
 {
   std::int32_t result;
@@ -109,5 +116,11 @@ inline std::vector<performance_variable> performance_variables     (const std::v
     result.emplace_back(indices[i]);
 
   return result;
+}
+
+inline performance_variable::performance_variable(const std::string& name , const performance_variable_type type)
+: performance_variable(performance_variable_index(name, type))
+{
+  
 }
 }

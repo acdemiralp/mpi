@@ -17,7 +17,7 @@
 #include <valarray>
 #include <vector>
 
-#define MPI_RELAXED_TRAITS
+#define MPI_USE_RELAXED_TRAITS
 
 #include <mpi/core/type/compliant_traits.hpp>
 #include <mpi/core/type/compliant_container_traits.hpp>
@@ -211,7 +211,7 @@ TEST_CASE("Trait Test")
 
   REQUIRE( mpi::is_compliant_v<aggregate_compliant_type               >);
   REQUIRE( mpi::is_compliant_v<aggregate_compliant_type_2d            >);
-#ifdef MPI_RELAXED_TRAITS // It is not possible to detect if the inner types are compliant with relaxed traits.
+#ifdef MPI_USE_RELAXED_TRAITS // It is not possible to detect if the inner types are compliant with relaxed traits.
   REQUIRE( mpi::is_compliant_v<aggregate_non_compliant_type           >);
   REQUIRE( mpi::is_compliant_v<aggregate_non_compliant_type_2d        >);
 #else
@@ -330,7 +330,7 @@ TEST_CASE("Trait Test")
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<valarray_compliant_type                >);
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<valarray_compliant_type_2              >);
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<valarray_non_compliant_type            >);
-#ifdef MPI_RELAXED_TRAITS // It is not possible to detect if the inner types are compliant with relaxed traits.
+#ifdef MPI_USE_RELAXED_TRAITS // It is not possible to detect if the inner types are compliant with relaxed traits.
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<valarray_non_compliant_type_2          >);
 #else
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<valarray_non_compliant_type_2          >);
@@ -341,7 +341,7 @@ TEST_CASE("Trait Test")
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<vector_compliant_type                  >);
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<vector_compliant_type_2                >);
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<vector_non_compliant_type              >);
-#ifdef MPI_RELAXED_TRAITS // It is not possible to detect if the inner types are compliant with relaxed traits.
+#ifdef MPI_USE_RELAXED_TRAITS // It is not possible to detect if the inner types are compliant with relaxed traits.
   REQUIRE( mpi::is_compliant_contiguous_sequential_container_v<vector_non_compliant_type_2            >);
 #else
   REQUIRE(!mpi::is_compliant_contiguous_sequential_container_v<vector_non_compliant_type_2            >);

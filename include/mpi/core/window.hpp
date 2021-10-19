@@ -27,15 +27,6 @@ public:
     else
       MPI_CHECK_ERROR_CODE(MPI_Win_allocate       , (size, displacement_unit, information.native(), communicator.native(), &base_pointer_, &native_))
   }
-  template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void>>>
-  explicit window  (const communicator& communicator, const std::int64_t size,                                           const bool shared = false, const information& information = mpi::information())
-  : managed_(true)
-  {
-    if (shared)
-      MPI_CHECK_ERROR_CODE(MPI_Win_allocate_shared, (sizeof(type) * size, sizeof(type), information.native(), communicator.native(), &base_pointer_, &native_))
-    else
-      MPI_CHECK_ERROR_CODE(MPI_Win_allocate       , (sizeof(type) * size, sizeof(type), information.native(), communicator.native(), &base_pointer_, &native_))
-  }
 
   explicit window  (const communicator& communicator, void* base_pointer, const std::int64_t size, const std::int32_t displacement_unit = 1, const information& information = mpi::information())
   : managed_(true), base_pointer_(base_pointer)
@@ -92,6 +83,18 @@ public:
     return *this;
   }
 
+  // A static member function for construction is bad practice but constructors do not support templates if the type does not appear in the arguments.
+  template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void>>>
+  static window allocate (const communicator& communicator, const std::int64_t size, const bool shared = false, const information& information = mpi::information())
+  {
+    window result;
+    if (shared)
+      MPI_CHECK_ERROR_CODE(MPI_Win_allocate_shared, (sizeof(type) * size, sizeof(type), information.native(), communicator.native(), &result.base_pointer_, &result.native_))
+    else
+      MPI_CHECK_ERROR_CODE(MPI_Win_allocate       , (sizeof(type) * size, sizeof(type), information.native(), communicator.native(), &result.base_pointer_, &result.native_))
+    return result;
+  }
+
   [[nodiscard]]
   group                group             () const
   {
@@ -124,9 +127,9 @@ public:
   [[nodiscard]]
   information          information       () const
   {
-    MPI_Info result;
-    MPI_CHECK_ERROR_CODE(MPI_Win_get_info, (native_, &result))
-    return mpi::information(result);
+    mpi::information result;
+    MPI_CHECK_ERROR_CODE(MPI_Win_get_info, (native_, &result.native_))
+    return result;
   }
   void                 set_information   (const mpi::information& value) const
   {
@@ -268,6 +271,8 @@ public:
   }
 
 protected:
+  window() : managed_(true) { }
+
   bool    managed_      = false;
   MPI_Win native_       = MPI_WIN_NULL;
   void*   base_pointer_ = nullptr;

@@ -203,7 +203,9 @@ public:
 
     result.integers  .resize(integers_size  );
     result.addresses .resize(addresses_size );
-    result.data_types.resize(data_types_size);
+    result.data_types.resize(addresses_size ); // Creates managed data types.
+
+    std::vector<MPI_Datatype> raw_data_types(data_types_size);
 
     MPI_CHECK_ERROR_CODE(MPI_Type_get_contents, (
       native_                 ,
@@ -212,7 +214,10 @@ public:
       data_types_size         ,
       result.integers  .data(),
       result.addresses .data(),
-      result.data_types.data()))
+      raw_data_types   .data()))
+
+    for (auto i = 0; i < data_types_size; ++i)
+      result.data_types[i].native_ = raw_data_types[i];
 
     return result;
   }
@@ -266,6 +271,8 @@ public:
   }
 
 protected:
+  data_type () : managed_(true) { }
+
   bool         managed_ = false;
   MPI_Datatype native_  = MPI_DATATYPE_NULL;
 };

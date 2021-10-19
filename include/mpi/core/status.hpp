@@ -71,16 +71,6 @@ public:
   }
 
   [[nodiscard]]
-  std::int32_t count_low               () const
-  {
-    return count_lo;
-  }
-  [[nodiscard]]
-  std::int32_t count_high_and_cancelled() const
-  {
-    return count_hi_and_cancelled;
-  }
-  [[nodiscard]]
   std::int32_t source                  () const
   {
     return MPI_SOURCE;

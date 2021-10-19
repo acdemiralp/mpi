@@ -10,6 +10,11 @@
 
 namespace mpi
 {
+namespace io
+{
+class file;
+}
+
 // Standard: "... It stores an unordered set of (key, value) pairs (both key and value are strings). A key can have only one value. ..."
 // This interface is loosely based on associative containers such as std::unordered_map (it is not STL compliant).
 // It can additionally be converted from/to std::unordered_map<std::string, std::string>.
@@ -23,6 +28,13 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Info_create, (&native_))
   }
+#ifdef MPI_USE_LATEST
+  information            (std::int32_t argc, char** argv)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Info_create_env, (argc, argv, &native_))
+  }
+#endif
   explicit information   (const map_type&     map   )
   : information()
   {
@@ -99,7 +111,32 @@ public:
   {
     return size() == 0;
   }
+  
+#ifdef MPI_USE_LATEST
   [[nodiscard]]                                
+  bool                       contains(const std::string& key  ) const
+  {
+    auto size(0), exists(0);
+    MPI_CHECK_ERROR_CODE(MPI_Info_get_string, (native_, key.c_str(), &size, nullptr, &exists))
+
+    return static_cast<bool>(exists);
+  }
+  [[nodiscard]]
+  std::optional<std::string> at      (const std::string& key  ) const
+  {
+    auto size(0), exists(0);
+    MPI_CHECK_ERROR_CODE(MPI_Info_get_string, (native_, key.c_str(), &size, nullptr, &exists))
+
+    if (!static_cast<bool>(exists))
+      return {std::nullopt};
+
+    std::string result(size, ' ');
+    MPI_CHECK_ERROR_CODE(MPI_Info_get_string, (native_, key.c_str(), &size, &result[0], &exists))
+
+    return result;
+  }
+#else
+  [[nodiscard, deprecated]]                                
   bool                       contains(const std::string& key  ) const
   {
     auto size(0), exists(0);
@@ -107,7 +144,7 @@ public:
 
     return static_cast<bool>(exists);
   }
-  [[nodiscard]]
+  [[nodiscard, deprecated]]
   std::optional<std::string> at      (const std::string& key  ) const
   {
     auto size(0), exists(0);
@@ -121,6 +158,7 @@ public:
 
     return result;
   }
+#endif
   [[nodiscard]]                                
   std::string                key_at  (const std::int32_t index) const
   {
@@ -166,6 +204,11 @@ public:
   }
 
 protected:
+  friend class communicator;
+  friend class session;
+  friend class window;
+  friend class io::file;
+
   bool     managed_ = false;
   MPI_Info native_  = MPI_INFO_NULL;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include <mpi/core/exception.hpp>
@@ -12,12 +13,13 @@ namespace mpi::tool
 {
 struct category
 {
-  explicit category  (std::int32_t index);
-  category           (const category&  that) = default;
-  category           (      category&& temp) = default;
-  virtual ~category  ()                      = default;
-  category& operator=(const category&  that) = default;
-  category& operator=(      category&& temp) = default;
+  explicit category  (std::int32_t       index);
+  explicit category  (const std::string& name );
+  category           (const category&    that ) = default;
+  category           (      category&&   temp ) = default;
+  virtual ~category  ()                         = default;
+  category& operator=(const category&    that ) = default;
+  category& operator=(      category&&   temp ) = default;
 
   std::int32_t                      index                ;
   std::string                       name                 ;
@@ -27,6 +29,12 @@ struct category
   std::vector<category>             subcategories        ;
 };
 
+inline std::int32_t          category_index    (const std::string& name)
+{
+  std::int32_t result;
+  MPI_CHECK_ERROR_CODE(MPI_T_category_get_index(name.c_str(), &result))
+  return result;
+}
 inline bool                  categories_changed()
 {
   static auto last_timestamp(0);
@@ -109,5 +117,9 @@ inline category::category(const std::int32_t index) : index(index)
   control_variables     = tool::control_variables    (control_variable_indices    );
   performance_variables = tool::performance_variables(performance_variable_indices);
   subcategories         = categories                 (subcategory_indices         );
+}
+inline category::category(const std::string& name ) : category(category_index(name))
+{
+  
 }
 }

@@ -2,8 +2,9 @@
 Modern C++20 message passing interface wrapper.
 
 ### Usage Notes
+- Define `MPI_USE_LATEST` to define the latest additions to the MPI 4.0 specification which may not yet be available to the majority of implementations.
 - Define `MPI_USE_EXCEPTIONS` to check the return values of all viable functions against `MPI_SUCCESS` and throw an exception otherwise.
-- Define `MPI_RELAXED_TRAITS` to prevent the library from checking the types of aggregate elements and triggering static asserts for non-aggregates.
+- Define `MPI_USE_RELAXED_TRAITS` to prevent the library from checking the types of aggregate elements and triggering static asserts for non-aggregates.
 - Compliant types (satisfying `mpi::is_compliant`) are types whose corresponding `mpi::data_type` can be automatically generated:
   - Arithmetic types (satisfying `std::is_arithmetic`), enumerations (satisfying `std::is_enum`), specializations of `std::complex` are compliant types.
   - C-style arrays, `std::array`, `std::pair`, `std::tuple`, and aggregate types (satisfying `std::is_aggregate`) consisting of other compliant types are also compliant types.
@@ -11,6 +12,7 @@ Modern C++20 message passing interface wrapper.
 - The MPI functions accepting buffers may be used with:
   - Compliant types.
   - Contiguous sequential containers (i.e. `std::span`, `std::valarray`, `std::vector<!bool>`) of compliant types.
+- Extension functions (starting with MPIX) are not included as they are often implementation-specific. You can nevertheless use them with the wrapper via the native handle getters.
 
 ### Design Notes
 - Constructors:
@@ -61,30 +63,7 @@ Modern C++20 message passing interface wrapper.
     - See https://www.boost.org/doc/libs/1_76_0/doc/html/boost_pfr/limitations_and_configuration.html for further detail.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
-- [x] MPI                         
-- [ ] MPIX_Allgather_init            
-- [ ] MPIX_Allgatherv_init           
-- [ ] MPIX_Allreduce_init            
-- [ ] MPIX_Alltoall_init             
-- [ ] MPIX_Alltoallv_init            
-- [ ] MPIX_Alltoallw_init            
-- [ ] MPIX_Barrier_init              
-- [ ] MPIX_Bcast_init                
-- [ ] MPIX_Exscan_init               
-- [ ] MPIX_Gather_init               
-- [ ] MPIX_Gatherv_init              
-- [ ] MPIX_Neighbor_allgather_init   
-- [ ] MPIX_Neighbor_allgatherv_init  
-- [ ] MPIX_Neighbor_alltoall_init    
-- [ ] MPIX_Neighbor_alltoallv_init   
-- [ ] MPIX_Neighbor_alltoallw_init   
-- [ ] MPIX_Query_cuda_support        
-- [ ] MPIX_Reduce_init               
-- [ ] MPIX_Reduce_scatter_block_init 
-- [ ] MPIX_Reduce_scatter_init       
-- [ ] MPIX_Scan_init                 
-- [ ] MPIX_Scatter_init              
-- [ ] MPIX_Scatterv_init             
+- [x] Constants              
 - [x] MPI_Abort                      
 - [ ] MPI_Accumulate                 
 - [x] MPI_Add_error_class            
@@ -93,7 +72,7 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Address~~                  
 - [x] MPI_Aint_add                   
 - [x] MPI_Aint_diff                  
-- [ ] MPI_Allgather                  
+- [x] MPI_Allgather                  
 - [ ] MPI_Allgatherv                 
 - [x] MPI_Alloc_mem                  
 - [ ] MPI_Allreduce                  
@@ -107,8 +86,8 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Bcast                      
 - [x] MPI_Bsend                      
 - [ ] MPI_Bsend_init                 
-- [ ] MPI_Buffer_attach              
-- [ ] MPI_Buffer_detach              
+- [x] MPI_Buffer_attach              
+- [x] MPI_Buffer_detach              
 - [x] MPI_Cancel                     
 - [x] MPI_Cart_coords                
 - [x] MPI_Cart_create                
@@ -234,7 +213,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Finalize                 
 - [x] MPI_Finalized                
 - [x] MPI_Free_mem                 
-- [ ] MPI_Gather                   
+- [x] MPI_Gather                   
 - [ ] MPI_Gatherv                  
 - [ ] MPI_Get                      
 - [ ] MPI_Get_accumulate           
@@ -267,7 +246,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Group_size               
 - [x] MPI_Group_translate_ranks    
 - [x] MPI_Group_union              
-- [ ] MPI_Iallgather               
+- [x] MPI_Iallgather               
 - [ ] MPI_Iallgatherv              
 - [ ] MPI_Iallreduce               
 - [ ] MPI_Ialltoall                
@@ -277,7 +256,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Ibcast                   
 - [x] MPI_Ibsend                   
 - [ ] MPI_Iexscan                  
-- [ ] MPI_Igather                  
+- [x] MPI_Igather                  
 - [ ] MPI_Igatherv                 
 - [x] MPI_Improbe                  
 - [x] MPI_Imrecv           
@@ -443,7 +422,7 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Type_hvector~~
 - [x] MPI_Type_indexed
 - [x] ~~MPI_Type_lb~~
-- [x] ~~MPI_Type_match_size~~
+- [ ] MPI_Type_match_size
 - [x] MPI_Type_set_attr
 - [x] MPI_Type_set_name
 - [x] MPI_Type_size
@@ -499,6 +478,213 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Win_wait
 - [x] MPI_Wtick
 - [x] MPI_Wtime
+
+- [ ] MPI_Allgather_init
+- [ ] MPI_Allgatherv_init
+- [ ] MPI_Allreduce_init
+- [ ] MPI_Alltoall_init
+- [ ] MPI_Alltoallv_init
+- [ ] MPI_Alltoallw_init
+- [ ] MPI_Barrier_init
+- [ ] MPI_Bcast_init
+- [ ] MPI_Comm_create_from_group
+- [x] MPI_Comm_idup_with_info
+- [ ] MPI_Exscan_init
+- [ ] MPI_Gather_init
+- [ ] MPI_Gatherv_init
+- [ ] MPI_Group_from_session_pset
+- [x] MPI_Info_create_env
+- [x] MPI_Info_get_string
+- [ ] MPI_Intercomm_create_from_groups
+- [ ] MPI_Isendrecv
+- [ ] MPI_Isendrecv_replace   
+- [ ] MPI_Neighbor_allgather_init
+- [ ] MPI_Neighbor_allgatherv_init
+- [ ] MPI_Neighbor_alltoall_init
+- [ ] MPI_Neighbor_alltoallv_init
+- [ ] MPI_Neighbor_alltoallw_init
+- [ ] MPI_Parrived   
+- [ ] MPI_Pready 
+- [ ] MPI_Pready_list
+- [ ] MPI_Pready_range
+- [ ] MPI_Precv_init
+- [ ] MPI_Psend_init
+- [ ] MPI_Reduce_init
+- [ ] MPI_Reduce_scatter_block_init
+- [ ] MPI_Reduce_scatter_init
+- [ ] MPI_Scan_init
+- [ ] MPI_Scatter_init
+- [ ] MPI_Scatterv_init
+- [x] MPI_Session_call_errhandler
+- [x] MPI_Session_create_errhandler
+- [x] ~~MPI_Session_c2f~~
+- [x] ~~MPI_Session_f2c~~
+- [x] MPI_Session_finalize
+- [x] MPI_Session_get_errhandler
+- [x] MPI_Session_get_info
+- [ ] MPI_Session_get_nth_pset
+- [ ] MPI_Session_get_num_psets
+- [ ] MPI_Session_get_pset_info
+- [x] MPI_Session_init
+- [x] MPI_Session_set_errhandler
+- [ ] MPI_T_category_get_events
+- [x] MPI_T_category_get_index
+- [ ] MPI_T_category_get_num_events
+- [x] MPI_T_cvar_get_index
+- [x] MPI_T_pvar_get_index
+- [ ] MPI_T_event_callback_get_info
+- [ ] MPI_T_event_callback_set_info
+- [ ] MPI_T_event_copy
+- [ ] MPI_T_event_get_num
+- [ ] MPI_T_event_get_info
+- [ ] MPI_T_event_get_index
+- [ ] MPI_T_event_get_source
+- [ ] MPI_T_event_get_timestamp
+- [ ] MPI_T_event_handle_alloc
+- [ ] MPI_T_event_handle_free
+- [ ] MPI_T_event_handle_get_info
+- [ ] MPI_T_event_handle_set_info
+- [ ] MPI_T_event_read
+- [ ] MPI_T_event_register_callback
+- [ ] MPI_T_event_set_dropped_handler
+- [ ] MPI_T_source_get_info
+- [x] MPI_T_source_get_num
+- [ ] MPI_T_source_get_timestamp
+
+### NIGHTS WORK
+Check GET_GROUP for comm whether to free
+MPI_SESSION_NULL, MPI_ERR_SESSION, MPI_MAX_PSET_NAME_LEN, MPI_MAX_STRINGTAG_LEN, MPI_T_BIND_MPI_SESSION
+MPI_ANY_SOURCE                    
+MPI_ANY_TAG                       
+MPI_APPNUM                        
+MPI_ARGVS_NULL                    
+MPI_ARGV_NULL                  
+MPI_BOTTOM                        
+MPI_BSEND_OVERHEAD     
+MPI_COMM_DUP_FN              
+MPI_COMM_NULL_COPY_FN             
+MPI_COMM_NULL_DELETE_FN           
+MPI_Copy_function              
+MPI_DISPLACEMENT_CURRENT            
+MPI_DOUBLE_PRECISION              
+MPI_DUP_FN                        
+MPI_Delete_function      
+MPI_GROUP_EMPTY 
+MPI_HOST 
+MPI_Handler_function       
+MPI_IN_PLACE                   
+MPI_IO         
+MPI_KEYVAL_INVALID            
+MPI_LASTUSEDCODE               
+MPI_MAX_INFO_KEY               
+MPI_MAX_INFO_VAL                
+MPI_MAX_PROCESSOR_NAME                       
+MPI_NULL_COPY_FN               
+MPI_NULL_DELETE_FN   
+MPI_OFFSET
+MPI_Offset
+MPI_PACKED
+MPI_PROC_NULL
+MPI_REPLACE
+MPI_SOURCE
+MPI_STATUSES_IGNORE
+MPI_STATUS_IGNORE
+MPI_SUBVERSION
+MPI_TAG
+MPI_TAG_UB
+MPI_TYPECLASS_COMPLEX
+MPI_TYPECLASS_INTEGER
+MPI_TYPECLASS_REAL
+MPI_TYPE_DUP_FN
+MPI_TYPE_NULL_COPY_FN
+MPI_TYPE_NULL_DELETE_FN
+MPI_UNDEFINED
+MPI_UNDEFINED_RANK
+MPI_UNIVERSE_SIZE
+MPI_UNWEIGHTED
+MPI_User_function
+MPI_VERSION
+MPI_WEIGHTS_EMPTY
+MPI_WIN_BASE
+MPI_WIN_CREATE_FLAVOR
+MPI_WIN_DISP_UNIT
+MPI_WIN_DUP_FN
+MPI_WIN_FLAVOR_ALLOCATE
+MPI_WIN_FLAVOR_CREATE
+MPI_WIN_FLAVOR_DYNAMIC
+MPI_WIN_FLAVOR_SHARED
+MPI_WIN_MODEL
+MPI_WIN_NULL_COPY_FN
+MPI_WIN_NULL_DELETE_FN
+MPI_WIN_SEPARATE
+MPI_WIN_SIZE
+MPI_WIN_UNIFIED
+MPI_WTIME_IS_GLOBAL
+
+MPI_TAG_UB
+MPI_HOST
+MPI_IO
+MPI_WTIME_IS_GLOBAL
+MPI_UNIVERSE_SIZE
+MPI_LASTUSEDCODE
+
+MPI_APPNUM
+MPI_ARGV_NULL
+MPI_ARGVS_NULL
+
+MPI_MAX_INFO_VAL
+MPI_UNDEFINED
+MPI_UNDEFINED_RANK
+MPI_KEYVAL_INVALID
+MPI_BSEND_OVERHEAD
+MPI_PROC_NULL
+MPI_ANY_SOURCE
+MPI_ANY_TAG
+MPI_BOTTOM
+MPI_IN_PLACE
+MPI_VERSION
+MPI_SUBVERSION
+
+MPI_UNWEIGHTED
+MPI_WEIGHTS_EMPTY
+
+File Displacement
+MPI_DISPLACEMENT_CURRENT
+
+Window attributes
+MPI_WIN_BASE
+MPI_WIN_SIZE
+MPI_WIN_DISP_UNIT
+MPI_WIN_CREATE_FLAVOR
+MPI_WIN_MODEL
+
+Window flavors
+MPI_WIN_FLAVOR_CREATE
+MPI_WIN_FLAVOR_ALLOCATE
+MPI_WIN_FLAVOR_DYNAMIC
+MPI_WIN_FLAVOR_SHARED
+
+Window Memory Model
+MPI_WIN_SEPARATE
+MPI_WIN_UNIFIED
+
+MPI_STATUS_IGNORE
+MPI_STATUSES_IGNORE
+
+MPI_Handler_function
+MPI_User_function
+MPI_Copy_function
+MPI_Delete_function
+
+MPI_COMM_NULL_COPY_FN
+MPI_COMM_NULL_DELETE_FN
+MPI_COMM_DUP_FN
+MPI_WIN_NULL_COPY_FN
+MPI_WIN_NULL_DELETE_FN
+MPI_WIN_DUP_FN
+MPI_TYPE_NULL_COPY_FN
+MPI_TYPE_NULL_DELETE_FN
+MPI_TYPE_DUP_FN
 
 ### Future Work
 - Tests.
