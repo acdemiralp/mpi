@@ -2,7 +2,6 @@
 Modern C++20 message passing interface wrapper.
 
 ### Usage Notes
-- Define `MPI_USE_LATEST` to define the latest additions to the MPI 4.0 specification which may not yet be available to the majority of implementations.
 - Define `MPI_USE_EXCEPTIONS` to check the return values of all viable functions against `MPI_SUCCESS` and throw an exception otherwise.
 - Define `MPI_USE_RELAXED_TRAITS` to prevent the library from checking the types of aggregate elements and triggering static asserts for non-aggregates.
 - Compliant types (satisfying `mpi::is_compliant`) are types whose corresponding `mpi::data_type` can be automatically generated:
