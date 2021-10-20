@@ -46,8 +46,8 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Win_create_dynamic, (information.native(), communicator.native(), &native_))
   }
 
-  explicit window  (const MPI_Win  native, void* base_pointer = nullptr)
-  : native_(native), base_pointer_(base_pointer)
+  explicit window  (const MPI_Win  native, void* base_pointer = nullptr, const bool managed = false)
+  : managed_(managed), native_(native), base_pointer_(base_pointer)
   {
     
   }
@@ -98,8 +98,7 @@ public:
   [[nodiscard]]
   group                group             () const
   {
-    mpi::group result;
-    result.managed_ = true;
+    mpi::group result(MPI_GROUP_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Win_get_group, (native_, &result.native_))
     return result;
   }
@@ -128,8 +127,7 @@ public:
   [[nodiscard]]
   information          information       () const
   {
-    mpi::information result(MPI_INFO_NULL);
-    result.managed_ = true;
+    mpi::information result(MPI_INFO_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Win_get_info, (native_, &result.native_))
     return result;
   }
@@ -141,7 +139,7 @@ public:
   [[nodiscard]]
   window_error_handler error_handler     () const
   {
-    window_error_handler result;
+    window_error_handler result(MPI_ERRHANDLER_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Win_get_errhandler, (native_, &result.native_))
     return result;
   }

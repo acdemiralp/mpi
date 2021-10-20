@@ -20,8 +20,8 @@ namespace mpi
 class data_type
 {
 public:
-  explicit data_type  (const MPI_Datatype native)
-  : native_(native)
+  explicit data_type  (const MPI_Datatype native, const bool managed = false)
+  : managed_(managed), native_(native)
   {
     
   }
@@ -201,9 +201,9 @@ public:
       &data_types_size, 
       reinterpret_cast<std::int32_t*>(&result.combiner)))
 
-    result.integers  .resize(integers_size  );
-    result.addresses .resize(addresses_size );
-    result.data_types.resize(addresses_size ); // Creates managed data types.
+    result.integers  .resize (integers_size  );
+    result.addresses .resize (addresses_size );
+    result.data_types.reserve(data_types_size);
 
     std::vector<MPI_Datatype> raw_data_types(data_types_size);
 
@@ -216,8 +216,8 @@ public:
       result.addresses .data(),
       raw_data_types   .data()))
 
-    for (auto i = 0; i < data_types_size; ++i)
-      result.data_types[i].native_ = raw_data_types[i];
+    for (auto& type : raw_data_types)
+      result.data_types.emplace_back(type, true); // Creates managed data types.
 
     return result;
   }

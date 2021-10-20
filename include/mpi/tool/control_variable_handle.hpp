@@ -46,8 +46,8 @@ public:
 #endif
     }
   }
-  explicit control_variable_handle  (const MPI_T_cvar_handle& native, const std::int32_t count = 1, std::optional<object_variant> object = std::nullopt)
-  : native_(native), count_(count), object_(std::move(object))
+  explicit control_variable_handle  (const MPI_T_cvar_handle& native, const std::int32_t count = 1, std::optional<object_variant> object = std::nullopt, const bool managed = false)
+  : managed_(managed), native_(native), count_(count), object_(std::move(object))
   {
 
   }

@@ -41,8 +41,8 @@ public:
     for (const auto& [key, value] : map)
       emplace(key, value);
   }
-  explicit information   (const MPI_Info      native)
-  : native_(native)
+  explicit information   (const MPI_Info      native, const bool managed = false)
+  : managed_(managed), native_(native)
   {
 
   }

@@ -21,8 +21,8 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_File_open, (communicator.native(), filepath.c_str(), static_cast<std::int32_t>(access_mode), information.native(), &native_))
   }
-  explicit file  (MPI_File native)
-  : native_(native)
+  explicit file  (MPI_File native, const bool managed = false)
+  : managed_(managed), native_(native)
   {
 
   }
@@ -72,8 +72,7 @@ public:
   [[nodiscard]]
   group              group             () const
   {
-    mpi::group result;
-    result.managed_ = true;
+    mpi::group result(MPI_GROUP_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_get_group, (native_, &result.native_))
     return result;
   }
@@ -95,8 +94,7 @@ public:
   [[nodiscard]]
   information        information       () const
   {
-    mpi::information result(MPI_INFO_NULL);
-    result.managed_ = true;
+    mpi::information result(MPI_INFO_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_get_info, (native_, &result.native_))
     return result;
   }
@@ -132,7 +130,7 @@ public:
   [[nodiscard]]
   file_error_handler error_handler     () const
   {
-    file_error_handler result;
+    file_error_handler result(MPI_ERRHANDLER_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_get_errhandler, (native_, &result.native_))
     return result;
   }

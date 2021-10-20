@@ -10,8 +10,8 @@ namespace mpi
 class key_value
 {
 public:
-  explicit key_value  (const std::int32_t native)
-  : native_(native)
+  explicit key_value  (const std::int32_t native, const bool managed = false)
+  : managed_(managed), native_(native)
   {
     
   }
@@ -38,8 +38,6 @@ public:
   }
 
 protected:
-  key_value() : managed_(true) { } // Default constructor is only available to sub classes who control the member variables explicitly.
-
   bool         managed_ = false;
   std::int32_t native_  = MPI_KEYVAL_INVALID;
 };
@@ -54,11 +52,12 @@ public:
     const copy_function_type   copy_function   = MPI_COMM_DUP_FN        ,
     const delete_function_type delete_function = MPI_COMM_NULL_DELETE_FN,
     void*                      extra_state     = nullptr                )
+  : key_value(MPI_KEYVAL_INVALID, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_keyval, (copy_function, delete_function, &native_, extra_state))
   }
-  explicit communicator_key_value  (const std::int32_t native)
-  : key_value(native)
+  explicit communicator_key_value  (const std::int32_t native, const bool managed = false)
+  : key_value(native, managed)
   {
     
   }
@@ -97,11 +96,12 @@ public:
     const copy_function_type   copy_function   = MPI_TYPE_DUP_FN        ,
     const delete_function_type delete_function = MPI_TYPE_NULL_DELETE_FN,
     void*                      extra_state     = nullptr                )
+  : key_value(MPI_KEYVAL_INVALID, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_keyval, (copy_function, delete_function, &native_, extra_state))
   }
-  explicit data_type_key_value  (const std::int32_t native)
-  : key_value(native)
+  explicit data_type_key_value  (const std::int32_t native, const bool managed = false)
+  : key_value(native, managed)
   {
     
   }
@@ -140,11 +140,12 @@ public:
     const copy_function_type   copy_function   = MPI_WIN_DUP_FN        ,
     const delete_function_type delete_function = MPI_WIN_NULL_DELETE_FN,
     void*                      extra_state     = nullptr               )
+  : key_value(MPI_KEYVAL_INVALID, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_create_keyval, (copy_function, delete_function, &native_, extra_state))
   }
-  explicit window_key_value  (const std::int32_t native)
-  : key_value(native)
+  explicit window_key_value  (const std::int32_t native, const bool managed = false)
+  : key_value(native, managed)
   {
     
   }

@@ -10,13 +10,16 @@
 
 namespace mpi
 {
-inline std::array<std::int32_t, 2> version        ()
+constexpr std::int32_t version     = MPI_VERSION   ;
+constexpr std::int32_t sub_version = MPI_SUBVERSION;
+
+inline std::array<std::int32_t, 2> get_version        ()
 {
   std::array<std::int32_t, 2> result {};
   MPI_CHECK_ERROR_CODE(MPI_Get_version, (&result[0], &result[1]))
   return result;
 }
-inline std::string                 library_version()
+inline std::string                 get_library_version()
 {
   std::string  result(MPI_MAX_LIBRARY_VERSION_STRING, ' ');
   std::int32_t size  (0);

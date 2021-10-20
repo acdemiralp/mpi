@@ -16,8 +16,8 @@ namespace mpi
 class request
 {
 public:
-  explicit request  (const MPI_Request native)
-  : native_(native)
+  explicit request  (const MPI_Request native, const bool managed = false)
+  : managed_(managed), native_(native)
   {
     
   }
@@ -97,8 +97,6 @@ public:
 protected:
   friend class communicator;
   friend class message;
-
-  request() : managed_(true) { } // Default constructor is only available to sub classes who control the member variables explicitly.
 
   bool        managed_ = false;
   MPI_Request native_  = MPI_REQUEST_NULL;

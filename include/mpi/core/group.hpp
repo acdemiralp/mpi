@@ -30,8 +30,8 @@ public:
   {
 
   }
-  explicit group    (const MPI_Group native)
-  : native_(native)
+  explicit group    (const MPI_Group native, const bool managed = false)
+  : managed_(managed), native_(native)
   {
     
   }

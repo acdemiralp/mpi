@@ -15,8 +15,8 @@ class file;
 class error_handler
 {
 public:
-  explicit error_handler  (const MPI_Errhandler native)
-  : native_(native)
+  explicit error_handler  (const MPI_Errhandler native, const bool managed = false)
+  : managed_(managed), native_(native)
   {
     
   }
@@ -61,8 +61,6 @@ public:
   }
 
 protected:
-  error_handler() : managed_(true) { } // Default constructor is only available to sub classes who control the member variables explicitly.
-
   bool           managed_ = false;
   MPI_Errhandler native_  = MPI_ERRHANDLER_NULL;
 };
@@ -73,11 +71,12 @@ public:
   using function_type = void (*) (MPI_Comm*, std::int32_t*, ...);
 
   explicit communicator_error_handler  (const function_type& function)
+  : error_handler(MPI_ERRHANDLER_NULL, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_errhandler, (function, &native_))
   }
-  explicit communicator_error_handler  (const MPI_Errhandler native)
-  : error_handler(native)
+  explicit communicator_error_handler  (const MPI_Errhandler native, const bool managed = false)
+  : error_handler(native, managed)
   {
     
   }
@@ -87,10 +86,7 @@ public:
   communicator_error_handler& operator=(const communicator_error_handler&  that) = delete ;
   communicator_error_handler& operator=(      communicator_error_handler&& temp) = default;
 
-protected:
   friend class communicator;
-
-  communicator_error_handler() : error_handler() { }
 };
   
 class file_error_handler : public error_handler
@@ -99,11 +95,12 @@ public:
   using function_type = void (*) (MPI_File*, std::int32_t*, ...);
 
   explicit file_error_handler  (const function_type& function)
+  : error_handler(MPI_ERRHANDLER_NULL, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_File_create_errhandler, (function, &native_))
   }
-  explicit file_error_handler  (const MPI_Errhandler native)
-  : error_handler(native)
+  explicit file_error_handler  (const MPI_Errhandler native, const bool managed = false)
+  : error_handler(native, managed)
   {
     
   }
@@ -113,10 +110,7 @@ public:
   file_error_handler& operator=(const file_error_handler&  that) = delete ;
   file_error_handler& operator=(      file_error_handler&& temp) = default;
 
-protected:
   friend class io::file;
-  
-  file_error_handler() : error_handler() { }
 };
   
 class window_error_handler : public error_handler
@@ -125,11 +119,12 @@ public:
   using function_type = void (*) (MPI_Win*, std::int32_t*, ...);
 
   explicit window_error_handler  (const function_type& function)
+  : error_handler(MPI_ERRHANDLER_NULL, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_create_errhandler, (function, &native_))
   }
-  explicit window_error_handler  (const MPI_Errhandler native)
-  : error_handler(native)
+  explicit window_error_handler  (const MPI_Errhandler native, const bool managed = false)
+  : error_handler(native, managed)
   {
     
   }
@@ -139,10 +134,7 @@ public:
   window_error_handler& operator=(const window_error_handler&  that) = delete ;
   window_error_handler& operator=(      window_error_handler&& temp) = default;
 
-protected:
   friend class window;
-
-  window_error_handler() : error_handler() { }
 };
 
 #ifdef MPI_USE_LATEST
@@ -152,11 +144,12 @@ public:
   using function_type = void (*) (MPI_Session*, std::int32_t*, ...);
 
   explicit session_error_handler  (const function_type& function)
+  : error_handler(MPI_ERRHANDLER_NULL, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Session_create_errhandler, (function, &native_))
   }
-  explicit session_error_handler  (const MPI_Errhandler native)
-  : error_handler(native)
+  explicit session_error_handler  (const MPI_Errhandler native, const bool managed = false)
+  : error_handler(native, managed)
   {
     
   }
@@ -167,11 +160,6 @@ public:
   session_error_handler& operator=(      session_error_handler&& temp) = default;
 
   friend class session;
-
-protected:
-  friend class window;
-
-  session_error_handler() : error_handler() { }
 };
 #endif
 

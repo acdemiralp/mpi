@@ -41,7 +41,7 @@ public:
   [[nodiscard]]
   request     immediate_receive(void* data, const std::int32_t size, const data_type& data_type)
   {
-    request result;
+    request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Imrecv, (data, size, data_type.native(), &native_, &result.native_))
     return result;
   }
@@ -61,8 +61,6 @@ public:
 
 protected:
   friend class communicator;
-
-  message() = default;
 
   MPI_Message native_ = MPI_MESSAGE_NULL;
 };

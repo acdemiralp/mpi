@@ -12,8 +12,7 @@
 
 namespace mpi
 {
-//#ifdef MPI_USE_LATEST
-
+#ifdef MPI_USE_LATEST
 class session
 {
 public:
@@ -22,8 +21,8 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Session_init, (information.native(), error_handler.native(), &native_))
   }
-  explicit session  (const MPI_Session  native)
-  : native_(native)
+  explicit session  (const MPI_Session  native, const bool managed = false)
+  : managed_(managed), native_(native)
   {
     
   }
@@ -76,8 +75,7 @@ public:
   [[nodiscard]]
   information              process_set_information(const std::string& name) const
   {
-    mpi::information result(MPI_INFO_NULL);
-    result.managed_ = true;
+    mpi::information result(MPI_INFO_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Session_get_pset_info, (native_, name.c_str(), &result.native_))
     return result;
   }
@@ -104,8 +102,7 @@ public:
   [[nodiscard]]
   information              information            () const
   {
-    mpi::information result(MPI_INFO_NULL);
-    result.managed_ = true;
+    mpi::information result(MPI_INFO_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Session_get_info, (native_, &result.native_))
     return result;
   }
@@ -141,5 +138,5 @@ protected:
   bool        managed_ = false;
   MPI_Session native_  = MPI_SESSION_NULL;
 };
-//#endif
+#endif
 }

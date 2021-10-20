@@ -17,8 +17,8 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Open_port, (info.native(), &name_[0]))
   }
-  explicit port  (const std::string& name)
-  : name_(name)
+  explicit port  (const std::string& name, const bool managed = false)
+  : managed_(managed), name_(name)
   {
 
   }

@@ -17,8 +17,8 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Op_create, (function, commutative, &native_))
   }
-  explicit op  (const MPI_Op native)
-  : native_(native)
+  explicit op  (const MPI_Op native, const bool managed = false)
+  : managed_(managed), native_(native)
   {
     
   }

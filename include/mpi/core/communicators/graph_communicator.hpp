@@ -14,13 +14,13 @@ namespace mpi
 class graph_communicator : public communicator
 {
 public:
-  explicit graph_communicator   (const MPI_Comm             native)
-  : communicator(native)
+  explicit graph_communicator   (const MPI_Comm             native, const bool managed = false)
+  : communicator(native, managed)
   {
 
   }
   explicit graph_communicator   (const communicator&        that, const graph& graph, const bool reorder = true)
-  : communicator()
+  : communicator(MPI_COMM_NULL, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Graph_create, (that.native(), static_cast<std::int32_t>(graph.degrees.size()), graph.degrees.data(), graph.edges.data(), reorder, &native_))
   }
