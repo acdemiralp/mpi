@@ -3,7 +3,7 @@ Modern C++20 message passing interface wrapper.
 
 ### Usage Notes
 - Define `MPI_USE_EXCEPTIONS` to check the return values of all viable functions against `MPI_SUCCESS` and throw an exception otherwise.
-- Define `MPI_USE_RELAXED_TRAITS` to prevent the library from checking the types of aggregate elements and triggering static asserts for non-aggregates.
+- Define `MPI_USE_RELAXED_TRAITS` to prevent the library from checking the types of aggregate elements and triggering static asserts for non-aggregates (useful for e.g. testing).
 - Compliant types (satisfying `mpi::is_compliant`) are types whose corresponding `mpi::data_type` can be automatically generated:
   - Arithmetic types (satisfying `std::is_arithmetic`), enumerations (satisfying `std::is_enum`), specializations of `std::complex` are compliant types.
   - C-style arrays, `std::array`, `std::pair`, `std::tuple`, and aggregate types (satisfying `std::is_aggregate`) consisting of other compliant types are also compliant types.
@@ -525,29 +525,29 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Session_get_pset_info
 - [x] MPI_Session_init
 - [x] MPI_Session_set_errhandler
-- [ ] MPI_T_category_get_events
+- [x] MPI_T_category_get_events
 - [x] MPI_T_category_get_index
-- [ ] MPI_T_category_get_num_events
+- [x] MPI_T_category_get_num_events
 - [x] MPI_T_cvar_get_index
 - [x] MPI_T_pvar_get_index
-- [ ] MPI_T_event_callback_get_info
-- [ ] MPI_T_event_callback_set_info
-- [ ] MPI_T_event_copy
-- [ ] MPI_T_event_get_num
-- [ ] MPI_T_event_get_info
-- [ ] MPI_T_event_get_index
-- [ ] MPI_T_event_get_source
-- [ ] MPI_T_event_get_timestamp
-- [ ] MPI_T_event_handle_alloc
-- [ ] MPI_T_event_handle_free
-- [ ] MPI_T_event_handle_get_info
-- [ ] MPI_T_event_handle_set_info
-- [ ] MPI_T_event_read
-- [ ] MPI_T_event_register_callback
-- [ ] MPI_T_event_set_dropped_handler
-- [ ] MPI_T_source_get_info
+- [x] MPI_T_event_callback_get_info
+- [x] MPI_T_event_callback_set_info
+- [x] MPI_T_event_copy
+- [x] MPI_T_event_get_num
+- [x] MPI_T_event_get_info
+- [x] MPI_T_event_get_index
+- [x] MPI_T_event_get_source
+- [x] MPI_T_event_get_timestamp
+- [x] MPI_T_event_handle_alloc
+- [x] MPI_T_event_handle_free
+- [x] MPI_T_event_handle_get_info
+- [x] MPI_T_event_handle_set_info
+- [x] MPI_T_event_read
+- [x] MPI_T_event_register_callback
+- [x] MPI_T_event_set_dropped_handler
+- [x] MPI_T_source_get_info
 - [x] MPI_T_source_get_num
-- [ ] MPI_T_source_get_timestamp
+- [x] MPI_T_source_get_timestamp
 MPI_DISPLACEMENT_CURRENT
 MPI_BSEND_OVERHEAD
 MPI_ANY_SOURCE

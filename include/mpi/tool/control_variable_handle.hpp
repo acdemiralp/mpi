@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <optional>
+#include <utility>
 
 #include <mpi/core/utility/container_adapter.hpp>
 #include <mpi/core/exception.hpp>
@@ -46,7 +47,7 @@ public:
 #endif
     }
   }
-  explicit control_variable_handle  (const MPI_T_cvar_handle& native, const std::int32_t count = 1, std::optional<object_variant> object = std::nullopt, const bool managed = false)
+  explicit control_variable_handle  (const MPI_T_cvar_handle& native, const bool managed = false, const std::int32_t count = 1, std::optional<object_variant> object = std::nullopt)
   : managed_(managed), native_(native), count_(count), object_(std::move(object))
   {
 

@@ -14,6 +14,10 @@ namespace io
 {
 class file;
 }
+namespace tool
+{
+class event_handle;
+}
 
 // Standard: "... It stores an unordered set of (key, value) pairs (both key and value are strings). A key can have only one value. ..."
 // This interface is loosely based on associative containers such as std::unordered_map (it is not STL compliant).
@@ -208,6 +212,7 @@ protected:
   friend class session;
   friend class window;
   friend class io::file;
+  friend class tool::event_handle;
 
   bool     managed_ = false;
   MPI_Info native_  = MPI_INFO_NULL;

@@ -6,8 +6,9 @@
 
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
-#include <mpi/tool/control_variable_handle.hpp>
-#include <mpi/tool/performance_variable_handle.hpp>
+#include <mpi/tool/structs/control_variable.hpp>
+#include <mpi/tool/structs/event.hpp>
+#include <mpi/tool/structs/performance_variable.hpp>
 
 namespace mpi::tool
 {
@@ -26,6 +27,9 @@ struct category
   std::string                       description          ;
   std::vector<control_variable>     control_variables    ;
   std::vector<performance_variable> performance_variables;
+#ifdef MPI_USE_LATEST
+  std::vector<event>                events               ;
+#endif
   std::vector<category>             subcategories        ;
 };
 
@@ -117,6 +121,16 @@ inline category::category(const std::int32_t index) : index(index)
   control_variables     = tool::control_variables    (control_variable_indices    );
   performance_variables = tool::performance_variables(performance_variable_indices);
   subcategories         = categories                 (subcategory_indices         );
+
+#ifdef MPI_USE_LATEST
+  std::int32_t event_count(0);
+  MPI_CHECK_ERROR_CODE(MPI_T_category_get_num_events, (index, &event_count))
+
+  std::vector<std::int32_t> event_indices(event_count);
+  MPI_CHECK_ERROR_CODE(MPI_T_category_get_events    , (index, event_count, event_indices.data()))
+
+  events = tool::events(event_indices);
+#endif
 }
 inline category::category(const std::string& name ) : category(category_index(name))
 {

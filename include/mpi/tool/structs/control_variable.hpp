@@ -18,8 +18,8 @@ struct control_variable
   explicit control_variable  (const std::int32_t index) : index(index)
   {
     auto         name_size(0), description_size(0);
-    MPI_Datatype raw_data_type;
-    MPI_T_enum   enum_type;
+    MPI_Datatype raw_data_type(MPI_DATATYPE_NULL);
+    MPI_T_enum   enum_type    (MPI_T_ENUM_NULL  );
 
     MPI_CHECK_ERROR_CODE(MPI_T_cvar_get_info, (
       index                                      ,
@@ -48,7 +48,7 @@ struct control_variable
       reinterpret_cast<std::int32_t*>(&bind_type),
       reinterpret_cast<std::int32_t*>(&scope)    ))
 
-    data_type.emplace(raw_data_type);
+    data_type.emplace(raw_data_type, true);
     if (enum_type != MPI_T_ENUM_NULL)
       enumeration.emplace(enum_type);
   }
@@ -75,7 +75,7 @@ struct control_variable
 inline std::int32_t                  control_variable_index(const std::string& name)
 {
   std::int32_t result;
-  MPI_CHECK_ERROR_CODE(MPI_T_cvar_get_index(name.c_str(), &result))
+  MPI_CHECK_ERROR_CODE(MPI_T_cvar_get_index, (name.c_str(), &result))
   return result;
 }
 inline std::int32_t                  control_variable_count()
