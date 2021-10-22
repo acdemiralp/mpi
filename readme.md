@@ -60,6 +60,15 @@ Modern C++20 message passing interface wrapper.
       - No references.
       - Static data members are ignored.
     - See https://www.boost.org/doc/libs/1_76_0/doc/html/boost_pfr/limitations_and_configuration.html for further detail.
+- Constants:
+  - Several MPI constants are unused:
+    - `MPI_STATUS_IGNORE`  : Stati are return values and this would require void overloads for every function.
+    - `MPI_STATUSES_IGNORE`: Stati are return values and this would require void overloads for every function.
+    - `MPI_ARGVS_NULL`     : This would require a scan over `std::vector<spawn_info>::arguments()` to see if they all are empty.
+    - `MPI_WEIGHTS_EMPTY`  : Prefer an empty container instead.
+    - `MPI_BOTTOM`         : Prefer nullptr instead.
+    - `MPI_ROOT`           : Unused in default arguments as intracommunicators are rarer than intercommunicators. Can nevertheless be passed to functions.
+    - `MPI_PROC_NULL`      : Unused in default arguments as intracommunicators are rarer than intercommunicators. Can nevertheless be passed to functions.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] Constants              
@@ -195,7 +204,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_File_set_errhandler      
 - [x] MPI_File_set_info            
 - [x] MPI_File_set_size            
-- [ ] MPI_File_set_view            
+- [ ] MPI_File_set_view (MPI_DISPLACEMENT_CURRENT)  
 - [x] MPI_File_sync                
 - [ ] MPI_File_write               
 - [ ] MPI_File_write_all           
@@ -421,7 +430,7 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Type_hvector~~
 - [x] MPI_Type_indexed
 - [x] ~~MPI_Type_lb~~
-- [ ] MPI_Type_match_size
+- [x] MPI_Type_match_size
 - [x] MPI_Type_set_attr
 - [x] MPI_Type_set_name
 - [x] MPI_Type_size
@@ -490,7 +499,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Exscan_init
 - [ ] MPI_Gather_init
 - [ ] MPI_Gatherv_init
-- [ ] MPI_Group_from_session_pset
+- [x] MPI_Group_from_session_pset
 - [x] MPI_Info_create_env
 - [x] MPI_Info_get_string
 - [x] MPI_Intercomm_create_from_groups
@@ -548,42 +557,6 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_T_source_get_info
 - [x] MPI_T_source_get_num
 - [x] MPI_T_source_get_timestamp
-MPI_DISPLACEMENT_CURRENT
-MPI_BSEND_OVERHEAD
-MPI_ANY_SOURCE
-MPI_ANY_TAG     
-MPI_IN_PLACE      
-MPI_STATUSES_IGNORE
-MPI_TYPECLASS_COMPLEX
-MPI_TYPECLASS_INTEGER
-MPI_TYPECLASS_REAL
-MPI_UNDEFINED
-MPI_UNDEFINED_RANK              
-MPI_ARGVS_NULL                    
-MPI_ARGV_NULL    
-MPI_PROC_NULL
-MPI_BOTTOM
-MPI_STATUS_IGNORE
-MPI_HOST
-MPI_IO
-MPI_TAG_UB
-MPI_WTIME_IS_GLOBAL
-MPI_UNWEIGHTED
-MPI_WEIGHTS_EMPTY
-MPI_APPNUM    
-MPI_LASTUSEDCODE   
-MPI_UNIVERSE_SIZE   
-MPI_WIN_BASE
-MPI_WIN_CREATE_FLAVOR
-MPI_WIN_DISP_UNIT
-MPI_WIN_MODEL
-MPI_WIN_SIZE
-MPI_WIN_FLAVOR_ALLOCATE
-MPI_WIN_FLAVOR_CREATE
-MPI_WIN_FLAVOR_DYNAMIC
-MPI_WIN_FLAVOR_SHARED
-MPI_WIN_SEPARATE
-MPI_WIN_UNIFIED
 
 ### Future Work
 - Tests.

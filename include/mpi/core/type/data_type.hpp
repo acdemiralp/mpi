@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <mpi/core/enums/combiner.hpp>
+#include <mpi/core/enums/type_class.hpp>
 #include <mpi/core/structs/data_type_information.hpp>
 #include <mpi/core/structs/distributed_array_information.hpp>
 #include <mpi/core/structs/sub_array_information.hpp>
@@ -24,6 +25,11 @@ public:
   : managed_(managed), native_(native)
   {
     
+  }
+  data_type           (const type_class  type, const std::int32_t size)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Type_match_size, (static_cast<std::int32_t>(type), size, &native_))
   }
   data_type           (const std::vector<data_type>& data_types, const std::vector<std::int32_t>& block_lengths, const std::vector<std::int64_t>& displacements)
   : managed_(true)
@@ -150,6 +156,7 @@ public:
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Type_size, (native_, &result))
+    MPI_CHECK_UNDEFINED (MPI_Type_size, result)
     return result;
   }
   [[nodiscard]]
@@ -157,13 +164,16 @@ public:
   {
     std::int64_t result;
     MPI_CHECK_ERROR_CODE(MPI_Type_size_x, (native_, &result))
+    MPI_CHECK_UNDEFINED (MPI_Type_size_x, result)
     return result;
   }
   [[nodiscard]]
   std::array<std::int64_t, 2> extent          () const
   {
     std::array<std::int64_t, 2> result {};
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_extent  , (native_, &result[0], &result[1]))
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_extent, (native_, &result[0], &result[1]))
+    MPI_CHECK_UNDEFINED (MPI_Type_get_extent, result[0])
+    MPI_CHECK_UNDEFINED (MPI_Type_get_extent, result[1])
     return result;
   }
   [[nodiscard]]
@@ -171,13 +181,17 @@ public:
   {
     std::array<std::int64_t, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_extent_x, (native_, &result[0], &result[1]))
+    MPI_CHECK_UNDEFINED (MPI_Type_get_extent_x, result[0])
+    MPI_CHECK_UNDEFINED (MPI_Type_get_extent_x, result[1])
     return result;
   }
   [[nodiscard]]
   std::array<std::int64_t, 2> true_extent     () const
   {
     std::array<std::int64_t, 2> result {};
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent  , (native_, &result[0], &result[1]))
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent, (native_, &result[0], &result[1]))
+    MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent, result[0])
+    MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent, result[1])
     return result;
   }
   [[nodiscard]]
@@ -185,6 +199,8 @@ public:
   {
     std::array<std::int64_t, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent_x, (native_, &result[0], &result[1]))
+    MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent_x, result[0])
+    MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent_x, result[1])
     return result;
   }
   [[nodiscard]]

@@ -10,7 +10,7 @@ namespace mpi
 class error_code : public error_class // The error classes are a subset of the error codes.
 {
 public:
-  explicit error_code    (const error_class& error_class)
+  error_code             (const error_class& error_class)
   {
     MPI_Add_error_code(error_class.native(), &native_);
   }

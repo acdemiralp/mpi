@@ -7,6 +7,7 @@
 
 #include <mpi/core/enums/profiling_level.hpp>
 #include <mpi/core/enums/thread_support.hpp>
+#include <mpi/core/structs/overhead_type.hpp>
 #include <mpi/core/utility/container_adapter.hpp>
 #include <mpi/core/utility/sequential_container_traits.hpp>
 #include <mpi/core/exception.hpp>
@@ -61,7 +62,6 @@ inline bool                           is_thread_main      ()
   MPI_CHECK_ERROR_CODE(MPI_Is_thread_main, (&result))
   return static_cast<bool>(result);
 }
-
 inline std::string                    processor_name      ()
 {
   std::string  result(MPI_MAX_PROCESSOR_NAME, ' ');
@@ -71,26 +71,42 @@ inline std::string                    processor_name      ()
   return result;
 }
 
-inline void                           attach_buffer       (void* buffer, const std::int32_t size)
+inline void                           set_profiling_level (const profiling_level level)
 {
-  MPI_CHECK_ERROR_CODE(MPI_Buffer_attach, (buffer, size))
+  MPI_CHECK_ERROR_CODE(MPI_Pcontrol, (static_cast<std::int32_t>(level)))
 }
-template <sequential_container type>
-void                                  attach_buffer       (const type& buffer)
+
+inline void                           attach_buffer       (const std::span<std::byte>&  buffer)
 {
-  using adapter = container_adapter<type>;
-  MPI_CHECK_ERROR_CODE(MPI_Buffer_attach, (adapter::data(buffer), static_cast<std::int32_t>(adapter::size(buffer) * sizeof adapter::data_type().size())))
+  MPI_CHECK_ERROR_CODE(MPI_Buffer_attach, (buffer.data(), static_cast<std::int32_t>(buffer.size())))
 }
 inline std::span<std::byte>           detach_buffer       ()
 {
   void*        buffer;
   std::int32_t size  ;
   MPI_CHECK_ERROR_CODE(MPI_Buffer_detach, (&buffer, &size))
+  MPI_CHECK_UNDEFINED (MPI_Buffer_detach, size)
   return { static_cast<std::byte*>(buffer), static_cast<std::size_t>(size) };
 }
 
-inline void                           set_profiling_level (const profiling_level level)
+// Convenience for attaching an internally managed buffer.
+inline void                           attach_buffer       (const std::int32_t size)
 {
-  MPI_CHECK_ERROR_CODE(MPI_Pcontrol, (static_cast<std::int32_t>(level)))
+  static std::vector<std::byte> buffer;
+  buffer.resize(size);
+  attach_buffer({buffer.data(), buffer.size()});
 }
+// Convenience for inferring the necessary buffer size from a set of compliant types.
+template <compliant... types>
+void                                  attach_buffer       (const buffer_type<types...>& buffer)
+{
+  attach_buffer({static_cast<std::byte*>(&buffer), sizeof buffer_type<types...>});
+}
+// Convenience for attaching an internally managed buffer, inferring the necessary buffer size from a set of compliant types.
+template <compliant... types>
+void                                  attach_buffer       ()
+{
+  attach_buffer(sizeof buffer_type<types...>);
+}
+
 }

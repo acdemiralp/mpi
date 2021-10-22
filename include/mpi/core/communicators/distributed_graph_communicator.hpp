@@ -76,9 +76,9 @@ public:
     neighbor_information result
     {
       std::vector<std::int32_t>(info.source_count     ),
-      info.weighted ? std::vector<std::int32_t>(info.source_count     ) : std::vector<std::int32_t>(),
+      info.weighted ? std::vector<std::int32_t>(info.source_count     ) : std::optional<std::vector<std::int32_t>>(std::nullopt),
       std::vector<std::int32_t>(info.destination_count),
-      info.weighted ? std::vector<std::int32_t>(info.destination_count) : std::vector<std::int32_t>()
+      info.weighted ? std::vector<std::int32_t>(info.destination_count) : std::optional<std::vector<std::int32_t>>(std::nullopt)
     };
 
     MPI_CHECK_ERROR_CODE(MPI_Dist_graph_neighbors, (

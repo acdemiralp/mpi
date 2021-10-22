@@ -103,6 +103,7 @@ public:
 
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Cart_map, (native_, static_cast<std::int32_t>(dimensions.size()), sizes.data(), periods.data(), &result))
+    // MPI_CHECK_UNDEFINED (MPI_Cart_map, result) // MPI_UNDEFINED should not cause an exception in this case.
     return result;
   }
   

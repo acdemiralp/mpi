@@ -56,6 +56,7 @@ public:
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Graph_map, (native_, static_cast<std::int32_t>(graph.degrees.size()), graph.degrees.data(), graph.edges.data(), &result))
+    // MPI_CHECK_UNDEFINED (MPI_Graph_map, result) // MPI_UNDEFINED should not cause an exception in this case.
     return result;
   }
 

@@ -4,6 +4,7 @@
 #include <string>
 
 #include <mpi/core/error/error_code.hpp>
+#include <mpi/core/error/standard_error_classes.hpp>
 #include <mpi/core/mpi.hpp>
 
 namespace mpi
@@ -44,9 +45,13 @@ protected:
 #define MPI_CHECK_ERROR_CODE(FUNC, ARGS)                           \
 auto code = FUNC ARGS;                                             \
 if (code != MPI_SUCCESS)                                           \
-  throw mpi::exception(std::string(#FUNC), mpi::error_code(code)); 
+  throw mpi::exception(std::string(#FUNC), mpi::error_code(code));
+
+#define MPI_CHECK_UNDEFINED(FUNC, VALUE)                           \
+if ((VALUE) == MPI_UNDEFINED)                                      \
+  throw mpi::exception(std::string(#FUNC), mpi::error::size); 
 #else
-#define MPI_CHECK_ERROR_CODE(FUNC, ARGS) \
-FUNC ARGS;
+#define MPI_CHECK_ERROR_CODE(FUNC, ARGS) FUNC ARGS;
+#define MPI_CHECK_UNDEFINED(FUNC, VALUE) ; 
 #endif
 }

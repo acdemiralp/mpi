@@ -1,12 +1,14 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include <mpi/core/enums/comparison.hpp>
 #include <mpi/core/structs/range.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
+#include <mpi/core/session.hpp>
 
 namespace mpi
 {
@@ -30,11 +32,18 @@ public:
   {
 
   }
-  explicit group    (const MPI_Group native, const bool managed = false)
+  explicit group    (const MPI_Group native , const bool managed = false)
   : managed_(managed), native_(native)
   {
     
   }
+#ifdef MPI_USE_LATEST
+  explicit group    (const session& session, const std::string& process_set_name)
+  : managed_(true)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Group_from_session_pset, (session.native(), process_set_name.c_str(), &native_))
+  }
+#endif
   group             (const group&  that, const std::vector<std::int32_t>& ranks , const bool include = true)
   : managed_(true)
   {
@@ -118,6 +127,7 @@ public:
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Group_rank, (native_, &result))
+    // MPI_CHECK_UNDEFINED (MPI_Group_rank, result) // MPI_UNDEFINED should not cause an exception in this case.
     return result;
   }
   [[nodiscard]]
@@ -139,7 +149,9 @@ public:
   std::vector<std::int32_t> translate_ranks(const std::vector<std::int32_t>& ranks, const group& that) const
   {
     std::vector<std::int32_t> result(ranks.size());
-    MPI_CHECK_ERROR_CODE(MPI_Group_translate_ranks, (native_, static_cast<std::int32_t>(ranks.size()), ranks.data(), that.native_, result.data()))
+    MPI_CHECK_ERROR_CODE (MPI_Group_translate_ranks, (native_, static_cast<std::int32_t>(ranks.size()), ranks.data(), that.native_, result.data()))
+    // for (auto& value : result)
+    //   MPI_CHECK_UNDEFINED(MPI_Group_translate_ranks, value) // MPI_UNDEFINED should not cause an exception in this case.
     return result;
   }
 

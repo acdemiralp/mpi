@@ -129,6 +129,7 @@ inline std::optional<std::tuple <std::int32_t, status>> test_any (const std::vec
   });
 
   MPI_CHECK_ERROR_CODE(MPI_Testany, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &std::get<0>(result), &complete, &std::get<1>(result)))
+  // MPI_CHECK_UNDEFINED (MPI_Testany, std::get<0>(result)) // MPI_UNDEFINED should not cause an exception in this case.
 
   return static_cast<bool>(complete) ? result : std::optional<std::tuple<std::int32_t, status>>(std::nullopt);
 }
@@ -145,6 +146,7 @@ inline std::vector  <std::tuple <std::int32_t, status>> test_some(const std::vec
   });
 
   MPI_CHECK_ERROR_CODE(MPI_Testsome, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &count, indices.data(), stati.data()))
+  // MPI_CHECK_UNDEFINED (MPI_Testsome, count) // MPI_UNDEFINED should not cause an exception in this case.
 
   if (count == MPI_UNDEFINED)
     return {};
@@ -185,6 +187,7 @@ inline std::tuple <std::int32_t, status>                wait_any (const std::vec
   });
 
   MPI_CHECK_ERROR_CODE(MPI_Waitany, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &std::get<0>(result), &std::get<1>(result)))
+  // MPI_CHECK_UNDEFINED (MPI_Waitany, std::get<0>(result)) // MPI_UNDEFINED should not cause an exception in this case.
 
   return result;
 }
@@ -201,6 +204,7 @@ inline std::vector<std::tuple<std::int32_t, status>>    wait_some(const std::vec
   });
 
   MPI_CHECK_ERROR_CODE(MPI_Waitsome, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &count, indices.data(), stati.data()))
+  // MPI_CHECK_UNDEFINED (MPI_Waitsome, count) // MPI_UNDEFINED should not cause an exception in this case.
 
   if (count == MPI_UNDEFINED)
     return {};
