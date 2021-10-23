@@ -13,6 +13,11 @@
 
 namespace mpi
 {
+namespace io
+{
+class file;
+}
+
 class request
 {
 public:
@@ -98,6 +103,7 @@ protected:
   friend class communicator;
   friend class message;
   friend class window;
+  friend class io::file;
 
   bool        managed_ = false;
   MPI_Request native_  = MPI_REQUEST_NULL;
