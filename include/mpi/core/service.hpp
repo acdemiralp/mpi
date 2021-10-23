@@ -35,7 +35,7 @@ protected:
 
 inline port lookup_service(const std::string& name, const information& info = information())
 {
-  std::string result(MPI_MAX_PORT_NAME, ' ');
+  std::string result(MPI_MAX_PORT_NAME, '\n');
   MPI_CHECK_ERROR_CODE(MPI_Lookup_name, (name.c_str(), info.native(), &result[0]))
   return port(result); // Unmanaged construction.
 }

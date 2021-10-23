@@ -64,7 +64,7 @@ inline bool                           is_thread_main      ()
 }
 inline std::string                    processor_name      ()
 {
-  std::string  result(MPI_MAX_PROCESSOR_NAME, ' ');
+  std::string  result(MPI_MAX_PROCESSOR_NAME, '\n');
   std::int32_t size  (0);
   MPI_CHECK_ERROR_CODE(MPI_Get_processor_name, (&result[0], &size))
   result.resize(static_cast<std::size_t>(size));

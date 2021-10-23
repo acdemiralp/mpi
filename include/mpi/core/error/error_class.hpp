@@ -45,7 +45,7 @@ public:
   [[nodiscard]]
   std::string  string    () const
   {
-    std::string  result(MPI_MAX_ERROR_STRING, ' ');
+    std::string  result(MPI_MAX_ERROR_STRING, '\n');
     std::int32_t length(0);
     MPI_Error_string(native_, &result[0], &length);
     result.resize(static_cast<std::size_t>(length));

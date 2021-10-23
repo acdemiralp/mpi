@@ -18,6 +18,11 @@
 
 namespace mpi
 {
+namespace io
+{
+class file;
+}
+
 class data_type
 {
 public:
@@ -241,7 +246,7 @@ public:
   [[nodiscard]]
   std::string                 name            () const
   {
-    std::string  result(MPI_MAX_OBJECT_NAME, ' ');
+    std::string  result(MPI_MAX_OBJECT_NAME, '\n');
     std::int32_t count (0);
     MPI_CHECK_ERROR_CODE(MPI_Type_get_name, (native_, result.data(), &count))
     result.resize(count);
@@ -287,7 +292,7 @@ public:
   }
 
 protected:
-  data_type () : managed_(true) { }
+  friend class io::file;
 
   bool         managed_ = false;
   MPI_Datatype native_  = MPI_DATATYPE_NULL;

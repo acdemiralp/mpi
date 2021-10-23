@@ -13,7 +13,7 @@ class port
 {
 public:
   explicit port  (const information& info = information())
-  : managed_(true), name_(MPI_MAX_PORT_NAME, ' ')
+  : managed_(true), name_(MPI_MAX_PORT_NAME, '\n')
   {
     MPI_CHECK_ERROR_CODE(MPI_Open_port, (info.native(), &name_[0]))
   }

@@ -67,8 +67,8 @@ Modern C++20 message passing interface wrapper.
     - `MPI_ARGVS_NULL`     : This would require a scan over `std::vector<spawn_info>::arguments()` to see if they all are empty.
     - `MPI_WEIGHTS_EMPTY`  : Prefer an empty container instead.
     - `MPI_BOTTOM`         : Prefer nullptr instead.
-    - `MPI_ROOT`           : Unused in default arguments as intracommunicators are rarer than intercommunicators. Can nevertheless be passed to functions.
-    - `MPI_PROC_NULL`      : Unused in default arguments as intracommunicators are rarer than intercommunicators. Can nevertheless be passed to functions.
+    - `MPI_ROOT`           : Unused in default arguments as intercommunicators are rarer than intracommunicators. Can nevertheless be passed to functions.
+    - `MPI_PROC_NULL`      : Unused in default arguments as intercommunicators are rarer than intracommunicators. Can nevertheless be passed to functions.
 
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] Constants              
@@ -172,8 +172,8 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_File_get_position        
 - [x] MPI_File_get_position_shared 
 - [x] MPI_File_get_size            
-- [ ] MPI_File_get_type_extent     
-- [ ] MPI_File_get_view            
+- [x] MPI_File_get_type_extent     
+- [x] MPI_File_get_view            
 - [ ] MPI_File_iread               
 - [ ] MPI_File_iread_all           
 - [ ] MPI_File_iread_at            
@@ -185,7 +185,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_File_iwrite_at_all       
 - [ ] MPI_File_iwrite_shared       
 - [x] MPI_File_open                
-- [ ] MPI_File_preallocate
+- [x] MPI_File_preallocate
 - [x] MPI_File_read                
 - [x] MPI_File_read_all            
 - [ ] MPI_File_read_all_begin      
@@ -198,13 +198,13 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_File_read_ordered_begin  
 - [ ] MPI_File_read_ordered_end    
 - [ ] MPI_File_read_shared         
-- [ ] MPI_File_seek                
-- [ ] MPI_File_seek_shared         
+- [x] MPI_File_seek                
+- [x] MPI_File_seek_shared         
 - [x] MPI_File_set_atomicity       
 - [x] MPI_File_set_errhandler      
 - [x] MPI_File_set_info            
 - [x] MPI_File_set_size            
-- [ ] MPI_File_set_view (MPI_DISPLACEMENT_CURRENT)  
+- [x] MPI_File_set_view  
 - [x] MPI_File_sync                
 - [ ] MPI_File_write               
 - [ ] MPI_File_write_all           

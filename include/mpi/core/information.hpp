@@ -134,7 +134,7 @@ public:
     if (!static_cast<bool>(exists))
       return {std::nullopt};
 
-    std::string result(size, ' ');
+    std::string result(size, '\n');
     MPI_CHECK_ERROR_CODE(MPI_Info_get_string, (native_, key.c_str(), &size, &result[0], &exists))
 
     return result;
@@ -157,7 +157,7 @@ public:
     if (!static_cast<bool>(exists))
       return {std::nullopt};
 
-    std::string result(size, ' ');
+    std::string result(size, '\n');
     MPI_CHECK_ERROR_CODE(MPI_Info_get, (native_, key.c_str(), size, &result[0], &exists))
 
     return result;
@@ -166,7 +166,7 @@ public:
   [[nodiscard]]                                
   std::string                key_at  (const std::int32_t index) const
   {
-    std::string result(MPI_MAX_INFO_KEY, ' ');
+    std::string result(MPI_MAX_INFO_KEY, '\n');
     MPI_CHECK_ERROR_CODE(MPI_Info_get_nthkey, (native_, index, &result[0]))
     return result;
   }

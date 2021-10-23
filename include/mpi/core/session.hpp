@@ -68,7 +68,7 @@ public:
     std::int32_t size  (0);
     MPI_CHECK_ERROR_CODE(MPI_Session_get_nth_pset, (native_, information.native(), index, &size, nullptr   ))
 
-    std::string  result(size, ' ');
+    std::string  result(size, '\n');
     MPI_CHECK_ERROR_CODE(MPI_Session_get_nth_pset, (native_, information.native(), index, &size, &result[0]))
     return result;
   }
