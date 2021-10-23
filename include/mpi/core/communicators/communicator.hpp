@@ -366,6 +366,15 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Ibarrier, (native_, &request.native_))
     return request;
   }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]                                                           
+  request                                   persistent_barrier            (const mpi::information& info = mpi::information()) const
+  {
+    request request(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Barrier_init, (native_, info.native(), &request.native_))
+    return request;
+  }
+#endif
 
   // Pack / unpack operations.
   [[nodiscard]]
@@ -406,7 +415,7 @@ public:
     return unpack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_position, output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_adapter::data_type());
   }
 
-  // Point-to-point operations.                                           
+  // Point-to-point operations.                                   
   void                                      send                          (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Send, (data, size, data_type.native(), destination, tag, native_))
@@ -450,7 +459,7 @@ public:
     using adapter = container_adapter<type>;
     ready_send(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
   }
-                                                                    
+
   [[nodiscard]]                                                           
   request                                   immediate_send                (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
@@ -504,6 +513,75 @@ public:
     return immediate_ready_send(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
   }
 
+  [[nodiscard]]                                                           
+  request                                   persistent_send               (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Send_init, (data, size, data_type.native(), destination, tag, native_, &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                                                           
+  request                                   persistent_send               (const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_send(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
+  }
+  [[nodiscard]]                                                           
+  request                                   persistent_synchronous_send   (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Ssend_init, (data, size, data_type.native(), destination, tag, native_, &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                                                           
+  request                                   persistent_synchronous_send   (const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_synchronous_send(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
+  }
+  [[nodiscard]]
+  request                                   persistent_buffered_send      (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Bsend_init, (data, size, data_type.native(), destination, tag, native_, &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]          
+  request                                   persistent_buffered_send      (const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_buffered_send(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
+  }                                                          
+  [[nodiscard]]                                                           
+  request                                   persistent_ready_send         (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Rsend_init, (data, size, data_type.native(), destination, tag, native_, &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                                                           
+  request                                   persistent_ready_send         (const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_ready_send(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
+  }
+
+#ifdef MPI_USE_LATEST 
+  [[nodiscard]]                                                           
+  request                                   partitioned_send              (const std::int32_t partitions, const void* data, const std::int64_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Psend_init, (data, partitions, size, data_type.native(), destination, tag, native_, info.native(), &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                                                           
+  request                                   partitioned_send              (const std::int32_t partitions, const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return partitioned_send(partitions, static_cast<const void*>(adapter::data(data)), static_cast<std::int64_t>(adapter::size(data)), adapter::data_type(), destination, tag, info);
+  }
+#endif
+  
   [[nodiscard]]
   status                                    receive                       (      void* data, const std::int32_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
@@ -530,6 +608,34 @@ public:
     using adapter = container_adapter<type>;
     return immediate_receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), source, tag);
   }
+  [[nodiscard]]
+  request                                   persistent_receive            (      void* data, const std::int32_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Recv_init, (data, size, data_type.native(), source, tag, native_, &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   persistent_receive            (      type& data,                                                      const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), source, tag);
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   partitioned_receive           (const std::int32_t partitions, void* data, const std::int64_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Precv_init, (data, partitions, size, data_type.native(), source, tag, native_, info.native(), &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   partitioned_receive           (const std::int32_t partitions, type& data,                                                      const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return partitioned_receive(partitions, static_cast<void*>(adapter::data(data)), static_cast<std::int64_t>(adapter::size(data)), adapter::data_type(), source, tag, info);
+  }
+#endif
 
   [[nodiscard]]
   status                                    send_receive                  (const void*         sent       , const std::int32_t sent_size    , const data_type&   sent_data_type    , const std::int32_t destination                 , const std::int32_t send_tag    ,

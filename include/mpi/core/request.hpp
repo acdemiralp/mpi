@@ -56,7 +56,7 @@ public:
   }
 
   [[nodiscard]]
-  std::optional<status> get_status() const
+  std::optional<status> get_status         () const
   {
     std::int32_t complete;
     status       result  ;
@@ -64,7 +64,7 @@ public:
     return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
   }
   [[nodiscard]]
-  std::optional<status> test      ()
+  std::optional<status> test               ()
   {
     std::int32_t complete;
     status       result  ;
@@ -72,29 +72,50 @@ public:
     return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
   }
 
-  status                wait      ()
+  status                wait               ()
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_Wait, (&native_, &result))
     return result;
   }
 
-  void                  start     ()
+  void                  start              ()
   {
     MPI_CHECK_ERROR_CODE(MPI_Start, (&native_))
   }
-  void                  cancel    ()
+  void                  cancel             ()
   {
     MPI_CHECK_ERROR_CODE(MPI_Cancel, (&native_))
   }
 
+#ifdef MPI_USE_LATEST
+  bool                  partition_arrived  (const std::int32_t               partition )
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Parrived    , (native_, partition, &result))
+    return static_cast<bool>(result);
+  }
+  void                  set_partition_ready(const std::int32_t               partition ) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Pready      , (partition, native_))
+  }
+  void                  set_partition_ready(const std::vector<std::int32_t>& partitions) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Pready_list , (static_cast<std::int32_t>(partitions.size()), partitions.data(), native_))
+  }
+  void                  set_partition_ready(const std::int32_t lower, const std::int32_t upper) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Pready_range, (lower, upper, native_))
+  }
+#endif
+
   [[nodiscard]]
-  bool                  managed   () const
+  bool                  managed            () const
   {
     return managed_;
   }
   [[nodiscard]]
-  MPI_Request           native    () const
+  MPI_Request           native             () const
   {
     return native_;
   }
