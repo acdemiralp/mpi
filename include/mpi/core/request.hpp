@@ -97,6 +97,7 @@ public:
 protected:
   friend class communicator;
   friend class message;
+  friend class window;
 
   bool        managed_ = false;
   MPI_Request native_  = MPI_REQUEST_NULL;

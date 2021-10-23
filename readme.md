@@ -73,7 +73,7 @@ Modern C++20 message passing interface wrapper.
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] Constants              
 - [x] MPI_Abort                      
-- [ ] MPI_Accumulate                 
+- [x] MPI_Accumulate                 
 - [x] MPI_Add_error_class            
 - [x] MPI_Add_error_code             
 - [x] MPI_Add_error_string           
@@ -143,7 +143,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Comm_split                 
 - [x] MPI_Comm_split_type            
 - [x] MPI_Comm_test_inter            
-- [ ] MPI_Compare_and_swap           
+- [x] MPI_Compare_and_swap           
 - [x] MPI_Dims_create                
 - [x] MPI_Dist_graph_create          
 - [x] MPI_Dist_graph_create_adjacent 
@@ -156,7 +156,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Error_class                
 - [x] MPI_Error_string               
 - [ ] MPI_Exscan                     
-- [ ] MPI_Fetch_and_op               
+- [x] MPI_Fetch_and_op               
 - [x] ~~MPI_File_c2f~~
 - [x] MPI_File_call_errhandler     
 - [x] MPI_File_close               
@@ -223,8 +223,8 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Free_mem                 
 - [x] MPI_Gather                   
 - [ ] MPI_Gatherv                  
-- [ ] MPI_Get                      
-- [ ] MPI_Get_accumulate           
+- [x] MPI_Get                      
+- [x] MPI_Get_accumulate           
 - [x] MPI_Get_address              
 - [x] MPI_Get_count                
 - [x] MPI_Get_elements             
@@ -327,23 +327,23 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Pcontrol                  
 - [x] MPI_Probe                     
 - [x] MPI_Publish_name              
-- [ ] MPI_Put                       
+- [x] MPI_Put                       
 - [x] MPI_Query_thread              
-- [ ] MPI_Raccumulate               
+- [x] MPI_Raccumulate               
 - [x] MPI_Recv                      
 - [ ] MPI_Recv_init                 
 - [ ] MPI_Reduce                    
 - [ ] MPI_Reduce_local              
 - [ ] MPI_Reduce_scatter            
 - [ ] MPI_Reduce_scatter_block      
-- [ ] MPI_Register_datarep          
+- [x] MPI_Register_datarep          
 - [x] ~~MPI_Request_c2f~~               
 - [x] ~~MPI_Request_f2c~~               
 - [x] MPI_Request_free              
 - [x] MPI_Request_get_status        
-- [ ] MPI_Rget                      
-- [ ] MPI_Rget_accumulate           
-- [ ] MPI_Rput                      
+- [x] MPI_Rget                      
+- [x] MPI_Rget_accumulate           
+- [x] MPI_Rput                      
 - [x] MPI_Rsend                     
 - [ ] MPI_Rsend_init                
 - [ ] MPI_Scan                      
@@ -559,4 +559,5 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_T_source_get_timestamp
 
 ### Future Work
+- Remaining point-to-point, collective and file interfaces.
 - Tests.
