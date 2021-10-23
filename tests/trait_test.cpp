@@ -19,10 +19,7 @@
 
 #define MPI_USE_RELAXED_TRAITS
 
-#include <mpi/core/type/compliant_traits.hpp>
-#include <mpi/core/type/compliant_container_traits.hpp>
-#include <mpi/core/type/type_traits.hpp>
-#include <mpi/core/environment.hpp>
+#include <mpi/all.hpp>
 
 struct aggregate
 {

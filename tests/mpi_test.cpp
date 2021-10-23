@@ -1,6 +1,6 @@
 #include "internal/doctest.h"
 
-#include <mpi/core/environment.hpp>
+#include <mpi/all.hpp>
 
 TEST_CASE("MPI Test")
 {
