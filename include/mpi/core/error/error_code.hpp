@@ -14,7 +14,7 @@ public:
   {
     MPI_Add_error_code(error_class.native(), &native_);
   }
-  explicit error_code    (const std::int32_t native) : mpi::error_class(native)
+  explicit error_code    (const std::int32_t native = MPI_ERR_UNKNOWN) : mpi::error_class(native)
   {
 
   }

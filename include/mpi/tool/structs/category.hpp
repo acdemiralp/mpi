@@ -36,7 +36,7 @@ struct category
 inline std::int32_t          category_index    (const std::string& name)
 {
   std::int32_t result;
-  MPI_CHECK_ERROR_CODE(MPI_T_category_get_index(name.c_str(), &result))
+  MPI_CHECK_ERROR_CODE(MPI_T_category_get_index, (name.c_str(), &result))
   return result;
 }
 inline bool                  categories_changed()

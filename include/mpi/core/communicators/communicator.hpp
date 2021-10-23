@@ -73,9 +73,9 @@ public:
   : managed_(true)
   {
     std::vector<char*> arguments(spawn_info.arguments.size());
-    std::transform(spawn_info.arguments.begin(), spawn_info.arguments.end(), arguments.begin(), [ ] (const std::string& value)
+    std::ranges::transform(spawn_info.arguments, arguments.begin(), [ ] (const std::string& value)
     {
-      return value.c_str();
+      return const_cast<char*>(value.data());
     });
 
     std::vector<std::int32_t> error_codes(spawn_info.process_count);
@@ -99,9 +99,9 @@ public:
     for (std::size_t i = 0; i < spawn_info.size(); ++i)
     {
       arguments[i].resize(spawn_info[i].arguments.size());
-      std::transform(spawn_info[i].arguments.begin(), spawn_info[i].arguments.end(), arguments[i].begin(), [ ] (const std::string& value)
+      std::ranges::transform(spawn_info[i].arguments, arguments[i].begin(), [ ] (const std::string& value)
       {
-        return value.c_str();
+        return const_cast<char*>(value.data());
       });
 
       commands      [i]  = const_cast<char*>(spawn_info[i].command.c_str());

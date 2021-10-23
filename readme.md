@@ -10,7 +10,7 @@ Modern C++20 message passing interface wrapper.
   - If your type is none of the above, you can specialize `template <> struct mpi::type_traits<TYPE> { static data_type get_data_type() { return DATA_TYPE; } };` manually.
 - The MPI functions accepting buffers may be used with:
   - Compliant types.
-  - Contiguous sequential containers (i.e. `std::span`, `std::valarray`, `std::vector<!bool>`) of compliant types.
+  - Contiguous sequential containers (i.e. `std::string`, `std::span`, `std::valarray`, `std::vector<!bool>`) of compliant types.
 - Extension functions (starting with MPIX) are not included as they are often implementation-specific. You can nevertheless use them with the wrapper via the native handle getters.
 
 ### Design Notes
@@ -174,30 +174,30 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_File_get_size            
 - [x] MPI_File_get_type_extent     
 - [x] MPI_File_get_view            
-- [ ] MPI_File_iread               
-- [ ] MPI_File_iread_all           
-- [ ] MPI_File_iread_at            
-- [ ] MPI_File_iread_at_all        
-- [ ] MPI_File_iread_shared        
-- [ ] MPI_File_iwrite              
-- [ ] MPI_File_iwrite_all          
-- [ ] MPI_File_iwrite_at           
-- [ ] MPI_File_iwrite_at_all       
-- [ ] MPI_File_iwrite_shared       
+- [x] MPI_File_iread               
+- [x] MPI_File_iread_all           
+- [x] MPI_File_iread_at            
+- [x] MPI_File_iread_at_all        
+- [x] MPI_File_iread_shared        
+- [x] MPI_File_iwrite              
+- [x] MPI_File_iwrite_all          
+- [x] MPI_File_iwrite_at           
+- [x] MPI_File_iwrite_at_all       
+- [x] MPI_File_iwrite_shared       
 - [x] MPI_File_open                
 - [x] MPI_File_preallocate
 - [x] MPI_File_read                
 - [x] MPI_File_read_all            
-- [ ] MPI_File_read_all_begin      
-- [ ] MPI_File_read_all_end        
-- [ ] MPI_File_read_at             
-- [ ] MPI_File_read_at_all         
-- [ ] MPI_File_read_at_all_begin   
-- [ ] MPI_File_read_at_all_end     
-- [ ] MPI_File_read_ordered        
-- [ ] MPI_File_read_ordered_begin  
-- [ ] MPI_File_read_ordered_end    
-- [ ] MPI_File_read_shared         
+- [x] MPI_File_read_all_begin      
+- [x] MPI_File_read_all_end        
+- [x] MPI_File_read_at             
+- [x] MPI_File_read_at_all         
+- [x] MPI_File_read_at_all_begin   
+- [x] MPI_File_read_at_all_end     
+- [x] MPI_File_read_ordered        
+- [x] MPI_File_read_ordered_begin  
+- [x] MPI_File_read_ordered_end    
+- [x] MPI_File_read_shared         
 - [x] MPI_File_seek                
 - [x] MPI_File_seek_shared         
 - [x] MPI_File_set_atomicity       
@@ -206,18 +206,18 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_File_set_size            
 - [x] MPI_File_set_view  
 - [x] MPI_File_sync                
-- [ ] MPI_File_write               
-- [ ] MPI_File_write_all           
-- [ ] MPI_File_write_all_begin     
-- [ ] MPI_File_write_all_end       
-- [ ] MPI_File_write_at            
-- [ ] MPI_File_write_at_all        
-- [ ] MPI_File_write_at_all_begin  
-- [ ] MPI_File_write_at_all_end    
-- [ ] MPI_File_write_ordered       
-- [ ] MPI_File_write_ordered_begin 
-- [ ] MPI_File_write_ordered_end   
-- [ ] MPI_File_write_shared        
+- [x] MPI_File_write               
+- [x] MPI_File_write_all           
+- [x] MPI_File_write_all_begin     
+- [x] MPI_File_write_all_end       
+- [x] MPI_File_write_at            
+- [x] MPI_File_write_at_all        
+- [x] MPI_File_write_at_all_begin  
+- [x] MPI_File_write_at_all_end    
+- [x] MPI_File_write_ordered       
+- [x] MPI_File_write_ordered_begin 
+- [x] MPI_File_write_ordered_end   
+- [x] MPI_File_write_shared        
 - [x] MPI_Finalize                 
 - [x] MPI_Finalized                
 - [x] MPI_Free_mem                 
@@ -559,5 +559,5 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_T_source_get_timestamp
 
 ### Future Work
-- Remaining point-to-point, collective and file interfaces.
+- Remaining point-to-point and collective interfaces.
 - Tests.

@@ -177,7 +177,7 @@ public:
     for (auto i = 0; i < size(); ++i)
     {
       const auto key = key_at(i);
-      result.emplace(key, at(key));
+      result.emplace(key, *at(key));
     }
     return result;
   }

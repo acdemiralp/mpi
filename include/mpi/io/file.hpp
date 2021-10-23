@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 
 #include <mpi/core/communicators/communicator.hpp>
 #include <mpi/core/error/error_handler.hpp>
 #include <mpi/core/type/data_type.hpp>
-#include <mpi/core/type/type_traits.hpp>
 #include <mpi/core/utility/container_adapter.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/information.hpp>
@@ -188,32 +188,271 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_File_seek_shared, (native_, offset, static_cast<std::int32_t>(mode)))
   }
 
-  // TODO: Read operations.
+  // Read operations.
+  [[nodiscard]]
+  status                               read                  (void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read, (native_, data, count, data_type.native(), &result))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  status                               read                  (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return read(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  template <typename type> [[nodiscard]]
+  std::pair<type, status>              read_count            (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
+  {
+    std::pair<type, status> result;
+    container_adapter<type>::resize(result.first, count);
+    result.second = read(result.first);
+    return result;
+  }
+  [[nodiscard]]
+  status                               read_all              (void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_all, (native_, data, count, data_type.native(), &result))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  status                               read_all              (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return read_all(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  template <typename type> [[nodiscard]]
+  std::pair<type, status>              read_all_count        (const std::int32_t count = 1) const
+  {
+    std::pair<type, status> result;
+    container_adapter<type>::resize(result.first, count);
+    result.second = read_all(result.first);
+    return result;
+  }
 
-  // The type and data_type must match. It is possible to automate this by implementing get_data_type<type> to map type to a data_type (see below).
-  template <typename type>
-  std::pair<std::vector<type>, status> read                  (const std::int32_t count, const data_type& data_type)
+  void                                 read_all_begin        (void* data, const std::int32_t count, const data_type& data_type) const
   {
-    std::pair<std::vector<type>, status> result {std::vector<type>(count), {}};
-    MPI_CHECK_ERROR_CODE(MPI_File_read    , (native_, static_cast<void*>(result.first.data()), count, data_type.native(), &result.second))
+    MPI_CHECK_ERROR_CODE(MPI_File_read_all_begin, (native_, data, count, data_type.native()))
+  }
+  template <typename type>                    
+  void                                 read_all_begin        (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    read_all_begin(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  [[nodiscard]]
+  status                               read_all_end          (void* data) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_all_end, (native_, data, &result))
     return result;
   }
-  template <typename type>                                   
-  std::pair<std::vector<type>, status> read_all              (const std::int32_t count, const data_type& data_type)
+  template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void*>>> [[nodiscard]]                   
+  status                               read_all_end          (type& data) const
   {
-    std::pair<std::vector<type>, status> result {std::vector<type>(count), {}};
-    MPI_CHECK_ERROR_CODE(MPI_File_read_all, (native_, static_cast<void*>(result.first.data()), count, data_type.native(), &result.second))
+    using adapter = container_adapter<type>;
+    return read_all_end(static_cast<void*>(adapter::data(data)));
+  }
+  [[nodiscard]]
+  status                               read_at               (const std::int64_t offset, void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_at, (native_, offset, data, count, data_type.native(), &result))
     return result;
   }
-  template <typename type>                                   
-  std::pair<std::vector<type>, status> read                  (const std::int32_t count)
+  template <typename type> [[nodiscard]]                     
+  status                               read_at               (const std::int64_t offset, type& data) const
   {
-    return read    <type>(count, type_traits<type>::get_data_type());
+    using adapter = container_adapter<type>;
+    return read_at(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
-  template <typename type>                                   
-  std::pair<std::vector<type>, status> read_all              (const std::int32_t count)
+  template <typename type> [[nodiscard]]
+  std::pair<type, status>              read_at_count         (const std::int64_t offset, const std::int32_t count = 1) const
   {
-    return read_all<type>(count, type_traits<type>::get_data_type());
+    std::pair<type, status> result;
+    container_adapter<type>::resize(result.first, count);
+    result.second = read_at(offset, result.first);
+    return result;
+  }
+  [[nodiscard]]
+  status                               read_at_all           (const std::int64_t offset, void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_at_all, (native_, offset, data, count, data_type.native(), &result))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  status                               read_at_all           (const std::int64_t offset, type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return read_at_all(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  template <typename type> [[nodiscard]]
+  std::pair<type, status>              read_at_all_count     (const std::int64_t offset, const std::int32_t count = 1) const
+  {
+    std::pair<type, status> result;
+    container_adapter<type>::resize(result.first, count);
+    result.second = read_at_all(offset, result.first);
+    return result;
+  }
+
+  void                                 read_at_all_begin     (const std::int64_t offset, void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_File_read_at_all_begin, (native_, offset, data, count, data_type.native()))
+  }
+  template <typename type>                    
+  void                                 read_at_all_begin     (const std::int64_t offset, type& data) const
+  {
+    using adapter = container_adapter<type>;
+    read_at_all_begin(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  [[nodiscard]]
+  status                               read_at_all_end       (void* data) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_at_all_end, (native_, data, &result))
+    return result;
+  }
+  template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void*>>> [[nodiscard]]                   
+  status                               read_at_all_end       (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return read_at_all_end(static_cast<void*>(adapter::data(data)));
+  }
+  [[nodiscard]]
+  status                               read_ordered          (void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_ordered, (native_, data, count, data_type.native(), &result))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  status                               read_ordered          (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return read_ordered(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  template <typename type> [[nodiscard]]
+  std::pair<type, status>              read_ordered_count    (const std::int32_t count = 1) const
+  {
+    std::pair<type, status> result;
+    container_adapter<type>::resize(result.first, count);
+    result.second = read_ordered(result.first);
+    return result;
+  }
+
+  void                                 read_ordered_begin    (void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_File_read_ordered_begin, (native_, data, count, data_type.native()))
+  }
+  template <typename type>                    
+  void                                 read_ordered_begin    (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    read_ordered_begin(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  [[nodiscard]]
+  status                               read_ordered_end      (void* data) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_ordered_end, (native_, data, &result))
+    return result;
+  }
+  template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void*>>> [[nodiscard]]                   
+  status                               read_ordered_end      (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return read_ordered_end(static_cast<void*>(adapter::data(data)));
+  }
+  [[nodiscard]]
+  status                               read_shared           (void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_shared, (native_, data, count, data_type.native(), &result))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  status                               read_shared           (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return read_shared(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  template <typename type> [[nodiscard]]
+  std::pair<type, status>              read_shared_count     (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
+  {
+    std::pair<type, status> result;
+    container_adapter<type>::resize(result.first, count);
+    result.second = read_shared(result.first);
+    return result;
+  }
+  
+  // Immediate read operations.
+  [[nodiscard]]
+  request                              immediate_read        (void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_File_iread, (native_, data, count, data_type.native(), &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  request                              immediate_read        (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_read(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  [[nodiscard]]
+  request                              immediate_read_all    (void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_File_iread_all, (native_, data, count, data_type.native(), &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  request                              immediate_read_all    (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_read_all(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  [[nodiscard]]
+  request                              immediate_read_at     (const std::int64_t offset, void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_File_iread_at, (native_, offset, data, count, data_type.native(), &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  request                              immediate_read_at     (const std::int64_t offset, type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_read_at(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  [[nodiscard]]
+  request                              immediate_read_at_all (const std::int64_t offset, void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_File_iread_at_all, (native_, offset, data, count, data_type.native(), &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  request                              immediate_read_at_all (const std::int64_t offset, type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_read_at_all(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+  }
+  [[nodiscard]]
+  request                              immediate_read_shared (void* data, const std::int32_t count, const data_type& data_type) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_File_iread_shared, (native_, data, count, data_type.native(), &result.native_))
+    return result;
+  }
+  template <typename type> [[nodiscard]]                     
+  request                              immediate_read_shared (type& data) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_read_shared(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 
   // Write operations.
