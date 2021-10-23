@@ -367,6 +367,45 @@ public:
     return request;
   }
 
+  // Pack / unpack operations.
+  [[nodiscard]]
+  std::int32_t                              pack_size                     (const std::int32_t count, const data_type& data_type) const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Pack_size, (count, data_type.native(), native_, &result))
+    return result;
+  }
+  [[nodiscard]]
+  std::int32_t                              pack                          (const void*       input, const std::int32_t input_size, const data_type&   input_data_type, void*              output, const std::int32_t output_size, const std::int32_t output_position ) const
+  {
+    std::int32_t result(output_position);
+    MPI_CHECK_ERROR_CODE(MPI_Pack, (input, input_size, input_data_type.native(), output, output_size, &result, native_))
+    return result;
+  }
+  template <typename input_type, typename output_type> [[nodiscard]]
+  std::int32_t                              pack                          (const input_type& input,                                                                    const output_type& output                                , const std::int32_t output_position ) const
+  {
+    using input_adapter  = container_adapter<input_type >;
+    using output_adapter = container_adapter<output_type>;
+
+    return pack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_position);
+  }
+  [[nodiscard]]
+  std::int32_t                              unpack                        (const void*       input, const std::int32_t input_size, const std::int32_t input_position , void*              output, const std::int32_t output_size, const data_type&   output_data_type) const
+  {
+    std::int32_t result(input_position);
+    MPI_CHECK_ERROR_CODE(MPI_Unpack, (input, input_size, &result, output, output_size, output_data_type.native(), native_))
+    return result;
+  }
+  template <typename input_type, typename output_type> [[nodiscard]]
+  std::int32_t                              unpack                        (const input_type& input,                                                                    const output_type& output                                , const std::int32_t input_position  ) const
+  {
+    using input_adapter  = container_adapter<input_type >;
+    using output_adapter = container_adapter<output_type>;
+
+    return unpack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_position, output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_adapter::data_type());
+  }
+
   // Point-to-point operations.                                           
   void                                      send                          (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {

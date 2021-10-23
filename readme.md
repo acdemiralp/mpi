@@ -320,10 +320,10 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Op_f2c~~                    
 - [x] MPI_Op_free                   
 - [x] MPI_Open_port                 
-- [ ] MPI_Pack                      
-- [ ] MPI_Pack_external             
-- [ ] MPI_Pack_external_size        
-- [ ] MPI_Pack_size                 
+- [x] MPI_Pack                      
+- [x] MPI_Pack_external             
+- [x] MPI_Pack_external_size        
+- [x] MPI_Pack_size                 
 - [x] MPI_Pcontrol                  
 - [x] MPI_Probe                     
 - [x] MPI_Publish_name              
@@ -438,8 +438,8 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Type_struct~~
 - [x] ~~MPI_Type_ub~~
 - [x] MPI_Type_vector
-- [ ] MPI_Unpack
-- [ ] MPI_Unpack_external
+- [x] MPI_Unpack
+- [x] MPI_Unpack_external
 - [x] MPI_Unpublish_name
 - [x] MPI_Wait
 - [x] MPI_Waitall
