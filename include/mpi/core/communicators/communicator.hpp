@@ -895,7 +895,97 @@ public:
   }
 #endif
 
-  // TODO MPI_Allgatherv MPI_Iallgatherv MPI_Allgatherv_init
+  void                                      all_gather_varying            (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Allgatherv, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), native_))
+  }
+  template <typename sent_type, typename received_type>                            
+  void                                      all_gather_varying            (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    all_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type());
+  }
+  template <typename sent_type, typename received_type>                            
+  void                                      all_gather_varying            (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+
+    std::vector<std::int32_t> displacements(received_sizes.size());
+    std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
+
+    all_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type());
+  }
+  template <typename type>                            
+  void                                      all_gather_varying            (      type&      data,                          const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements) const
+  {
+    using adapter = container_adapter<type>;
+    all_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), static_cast<void*>(adapter::data(data)), received_sizes, displacements, adapter::data_type());
+  }
+  template <typename type>                            
+  void                                      all_gather_varying            (      type&      data,                          const std::vector<std::int32_t>& received_sizes) const
+  {
+    using adapter = container_adapter<type>;
+    
+    std::vector<std::int32_t> displacements(received_sizes.size());
+    std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
+
+    all_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), static_cast<void*>(adapter::data(data)), received_sizes, displacements, adapter::data_type());
+  }
+  [[nodiscard]]
+  request                                   immediate_all_gather_varying  (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Iallgatherv, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), native_, &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                           
+  request                                   immediate_all_gather_varying  (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_all_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type());
+  }
+  template <typename type> [[nodiscard]]                           
+  request                                   immediate_all_gather_varying  (      type&      data,                          const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_all_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), static_cast<void*>(adapter::data(data)), received_sizes, displacements, adapter::data_type());
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   persistent_all_gather_varying (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Allgatherv_init, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), native_, info.native(), &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                           
+  request                                   persistent_all_gather_varying (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,            const mpi::information& info = mpi::information()) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return persistent_all_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type(), info);
+  }
+  template <typename type> [[nodiscard]]                           
+  request                                   persistent_all_gather_varying (      type&      data,                          const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,            const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_all_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), static_cast<void*>(adapter::data(data)), received_sizes, displacements, adapter::data_type(), info);
+  }
+#endif
 
   void                                      all_reduce                    (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
   {
@@ -1148,46 +1238,97 @@ public:
   }
 #endif
 
-  /*
-  // TODO MPI_Gatherv MPI_Igatherv MPI_Gatherv_init
   void                                      gather_varying                (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
                                                                                  void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, const std::int32_t root = 0) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Gatherv, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), root, native_))
   }
   template <typename sent_type, typename received_type>                            
-  void                                      gather_varying                (sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::optional<std::vector<std::int32_t>>& displacements = std::nullopt, const std::int32_t root = 0) const
+  void                                      gather_varying                (sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const std::int32_t root = 0) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type(), root);
+  }
+  template <typename sent_type, typename received_type>                            
+  void                                      gather_varying                (sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes,                                                 const std::int32_t root = 0) const
   {
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
 
-    if (!displacements)
-    {
-      auto mutable_displacements = const_cast<std::optional<std::vector<std::int32_t>>&>(displacements); // Horrible, but the only way.
-      mutable_displacements.emplace(received_sizes.size());
-      std::exclusive_scan(received_sizes.begin(), received_sizes.end(), mutable_displacements->begin(), 0);
-    }
+    std::vector<std::int32_t> displacements(received_sizes.size());
+    std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
 
     gather_varying(
       static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
-      static_cast<      void*>(receive_adapter::data(received)), received_sizes.data(), displacements->data()       , receive_adapter::data_type(), root);
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type(), root);
   }
   template <typename type>                            
-  void                                      gather_varying                (type&      data,                          const std::vector<std::int32_t>& received_sizes, const std::optional<std::vector<std::int32_t>>& displacements = std::nullopt, const std::int32_t root = 0) const
+  void                                      gather_varying                (type&      data,                          const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const std::int32_t root = 0) const
+  {
+    using adapter = container_adapter<type>;
+    gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), static_cast<void*>(adapter::data(data)), received_sizes, displacements, adapter::data_type(), root);
+  }
+  template <typename type>                            
+  void                                      gather_varying                (type&      data,                          const std::vector<std::int32_t>& received_sizes,                                                 const std::int32_t root = 0) const
   {
     using adapter = container_adapter<type>;
     
-    if (!displacements)
-    {
-      displacements.emplace(received_sizes.size());
-      std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements->begin(), 0);
-    }
+    std::vector<std::int32_t> displacements(received_sizes.size());
+    std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
 
-    gather_varying(
-      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
-      static_cast<void*>(adapter::data(data)), XXX, XXX, adapter::data_type(), root);
+    gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), static_cast<void*>(adapter::data(data)), received_sizes, displacements, adapter::data_type(), root);
   }
-  */
+  [[nodiscard]]
+  request                                   immediate_gather_varying      (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, const std::int32_t root = 0) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Igatherv, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), root, native_, &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                           
+  request                                   immediate_gather_varying      (sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const std::int32_t root = 0) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type(), root);
+  }
+  template <typename type> [[nodiscard]]                           
+  request                                   immediate_gather_varying      (type&      data,                          const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const std::int32_t root = 0) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), static_cast<void*>(adapter::data(data)), received_sizes, displacements, adapter::data_type(), root);
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   persistent_gather_varying     (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Gatherv_init, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), root, native_, info.native(), &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                           
+  request                                   persistent_gather_varying     (sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,                  const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return persistent_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type(), root, info);
+  }
+  template <typename type> [[nodiscard]]                           
+  request                                   persistent_gather_varying     (type&      data,                          const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,                  const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), static_cast<void*>(adapter::data(data)), received_sizes, displacements, adapter::data_type(), root, info);
+  }
+#endif
 
   void                                      reduce_local                  (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
   {
@@ -1607,7 +1748,69 @@ public:
   }
 #endif
 
-  // TODO MPI_Neighbor_allgatherv MPI_Ineighbor_allgatherv MPI_Neighbor_allgatherv_init
+  void                                      neighbor_all_gather_varying   (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Neighbor_allgatherv, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), native_))
+  }
+  template <typename sent_type, typename received_type>                            
+  void                                      neighbor_all_gather_varying   (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    neighbor_all_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type());
+  }
+  template <typename sent_type, typename received_type>                            
+  void                                      neighbor_all_gather_varying   (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+
+    std::vector<std::int32_t> displacements(received_sizes.size());
+    std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
+
+    neighbor_all_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type());
+  }
+  [[nodiscard]]
+  request                                   immediate_neighbor_all_gather_varying  (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
+                                                                                          void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Ineighbor_allgatherv, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), native_, &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                           
+  request                                   immediate_neighbor_all_gather_varying  (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_neighbor_all_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type());
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   persistent_neighbor_all_gather_varying (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
+                                                                                          void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Neighbor_allgatherv_init, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), native_, info.native(), &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                           
+  request                                   persistent_neighbor_all_gather_varying (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,            const mpi::information& info = mpi::information()) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return persistent_neighbor_all_gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes, displacements                      , receive_adapter::data_type(), info);
+  }
+#endif
 
   [[nodiscard]]                                                           
   bool                                      managed                       () const

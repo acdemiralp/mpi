@@ -81,7 +81,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Aint_add                   
 - [x] MPI_Aint_diff                  
 - [x] MPI_Allgather                  
-- [ ] MPI_Allgatherv                 
+- [x] MPI_Allgatherv                 
 - [x] MPI_Alloc_mem                  
 - [x] MPI_Allreduce                  
 - [x] MPI_Alltoall                   
@@ -222,7 +222,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Finalized                
 - [x] MPI_Free_mem                 
 - [x] MPI_Gather                   
-- [ ] MPI_Gatherv                  
+- [x] MPI_Gatherv                  
 - [x] MPI_Get                      
 - [x] MPI_Get_accumulate           
 - [x] MPI_Get_address              
@@ -255,7 +255,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Group_translate_ranks    
 - [x] MPI_Group_union              
 - [x] MPI_Iallgather               
-- [ ] MPI_Iallgatherv              
+- [x] MPI_Iallgatherv              
 - [x] MPI_Iallreduce               
 - [x] MPI_Ialltoall                
 - [ ] MPI_Ialltoallv               
@@ -265,11 +265,11 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Ibsend                   
 - [x] MPI_Iexscan                  
 - [x] MPI_Igather                  
-- [ ] MPI_Igatherv                 
+- [x] MPI_Igatherv                 
 - [x] MPI_Improbe                  
 - [x] MPI_Imrecv           
 - [x] MPI_Ineighbor_allgather       
-- [ ] MPI_Ineighbor_allgatherv      
+- [x] MPI_Ineighbor_allgatherv      
 - [x] MPI_Ineighbor_alltoall        
 - [ ] MPI_Ineighbor_alltoallv       
 - [ ] MPI_Ineighbor_alltoallw       
@@ -310,7 +310,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Mprobe                    
 - [x] MPI_Mrecv                     
 - [x] MPI_Neighbor_allgather        
-- [ ] MPI_Neighbor_allgatherv       
+- [x] MPI_Neighbor_allgatherv       
 - [x] MPI_Neighbor_alltoall         
 - [ ] MPI_Neighbor_alltoallv        
 - [ ] MPI_Neighbor_alltoallw        
@@ -487,7 +487,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Wtick
 - [x] MPI_Wtime
 - [x] MPI_Allgather_init
-- [ ] MPI_Allgatherv_init
+- [x] MPI_Allgatherv_init
 - [x] MPI_Allreduce_init
 - [x] MPI_Alltoall_init
 - [ ] MPI_Alltoallv_init
@@ -498,7 +498,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Comm_idup_with_info
 - [x] MPI_Exscan_init
 - [x] MPI_Gather_init
-- [ ] MPI_Gatherv_init
+- [x] MPI_Gatherv_init
 - [x] MPI_Group_from_session_pset
 - [x] MPI_Info_create_env
 - [x] MPI_Info_get_string
@@ -506,7 +506,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Isendrecv
 - [x] MPI_Isendrecv_replace   
 - [x] MPI_Neighbor_allgather_init
-- [ ] MPI_Neighbor_allgatherv_init
+- [x] MPI_Neighbor_allgatherv_init
 - [x] MPI_Neighbor_alltoall_init
 - [ ] MPI_Neighbor_alltoallv_init
 - [ ] MPI_Neighbor_alltoallw_init
