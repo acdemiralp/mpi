@@ -83,7 +83,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Allgather                  
 - [ ] MPI_Allgatherv                 
 - [x] MPI_Alloc_mem                  
-- [ ] MPI_Allreduce                  
+- [x] MPI_Allreduce                  
 - [x] MPI_Alltoall                   
 - [ ] MPI_Alltoallv                  
 - [ ] MPI_Alltoallw                  
@@ -256,7 +256,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Group_union              
 - [x] MPI_Iallgather               
 - [ ] MPI_Iallgatherv              
-- [ ] MPI_Iallreduce               
+- [x] MPI_Iallreduce               
 - [x] MPI_Ialltoall                
 - [ ] MPI_Ialltoallv               
 - [ ] MPI_Ialltoallw               
@@ -268,9 +268,9 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Igatherv                 
 - [x] MPI_Improbe                  
 - [x] MPI_Imrecv           
-- [ ] MPI_Ineighbor_allgather       
+- [x] MPI_Ineighbor_allgather       
 - [ ] MPI_Ineighbor_allgatherv      
-- [ ] MPI_Ineighbor_alltoall        
+- [x] MPI_Ineighbor_alltoall        
 - [ ] MPI_Ineighbor_alltoallv       
 - [ ] MPI_Ineighbor_alltoallw       
 - [x] ~~MPI_Info_c2f~~                  
@@ -309,9 +309,9 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Message_f2c~~               
 - [x] MPI_Mprobe                    
 - [x] MPI_Mrecv                     
-- [ ] MPI_Neighbor_allgather        
+- [x] MPI_Neighbor_allgather        
 - [ ] MPI_Neighbor_allgatherv       
-- [ ] MPI_Neighbor_alltoall         
+- [x] MPI_Neighbor_alltoall         
 - [ ] MPI_Neighbor_alltoallv        
 - [ ] MPI_Neighbor_alltoallw        
 - [x] ~~MPI_Op_c2f~~                    
@@ -488,7 +488,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Wtime
 - [x] MPI_Allgather_init
 - [ ] MPI_Allgatherv_init
-- [ ] MPI_Allreduce_init
+- [x] MPI_Allreduce_init
 - [x] MPI_Alltoall_init
 - [ ] MPI_Alltoallv_init
 - [ ] MPI_Alltoallw_init
@@ -505,9 +505,9 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Intercomm_create_from_groups
 - [x] MPI_Isendrecv
 - [x] MPI_Isendrecv_replace   
-- [ ] MPI_Neighbor_allgather_init
+- [x] MPI_Neighbor_allgather_init
 - [ ] MPI_Neighbor_allgatherv_init
-- [ ] MPI_Neighbor_alltoall_init
+- [x] MPI_Neighbor_alltoall_init
 - [ ] MPI_Neighbor_alltoallv_init
 - [ ] MPI_Neighbor_alltoallw_init
 - [x] MPI_Parrived   

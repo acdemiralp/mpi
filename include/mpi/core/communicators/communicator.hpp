@@ -741,8 +741,8 @@ public:
   }
 #endif
 
-  void                                      all_to_all                    (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void*        received, const std::int32_t received_size, const data_type& received_data_type) const
+  void                                      all_to_all                    (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Alltoall, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_))
   }
@@ -764,8 +764,8 @@ public:
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]                                                           
-  request                                   immediate_all_to_all          (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void*        received, const std::int32_t received_size, const data_type& received_data_type) const
+  request                                   immediate_all_to_all          (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Ialltoall, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, &result.native_))
@@ -819,8 +819,8 @@ public:
   // TODO MPI_Alltoallv MPI_Ialltoallv MPI_Alltoallv_init
   // TODO MPI_Alltoallw MPI_Ialltoallw MPI_Alltoallw_init
 
-  void                                      all_gather                    (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void*        received, const std::int32_t received_size, const data_type& received_data_type) const
+  void                                      all_gather                    (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Allgather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_))
   }
@@ -842,8 +842,8 @@ public:
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]                                                           
-  request                                   immediate_all_gather          (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void*        received, const std::int32_t received_size, const data_type& received_data_type) const
+  request                                   immediate_all_gather          (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Iallgather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, &result.native_))
@@ -894,8 +894,65 @@ public:
   }
 #endif
 
-  // TODO MPI_Allgatherv     MPI_Iallgatherv     MPI_Allgatherv_init
-  // TODO MPI_Allreduce      MPI_Iallreduce      MPI_Allreduce_init
+  // TODO MPI_Allgatherv MPI_Iallgatherv MPI_Allgatherv_init
+
+  void                                      all_reduce                    (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Allreduce, (sent, received, size, data_type.native(), op.native(), native_))
+  }
+  template <typename type>                            
+  void                                      all_reduce                    (const type& sent, type& received,                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    all_reduce(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+  }
+  template <typename type>                            
+  void                                      all_reduce                    (      type& data,                                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    all_reduce(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
+  }
+  [[nodiscard]]
+  request                                   immediate_all_reduce          (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Iallreduce, (sent, received, size, data_type.native(), op.native(), native_, &result.native_))
+    return  result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   immediate_all_reduce          (const type& sent, type& received,                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_all_reduce(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+  }
+  template <typename type> [[nodiscard]]                           
+  request                                   immediate_all_reduce          (      type& data,                                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_all_reduce(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   persistent_all_reduce         (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Allreduce_init, (sent, received, size, data_type.native(), op.native(), native_, info.native(), &result.native_))
+    return  result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   persistent_all_reduce         (const type& sent, type& received,                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_all_reduce(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, info);
+  }
+  template <typename type> [[nodiscard]]                           
+  request                                   persistent_all_reduce         (      type& data,                                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_all_reduce(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op, info);
+  }
+#endif
+
   // TODO MPI_Reduce_scatter MPI_Ireduce_scatter MPI_Reduce_scatter_init
   
   void                                      reduce_scatter_block          (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
@@ -957,9 +1014,9 @@ public:
 
   // All to one collective operations.
 
-  void                                      gather                        (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void*        received, const std::int32_t received_size, const data_type& received_data_type, 
-                                                                           const std::int32_t root    = 0) const
+  void                                      gather                        (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type, 
+                                                                           const std::int32_t root = 0) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Gather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_))
   }
@@ -981,9 +1038,9 @@ public:
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root);
   }
   [[nodiscard]]                                                           
-  request                                   immediate_gather              (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void*        received, const std::int32_t received_size, const data_type& received_data_type,  
-                                                                           const std::int32_t root    = 0) const
+  request                                   immediate_gather              (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type,  
+                                                                           const std::int32_t root = 0) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Igather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, &result.native_))
@@ -1152,9 +1209,9 @@ public:
   }
 #endif
 
-  void                                      scatter                       (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void*        received, const std::int32_t received_size, const data_type& received_data_type, 
-                                                                           const std::int32_t root    = 0) const
+  void                                      scatter                       (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type, 
+                                                                           const std::int32_t root = 0) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Scatter, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_))
   }
@@ -1176,9 +1233,9 @@ public:
       MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, root);
   }
   [[nodiscard]]                                                           
-  request                                   immediate_scatter             (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void*        received, const std::int32_t received_size, const data_type& received_data_type, 
-                                                                           const std::int32_t root    = 0) const
+  request                                   immediate_scatter             (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type, 
+                                                                           const std::int32_t root = 0) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Iscatter, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, &result.native_))
@@ -1350,10 +1407,111 @@ public:
   
   // All to all neighborhood collective operations.
 
-  // TODO MPI_Neighbor_alltoall   MPI_Ineighbor_alltoall   MPI_Neighbor_alltoall_init
+  void                                      neighbor_all_to_all           (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoall, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_))
+  }
+  template <typename sent_type, typename received_type>                            
+  void                                      neighbor_all_to_all           (sent_type& sent_data, received_type& received_data) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    neighbor_all_to_all(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type());
+  }
+  [[nodiscard]]                                                           
+  request                                   immediate_neighbor_all_to_all (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Ineighbor_alltoall, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                                                           
+  request                                   immediate_neighbor_all_to_all (sent_type& sent_data, received_type& received_data) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_neighbor_all_to_all(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type());
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]                                                           
+  request                                   persistent_neighbor_all_to_all(const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoall_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, info.native(), &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                                                           
+  request                                   persistent_neighbor_all_to_all(sent_type& sent_data, received_type& received_data, const mpi::information& info = mpi::information()) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return persistent_neighbor_all_to_all(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type(), info);
+  }
+#endif
+
   // TODO MPI_Neighbor_alltoallv  MPI_Ineighbor_alltoallv  MPI_Neighbor_alltoallv_init
   // TODO MPI_Neighbor_alltoallw  MPI_Ineighbor_alltoallw  MPI_Neighbor_alltoallw_init
-  // TODO MPI_Neighbor_allgather  MPI_Ineighbor_allgather  MPI_Neighbor_allgather_init
+
+  void                                      neighbor_all_gather           (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Neighbor_allgather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_))
+  }
+  template <typename sent_type, typename received_type>                            
+  void                                      neighbor_all_gather           (sent_type& sent_data, received_type& received_data) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    neighbor_all_gather(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type());
+  }
+  [[nodiscard]]                                                           
+  request                                   immediate_neighbor_all_gather (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Ineighbor_allgather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                                                           
+  request                                   immediate_neighbor_all_gather (sent_type& sent_data, received_type& received_data) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_neighbor_all_gather(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type());
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]                                                           
+  request                                   persistent_neighbor_all_gather(const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void*        received, const std::int32_t received_size, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Neighbor_allgather_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, info.native(), &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                                                           
+  request                                   persistent_neighbor_all_gather(sent_type& sent_data, received_type& received_data, const mpi::information& info = mpi::information()) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return persistent_neighbor_all_gather(
+      static_cast<void*>(send_adapter   ::data(sent_data    )), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received_data)), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type(), info);
+  }
+#endif
+
   // TODO MPI_Neighbor_allgatherv MPI_Ineighbor_allgatherv MPI_Neighbor_allgatherv_init
 
   [[nodiscard]]                                                           
