@@ -293,7 +293,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Iprobe                    
 - [x] MPI_Irecv                     
 - [x] MPI_Ireduce                   
-- [ ] MPI_Ireduce_scatter           
+- [x] MPI_Ireduce_scatter           
 - [x] MPI_Ireduce_scatter_block     
 - [x] MPI_Irsend                    
 - [x] MPI_Is_thread_main            
@@ -334,7 +334,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Recv_init                 
 - [x] MPI_Reduce                    
 - [x] MPI_Reduce_local              
-- [ ] MPI_Reduce_scatter            
+- [x] MPI_Reduce_scatter            
 - [x] MPI_Reduce_scatter_block      
 - [x] MPI_Register_datarep          
 - [x] ~~MPI_Request_c2f~~               
@@ -518,7 +518,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Psend_init
 - [x] MPI_Reduce_init
 - [x] MPI_Reduce_scatter_block_init
-- [ ] MPI_Reduce_scatter_init
+- [x] MPI_Reduce_scatter_init
 - [x] MPI_Scan_init
 - [x] MPI_Scatter_init
 - [ ] MPI_Scatterv_init

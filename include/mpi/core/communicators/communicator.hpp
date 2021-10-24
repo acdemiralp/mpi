@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <numeric>
 #include <optional>
 #include <string>
 #include <utility>
@@ -760,7 +761,7 @@ public:
   {
     using adapter = container_adapter<type>;
     all_to_all(
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]                                                           
@@ -785,7 +786,7 @@ public:
   {
     using adapter = container_adapter<type>;
     return immediate_all_to_all(
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 #ifdef MPI_USE_LATEST
@@ -811,7 +812,7 @@ public:
   {
     using adapter = container_adapter<type>;
     return persistent_all_to_all(
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), info);
   }
 #endif
@@ -838,7 +839,7 @@ public:
   {
     using adapter = container_adapter<type>;
     all_gather(
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]                                                           
@@ -863,7 +864,7 @@ public:
   {
     using adapter = container_adapter<type>;
     return immediate_all_gather(
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 #ifdef MPI_USE_LATEST
@@ -889,7 +890,7 @@ public:
   {
     using adapter = container_adapter<type>;
     return persistent_all_gather(
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), info);
   }
 #endif
@@ -953,8 +954,63 @@ public:
   }
 #endif
 
-  // TODO MPI_Reduce_scatter MPI_Ireduce_scatter MPI_Reduce_scatter_init
-  
+  void                                      reduce_scatter                (const void* sent, void* received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Reduce_scatter, (sent, received, sizes.data(), data_type.native(), op.native(), native_))
+  }
+  template <typename type>                            
+  void                                      reduce_scatter                (const type& sent, type& received, const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    reduce_scatter(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), sizes, adapter::data_type(), op);
+  }
+  template <typename type>                            
+  void                                      reduce_scatter                (      type& data,                 const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    reduce_scatter(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), sizes, adapter::data_type(), op);
+  }
+  [[nodiscard]]
+  request                                   immediate_reduce_scatter      (const void* sent, void* received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Ireduce_scatter, (sent, received, sizes.data(), data_type.native(), op.native(), native_, &result.native_))
+    return  result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   immediate_reduce_scatter      (const type& sent, type& received, const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_reduce_scatter(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), sizes, adapter::data_type(), op);
+  }
+  template <typename type> [[nodiscard]]                           
+  request                                   immediate_reduce_scatter      (      type& data,                 const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_reduce_scatter(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), sizes, adapter::data_type(), op);
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   persistent_reduce_scatter     (const void* sent, void* received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Reduce_scatter_init, (sent, received, sizes.data(), data_type.native(), op.native(), native_, info.native(), &result.native_))
+    return  result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   persistent_reduce_scatter     (const type& sent, type& received, const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_reduce_scatter(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), sizes, adapter::data_type(), op, info);
+  }
+  template <typename type> [[nodiscard]]                           
+  request                                   persistent_reduce_scatter     (      type& data,                 const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_reduce_scatter(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), sizes, adapter::data_type(), op, info);
+  }
+#endif
+
   void                                      reduce_scatter_block          (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Reduce_scatter_block, (sent, received, size, data_type.native(), op.native(), native_))
@@ -1034,7 +1090,7 @@ public:
   {
     using adapter = container_adapter<type>;
     gather(
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root);
   }
   [[nodiscard]]                                                           
@@ -1060,7 +1116,7 @@ public:
   {
     using adapter = container_adapter<type>;
     return immediate_gather(
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root);
   }
 #ifdef MPI_USE_LATEST
@@ -1087,12 +1143,51 @@ public:
   {
     using adapter = container_adapter<type>;
     return persistent_gather(
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root, info);
   }
 #endif
 
+  /*
   // TODO MPI_Gatherv MPI_Igatherv MPI_Gatherv_init
+  void                                      gather_varying                (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, const std::int32_t root = 0) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Gatherv, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), root, native_))
+  }
+  template <typename sent_type, typename received_type>                            
+  void                                      gather_varying                (sent_type& sent, received_type& received, const std::vector<std::int32_t>& received_sizes, const std::optional<std::vector<std::int32_t>>& displacements = std::nullopt, const std::int32_t root = 0) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+
+    if (!displacements)
+    {
+      auto mutable_displacements = const_cast<std::optional<std::vector<std::int32_t>>&>(displacements); // Horrible, but the only way.
+      mutable_displacements.emplace(received_sizes.size());
+      std::exclusive_scan(received_sizes.begin(), received_sizes.end(), mutable_displacements->begin(), 0);
+    }
+
+    gather_varying(
+      static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      static_cast<      void*>(receive_adapter::data(received)), received_sizes.data(), displacements->data()       , receive_adapter::data_type(), root);
+  }
+  template <typename type>                            
+  void                                      gather_varying                (type&      data,                          const std::vector<std::int32_t>& received_sizes, const std::optional<std::vector<std::int32_t>>& displacements = std::nullopt, const std::int32_t root = 0) const
+  {
+    using adapter = container_adapter<type>;
+    
+    if (!displacements)
+    {
+      displacements.emplace(received_sizes.size());
+      std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements->begin(), 0);
+    }
+
+    gather_varying(
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
+      static_cast<void*>(adapter::data(data)), XXX, XXX, adapter::data_type(), root);
+  }
+  */
 
   void                                      reduce_local                  (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
   {
@@ -1230,7 +1325,7 @@ public:
     using adapter = container_adapter<type>;
     scatter(
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), 
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, root);
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root);
   }
   [[nodiscard]]                                                           
   request                                   immediate_scatter             (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
@@ -1256,7 +1351,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_scatter(
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), 
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, root);
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root);
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]                                                           
@@ -1283,7 +1378,7 @@ public:
     using adapter = container_adapter<type>;
     return persistent_scatter(
       static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), 
-      MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, root, info);
+      MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root, info);
   }
 #endif
 
