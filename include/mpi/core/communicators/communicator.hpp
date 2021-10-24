@@ -21,7 +21,9 @@
 #include <mpi/core/key_value.hpp>
 #include <mpi/core/message.hpp>
 #include <mpi/core/mpi.hpp>
+#include <mpi/core/op.hpp>
 #include <mpi/core/port.hpp>
+#include <mpi/core/standard_ops.hpp>
 #include <mpi/core/request.hpp>
 
 namespace mpi
@@ -906,7 +908,6 @@ public:
   // TODO MPI_Gatherv MPI_Igatherv     MPI_Gatherv_init
   // TODO MPI_Reduce  MPI_Reduce_local MPI_Ireduce      MPI_Reduce_init
 
-  
   // One to all collective operations.
                                 
   void                                      broadcast                     (void* data, const std::int32_t count, const data_type& data_type, const std::int32_t root = 0) const
@@ -1030,9 +1031,120 @@ public:
 
   // Other collective operations.
 
-  // TODO MPI_Scan   MPI_Iscan   MPI_Scan_init
-  // TODO MPI_Exscan MPI_Iexscan MPI_Exscan_init
-
+  void                                      inclusive_scan                (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Scan, (sent, received, size, data_type.native(), op.native(), native_))
+  }
+  template <typename type>                            
+  void                                      inclusive_scan                (const type& sent, type& received,                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    inclusive_scan(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+  }
+  template <typename type>                            
+  void                                      inclusive_scan                (      type& data,                                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    inclusive_scan(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
+  }
+  [[nodiscard]]
+  request                                   immediate_inclusive_scan      (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Iscan, (sent, received, size, data_type.native(), op.native(), native_, &result.native_))
+    return  result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   immediate_inclusive_scan      (const type& sent, type& received,                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_inclusive_scan(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+  }
+  template <typename type> [[nodiscard]]
+  request                                   immediate_inclusive_scan      (      type& data,                                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_inclusive_scan(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   persistent_inclusive_scan     (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Scan_init, (sent, received, size, data_type.native(), op.native(), native_, info.native(), &result.native_))
+    return  result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   persistent_inclusive_scan     (const type& sent, type& received,                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_inclusive_scan(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, info);
+  }
+  template <typename type> [[nodiscard]]
+  request                                   persistent_inclusive_scan     (      type& data,                                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_inclusive_scan(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op, info);
+  }
+#endif
+  
+  void                                      exclusive_scan                (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Exscan, (sent, received, size, data_type.native(), op.native(), native_))
+  }
+  template <typename type>                            
+  void                                      exclusive_scan                (const type& sent, type& received,                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    exclusive_scan(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+  }
+  template <typename type>                            
+  void                                      exclusive_scan                (      type& data,                                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    exclusive_scan(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
+  }
+  [[nodiscard]]
+  request                                   immediate_exclusive_scan      (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Iexscan, (sent, received, size, data_type.native(), op.native(), native_, &result.native_))
+    return  result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   immediate_exclusive_scan      (const type& sent, type& received,                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_exclusive_scan(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+  }
+  template <typename type> [[nodiscard]]
+  request                                   immediate_exclusive_scan      (      type& data,                                                                      const op& op = ops::sum) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_exclusive_scan(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   persistent_exclusive_scan     (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Exscan_init, (sent, received, size, data_type.native(), op.native(), native_, info.native(), &result.native_))
+    return  result;
+  }
+  template <typename type> [[nodiscard]]
+  request                                   persistent_exclusive_scan     (const type& sent, type& received,                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_exclusive_scan(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, info);
+  }
+  template <typename type> [[nodiscard]]
+  request                                   persistent_exclusive_scan     (      type& data,                                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_exclusive_scan(MPI_IN_PLACE, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op, info);
+  }
+#endif
+  
   // All to all neighborhood collective operations.
 
   // TODO MPI_Neighbor_alltoall   MPI_Ineighbor_alltoall   MPI_Neighbor_alltoall_init

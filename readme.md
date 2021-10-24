@@ -155,7 +155,7 @@ Modern C++20 message passing interface wrapper.
 - [x] ~~MPI_Errhandler_set~~            
 - [x] MPI_Error_class                
 - [x] MPI_Error_string               
-- [ ] MPI_Exscan                     
+- [x] MPI_Exscan                     
 - [x] MPI_Fetch_and_op               
 - [x] ~~MPI_File_c2f~~
 - [x] MPI_File_call_errhandler     
@@ -263,7 +263,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Ibarrier                 
 - [x] MPI_Ibcast                   
 - [x] MPI_Ibsend                   
-- [ ] MPI_Iexscan                  
+- [x] MPI_Iexscan                  
 - [x] MPI_Igather                  
 - [ ] MPI_Igatherv                 
 - [x] MPI_Improbe                  
@@ -297,7 +297,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Ireduce_scatter_block     
 - [x] MPI_Irsend                    
 - [x] MPI_Is_thread_main            
-- [ ] MPI_Iscan                     
+- [x] MPI_Iscan                     
 - [x] MPI_Iscatter                  
 - [ ] MPI_Iscatterv                 
 - [x] MPI_Isend                     
@@ -346,7 +346,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Rput                      
 - [x] MPI_Rsend                     
 - [x] MPI_Rsend_init                
-- [ ] MPI_Scan                      
+- [x] MPI_Scan                      
 - [x] MPI_Scatter                   
 - [ ] MPI_Scatterv                  
 - [x] MPI_Send                      
@@ -496,7 +496,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Bcast_init
 - [x] MPI_Comm_create_from_group
 - [x] MPI_Comm_idup_with_info
-- [ ] MPI_Exscan_init
+- [x] MPI_Exscan_init
 - [x] MPI_Gather_init
 - [ ] MPI_Gatherv_init
 - [x] MPI_Group_from_session_pset
@@ -519,7 +519,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Reduce_init
 - [ ] MPI_Reduce_scatter_block_init
 - [ ] MPI_Reduce_scatter_init
-- [ ] MPI_Scan_init
+- [x] MPI_Scan_init
 - [x] MPI_Scatter_init
 - [ ] MPI_Scatterv_init
 - [x] MPI_Session_call_errhandler
