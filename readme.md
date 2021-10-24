@@ -69,7 +69,7 @@ Modern C++20 message passing interface wrapper.
     - `MPI_BOTTOM`         : Prefer nullptr instead.
     - `MPI_ROOT`           : Unused in default arguments as intercommunicators are rarer than intracommunicators. Can nevertheless be passed to functions.
     - `MPI_PROC_NULL`      : Unused in default arguments as intercommunicators are rarer than intracommunicators. Can nevertheless be passed to functions.
-
+      
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] Constants              
 - [x] MPI_Abort                      
@@ -486,18 +486,18 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Win_wait
 - [x] MPI_Wtick
 - [x] MPI_Wtime
-- [ ] MPI_Allgather_init
+- [x] MPI_Allgather_init
 - [ ] MPI_Allgatherv_init
 - [ ] MPI_Allreduce_init
 - [ ] MPI_Alltoall_init
 - [ ] MPI_Alltoallv_init
 - [ ] MPI_Alltoallw_init
 - [x] MPI_Barrier_init
-- [ ] MPI_Bcast_init
+- [x] MPI_Bcast_init
 - [x] MPI_Comm_create_from_group
 - [x] MPI_Comm_idup_with_info
 - [ ] MPI_Exscan_init
-- [ ] MPI_Gather_init
+- [x] MPI_Gather_init
 - [ ] MPI_Gatherv_init
 - [x] MPI_Group_from_session_pset
 - [x] MPI_Info_create_env
@@ -520,7 +520,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Reduce_scatter_block_init
 - [ ] MPI_Reduce_scatter_init
 - [ ] MPI_Scan_init
-- [ ] MPI_Scatter_init
+- [x] MPI_Scatter_init
 - [ ] MPI_Scatterv_init
 - [x] MPI_Session_call_errhandler
 - [x] MPI_Session_create_errhandler
