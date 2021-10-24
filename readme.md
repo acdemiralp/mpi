@@ -84,7 +84,7 @@ Modern C++20 message passing interface wrapper.
 - [ ] MPI_Allgatherv                 
 - [x] MPI_Alloc_mem                  
 - [ ] MPI_Allreduce                  
-- [ ] MPI_Alltoall                   
+- [x] MPI_Alltoall                   
 - [ ] MPI_Alltoallv                  
 - [ ] MPI_Alltoallw                  
 - [x] ~~MPI_Attr_delete~~                
@@ -257,7 +257,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Iallgather               
 - [ ] MPI_Iallgatherv              
 - [ ] MPI_Iallreduce               
-- [ ] MPI_Ialltoall                
+- [x] MPI_Ialltoall                
 - [ ] MPI_Ialltoallv               
 - [ ] MPI_Ialltoallw               
 - [x] MPI_Ibarrier                 
@@ -292,9 +292,9 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Intercomm_merge           
 - [x] MPI_Iprobe                    
 - [x] MPI_Irecv                     
-- [ ] MPI_Ireduce                   
+- [x] MPI_Ireduce                   
 - [ ] MPI_Ireduce_scatter           
-- [ ] MPI_Ireduce_scatter_block     
+- [x] MPI_Ireduce_scatter_block     
 - [x] MPI_Irsend                    
 - [x] MPI_Is_thread_main            
 - [x] MPI_Iscan                     
@@ -332,10 +332,10 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Raccumulate               
 - [x] MPI_Recv                      
 - [x] MPI_Recv_init                 
-- [ ] MPI_Reduce                    
-- [ ] MPI_Reduce_local              
+- [x] MPI_Reduce                    
+- [x] MPI_Reduce_local              
 - [ ] MPI_Reduce_scatter            
-- [ ] MPI_Reduce_scatter_block      
+- [x] MPI_Reduce_scatter_block      
 - [x] MPI_Register_datarep          
 - [x] ~~MPI_Request_c2f~~               
 - [x] ~~MPI_Request_f2c~~               
@@ -489,7 +489,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Allgather_init
 - [ ] MPI_Allgatherv_init
 - [ ] MPI_Allreduce_init
-- [ ] MPI_Alltoall_init
+- [x] MPI_Alltoall_init
 - [ ] MPI_Alltoallv_init
 - [ ] MPI_Alltoallw_init
 - [x] MPI_Barrier_init
@@ -516,8 +516,8 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Pready_range
 - [x] MPI_Precv_init
 - [x] MPI_Psend_init
-- [ ] MPI_Reduce_init
-- [ ] MPI_Reduce_scatter_block_init
+- [x] MPI_Reduce_init
+- [x] MPI_Reduce_scatter_block_init
 - [ ] MPI_Reduce_scatter_init
 - [x] MPI_Scan_init
 - [x] MPI_Scatter_init
