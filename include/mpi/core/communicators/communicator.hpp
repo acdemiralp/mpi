@@ -918,7 +918,33 @@ public:
   }
 #endif
 
-  // TODO MPI_Alltoallw MPI_Ialltoallw MPI_Alltoallw_init
+  // The alltoallw is the only family of functions that do not have convenience wrappers (because it just cannot be made convenient).
+  void                                      all_to_all_general            (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int32_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Alltoallw    ,  (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
+                                              received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_))
+  }
+  [[nodiscard]]
+  request                                   immediate_all_to_all_general  (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int32_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Ialltoallw    , (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
+                                              received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_, &result.native_))
+    return result;
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   persistent_all_to_all_general (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int32_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                 void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Alltoallw_init, (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
+                                              received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_, info.native(), &result.native_))
+    return result;
+  }
+#endif
 
   void                                      all_gather                    (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
                                                                                  void* received, const std::int32_t received_size, const data_type& received_data_type) const
@@ -1957,7 +1983,33 @@ public:
   }
 #endif
 
-  // TODO MPI_Neighbor_alltoallw  MPI_Ineighbor_alltoallw  MPI_Neighbor_alltoallw_init
+  // The alltoallw is the only family of functions that do not have convenience wrappers (because it just cannot be made convenient).
+  void                                      neighbor_all_to_all_general           (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoallw     ,  (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
+                                                        received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_))
+  }
+  [[nodiscard]]
+  request                                   immediate_neighbor_all_to_all_general (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Ineighbor_alltoallw    , (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
+                                                       received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_, &result.native_))
+    return result;
+  }
+#ifdef MPI_USE_LATEST
+  [[nodiscard]]
+  request                                   persistent_neighbor_all_to_all_general(const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoallw_init, (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
+                                                       received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_, info.native(), &result.native_))
+    return result;
+  }
+#endif
 
   void                                      neighbor_all_gather           (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
                                                                                  void* received, const std::int32_t received_size, const data_type& received_data_type) const

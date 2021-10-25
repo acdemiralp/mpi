@@ -86,7 +86,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Allreduce                  
 - [x] MPI_Alltoall                   
 - [x] MPI_Alltoallv                  
-- [ ] MPI_Alltoallw                  
+- [x] MPI_Alltoallw                  
 - [x] ~~MPI_Attr_delete~~                
 - [x] ~~MPI_Attr_get~~                   
 - [x] ~~MPI_Attr_put~~                   
@@ -259,7 +259,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Iallreduce               
 - [x] MPI_Ialltoall                
 - [x] MPI_Ialltoallv               
-- [ ] MPI_Ialltoallw               
+- [x] MPI_Ialltoallw               
 - [x] MPI_Ibarrier                 
 - [x] MPI_Ibcast                   
 - [x] MPI_Ibsend                   
@@ -272,7 +272,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Ineighbor_allgatherv      
 - [x] MPI_Ineighbor_alltoall        
 - [x] MPI_Ineighbor_alltoallv       
-- [ ] MPI_Ineighbor_alltoallw       
+- [x] MPI_Ineighbor_alltoallw       
 - [x] ~~MPI_Info_c2f~~                  
 - [x] MPI_Info_create               
 - [x] MPI_Info_delete               
@@ -313,7 +313,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Neighbor_allgatherv       
 - [x] MPI_Neighbor_alltoall         
 - [x] MPI_Neighbor_alltoallv        
-- [ ] MPI_Neighbor_alltoallw        
+- [x] MPI_Neighbor_alltoallw        
 - [x] ~~MPI_Op_c2f~~                    
 - [x] MPI_Op_commutative            
 - [x] MPI_Op_create                 
@@ -491,7 +491,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Allreduce_init
 - [x] MPI_Alltoall_init
 - [x] MPI_Alltoallv_init
-- [ ] MPI_Alltoallw_init
+- [x] MPI_Alltoallw_init
 - [x] MPI_Barrier_init
 - [x] MPI_Bcast_init
 - [x] MPI_Comm_create_from_group
@@ -509,7 +509,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Neighbor_allgatherv_init
 - [x] MPI_Neighbor_alltoall_init
 - [x] MPI_Neighbor_alltoallv_init
-- [ ] MPI_Neighbor_alltoallw_init
+- [x] MPI_Neighbor_alltoallw_init
 - [x] MPI_Parrived   
 - [x] MPI_Pready 
 - [x] MPI_Pready_list
