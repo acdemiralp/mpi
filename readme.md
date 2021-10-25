@@ -299,7 +299,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Is_thread_main            
 - [x] MPI_Iscan                     
 - [x] MPI_Iscatter                  
-- [ ] MPI_Iscatterv                 
+- [x] MPI_Iscatterv                 
 - [x] MPI_Isend                     
 - [x] MPI_Issend                    
 - [x] ~~MPI_Keyval_create~~             
@@ -348,7 +348,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Rsend_init                
 - [x] MPI_Scan                      
 - [x] MPI_Scatter                   
-- [ ] MPI_Scatterv                  
+- [x] MPI_Scatterv                  
 - [x] MPI_Send                      
 - [x] MPI_Send_init                 
 - [x] MPI_Sendrecv                  
@@ -521,7 +521,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Reduce_scatter_init
 - [x] MPI_Scan_init
 - [x] MPI_Scatter_init
-- [ ] MPI_Scatterv_init
+- [x] MPI_Scatterv_init
 - [x] MPI_Session_call_errhandler
 - [x] MPI_Session_create_errhandler
 - [x] ~~MPI_Session_c2f~~

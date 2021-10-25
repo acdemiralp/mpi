@@ -1523,7 +1523,99 @@ public:
   }
 #endif
 
-  // TODO MPI_Scatterv MPI_Iscatterv MPI_Scatterv_init
+  void                                      scatter_varying               (const void* sent    , const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements, const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size                                                           , const data_type& received_data_type, const std::int32_t root = 0) const
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Scatterv, (sent, sent_sizes.data(), displacements.data(), sent_data_type.native(), received, received_size, received_data_type.native(), root, native_))
+  }
+  template <typename sent_type, typename received_type>                            
+  void                                      scatter_varying               (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements           , const std::int32_t root = 0) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    scatter_varying(
+      static_cast<void*>(send_adapter   ::data(sent    )), sent_sizes, displacements                                 , send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received)), static_cast<std::int32_t>(receive_adapter::size(received)), receive_adapter::data_type(), root);
+  }
+  template <typename sent_type, typename received_type>                                                                                                                                                                          
+  void                                      scatter_varying               (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& sent_sizes                                                           , const std::int32_t root = 0) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    
+    std::vector<std::int32_t> displacements(sent_sizes.size());
+    std::exclusive_scan(sent_sizes.begin(), sent_sizes.end(), displacements.begin(), 0);
+
+    scatter_varying(
+      static_cast<void*>(send_adapter   ::data(sent    )), sent_sizes, displacements                                 , send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received)), static_cast<std::int32_t>(receive_adapter::size(received)), receive_adapter::data_type(), root);
+  }
+  template <typename type>                                                                                                                                                                                                       
+  void                                      scatter_varying               (      type&      data,                          const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements           , const std::int32_t root = 0) const
+  {
+    using adapter = container_adapter<type>;
+    scatter_varying(static_cast<void*>(adapter::data(data)), sent_sizes, displacements, adapter::data_type(), MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root);
+  }
+  template <typename type>                                                                                                                                                                                                       
+  void                                      scatter_varying               (      type&      data,                          const std::vector<std::int32_t>& sent_sizes                                                           , const std::int32_t root = 0) const
+  {
+    using adapter = container_adapter<type>;
+    
+    std::vector<std::int32_t> displacements(sent_sizes.size());
+    std::exclusive_scan(sent_sizes.begin(), sent_sizes.end(), displacements.begin(), 0);
+
+    scatter_varying(static_cast<void*>(adapter::data(data)), sent_sizes, displacements, adapter::data_type(), MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root);
+  }
+  [[nodiscard]]                                                           
+  request                                   immediate_scatter_varying     (const void* sent    , const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements, const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size                                                           , const data_type& received_data_type, const std::int32_t root = 0) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Iscatterv, (sent, sent_sizes.data(), displacements.data(), sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                                                           
+  request                                   immediate_scatter_varying     (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements           , const std::int32_t root = 0) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_scatter_varying(
+      static_cast<void*>(send_adapter   ::data(sent    )), sent_sizes, displacements                                 , send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received)), static_cast<std::int32_t>(receive_adapter::size(received)), receive_adapter::data_type(), root);
+  }
+  template <typename type> [[nodiscard]]                                                           
+  request                                   immediate_scatter_varying     (      type&      data,                          const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements           , const std::int32_t root = 0) const
+  {
+    using adapter = container_adapter<type>;
+    return immediate_scatter_varying(static_cast<void*>(adapter::data(data)), sent_sizes, displacements, adapter::data_type(), MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root);
+  }
+//#ifdef MPI_USE_LATEST
+  [[nodiscard]]                                                           
+  request                                   persistent_scatter_varying    (const void* sent    , const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements, const data_type& sent_data_type    ,
+                                                                                 void* received, const std::int32_t received_size                                                           , const data_type& received_data_type, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  {
+    request result(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Scatterv_init, (sent, sent_sizes.data(), displacements.data(), sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, info, &result.native_))
+    return  result;
+  }
+  template <typename sent_type, typename received_type> [[nodiscard]]                                                           
+  request                                   persistent_scatter_varying    (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements           , const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  {
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return persistent_scatter_varying(
+      static_cast<void*>(send_adapter   ::data(sent    )), sent_sizes, displacements                                 , send_adapter   ::data_type(), 
+      static_cast<void*>(receive_adapter::data(received)), static_cast<std::int32_t>(receive_adapter::size(received)), receive_adapter::data_type(), root, info);
+  }
+  template <typename type> [[nodiscard]]                                                           
+  request                                   persistent_scatter_varying    (      type&      data,                          const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements           , const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  {
+    using adapter = container_adapter<type>;
+    return persistent_scatter_varying(static_cast<void*>(adapter::data(data)), sent_sizes, displacements, adapter::data_type(), MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root, info);
+  }
+
+//#endif
+
 
   // Other collective operations.
 
