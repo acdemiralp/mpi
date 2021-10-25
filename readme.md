@@ -85,7 +85,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Alloc_mem                  
 - [x] MPI_Allreduce                  
 - [x] MPI_Alltoall                   
-- [ ] MPI_Alltoallv                  
+- [x] MPI_Alltoallv                  
 - [ ] MPI_Alltoallw                  
 - [x] ~~MPI_Attr_delete~~                
 - [x] ~~MPI_Attr_get~~                   
@@ -258,7 +258,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Iallgatherv              
 - [x] MPI_Iallreduce               
 - [x] MPI_Ialltoall                
-- [ ] MPI_Ialltoallv               
+- [x] MPI_Ialltoallv               
 - [ ] MPI_Ialltoallw               
 - [x] MPI_Ibarrier                 
 - [x] MPI_Ibcast                   
@@ -271,7 +271,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Ineighbor_allgather       
 - [x] MPI_Ineighbor_allgatherv      
 - [x] MPI_Ineighbor_alltoall        
-- [ ] MPI_Ineighbor_alltoallv       
+- [x] MPI_Ineighbor_alltoallv       
 - [ ] MPI_Ineighbor_alltoallw       
 - [x] ~~MPI_Info_c2f~~                  
 - [x] MPI_Info_create               
@@ -312,7 +312,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Neighbor_allgather        
 - [x] MPI_Neighbor_allgatherv       
 - [x] MPI_Neighbor_alltoall         
-- [ ] MPI_Neighbor_alltoallv        
+- [x] MPI_Neighbor_alltoallv        
 - [ ] MPI_Neighbor_alltoallw        
 - [x] ~~MPI_Op_c2f~~                    
 - [x] MPI_Op_commutative            
@@ -490,7 +490,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Allgatherv_init
 - [x] MPI_Allreduce_init
 - [x] MPI_Alltoall_init
-- [ ] MPI_Alltoallv_init
+- [x] MPI_Alltoallv_init
 - [ ] MPI_Alltoallw_init
 - [x] MPI_Barrier_init
 - [x] MPI_Bcast_init
@@ -508,7 +508,7 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Neighbor_allgather_init
 - [x] MPI_Neighbor_allgatherv_init
 - [x] MPI_Neighbor_alltoall_init
-- [ ] MPI_Neighbor_alltoallv_init
+- [x] MPI_Neighbor_alltoallv_init
 - [ ] MPI_Neighbor_alltoallw_init
 - [x] MPI_Parrived   
 - [x] MPI_Pready 
