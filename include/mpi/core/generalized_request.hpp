@@ -21,7 +21,7 @@ public:
     const query_function_type  query_function , 
     const free_function_type   free_function  , 
     const cancel_function_type cancel_function, 
-    void*                      extra_state    = nullptr)
+    void*                      extra_state    )
   : request(MPI_REQUEST_NULL, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Grequest_start, (query_function, free_function, cancel_function, extra_state, &native_))

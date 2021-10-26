@@ -37,34 +37,34 @@ public:
   {
     
   }
-  communicator            (const communicator&  that , const group&                          group                          )
+  communicator            (const communicator&  that , const group&                          group        )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create       , (that.native_, group      .native(),      &native_))
   }
-  communicator            (const communicator&  that , const group&                          group                          , const std::int32_t  tag)
+  communicator            (const communicator&  that , const group&                          group        , const std::int32_t  tag)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_group , (that.native_, group      .native(), tag, &native_))
   }
 #ifdef MPI_USE_LATEST
-  communicator            (                            const group&                          group                          ,  const std::string& tag      , const information& information, const communicator_error_handler& error_handler)
+  communicator            (                            const group&                          group        , const std::string&  tag      , const information& information, const communicator_error_handler& error_handler)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_from_group, (group.native(), tag.c_str(), information.native(), error_handler.native(), &native_))
   }
 #endif
-  communicator            (const communicator&  that , const std::int32_t                    color                          , const std::int32_t  key)
+  communicator            (const communicator&  that , const std::int32_t                    color        , const std::int32_t  key)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_split        , (that.native_, color, key, &native_))
   }
-  communicator            (const communicator&  that , const split_type                      split_type = split_type::shared, const std::int32_t  key   = 0, const information& information       = mpi::information())
+  communicator            (const communicator&  that , const split_type                      split_type   , const std::int32_t  key   = 0, const information& information       = mpi::information())
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_split_type   , (that.native_, static_cast<std::int32_t>(split_type), key, information.native(), &native_))
   }
-  communicator            (const communicator&  that , const port&                           port                           , const bool          accept   , const information& information       = mpi::information(), const std::int32_t root = 0)
+  communicator            (const communicator&  that , const port&                           port         , const bool          accept   , const information& information       = mpi::information(), const std::int32_t root = 0)
   : managed_(true)
   {
     if (accept)
@@ -72,7 +72,7 @@ public:
     else
       MPI_CHECK_ERROR_CODE(MPI_Comm_connect, (port.name().c_str(), information.native(), root, that.native(), &native_))
   }
-  communicator            (const communicator&  that , const spawn_information&              spawn_info                     , const std::int32_t  root  = 0, const bool         check_error_codes = true)
+  communicator            (const communicator&  that , const spawn_information&              spawn_info   , const std::int32_t  root  = 0, const bool         check_error_codes = true)
   : managed_(true)
   {
     std::vector<char*> arguments(spawn_info.arguments.size());
@@ -90,7 +90,7 @@ public:
         if (code != MPI_SUCCESS)
           throw exception("spawn", error_code(code));
   }
-  communicator            (const communicator&  that , const std::vector<spawn_information>& spawn_info                     , const std::int32_t  root  = 0, const bool         check_error_codes = true)
+  communicator            (const communicator&  that , const std::vector<spawn_information>& spawn_info   , const std::int32_t  root  = 0, const bool         check_error_codes = true)
   : managed_(true)
   {
     std::vector<char*>              commands      (spawn_info.size());
@@ -123,24 +123,24 @@ public:
         if (code != MPI_SUCCESS)
           throw exception("spawn_multiple", error_code(code));
   }
-  communicator            (const communicator&  local, const std::int32_t                    local_leader                   , const communicator& peer     , const std::int32_t peer_leader, const std::int32_t tag = 0)
+  communicator            (const communicator&  local, const std::int32_t                    local_leader , const communicator& peer     , const std::int32_t peer_leader, const std::int32_t tag = 0)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Intercomm_create, (local.native_, local_leader, peer.native_, peer_leader, tag, &native_))
   }
 #ifdef MPI_USE_LATEST
-  communicator            (const group&         local, const std::int32_t                    local_leader                   , const group&        peer     , const std::int32_t peer_leader, const std::string& tag, const information& information, const communicator_error_handler& error_handler)
+  communicator            (const group&         local, const std::int32_t                    local_leader , const group&        peer     , const std::int32_t peer_leader, const std::string& tag, const information& information, const communicator_error_handler& error_handler)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Intercomm_create_from_groups, (local.native_, local_leader, peer.native_, peer_leader, tag.c_str(), information.native(), error_handler.native(), &native_))
   }
 #endif
-  communicator            (const communicator&  that , const bool                            high                           )
+  communicator            (const communicator&  that , const bool                            high         )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Intercomm_merge, (that.native_, high, &native_))
   }
-  communicator            (const communicator&  that , const information&                    information                    )
+  communicator            (const communicator&  that , const information&                    information  )
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_dup_with_info, (that.native_, information.native(), &native_))

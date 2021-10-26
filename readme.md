@@ -1,6 +1,73 @@
 ### MPI
 Modern C++20 message passing interface wrapper.
 
+### Examples
+- Initialization:
+```cpp
+  mpi::environment environment;
+  const auto& communicator = mpi::world_communicator;
+```
+- Transmitting basic types:
+```cpp
+  std::int32_t data = 0;
+  if (communicator.rank() == 0)
+  {
+    data = 42;
+    communicator.send(data, 1);
+  }
+  if (communicator.rank() == 1)
+  {
+    communicator.receive(data, 0);
+  }
+```
+- Transmitting a container of basic types:
+```cpp
+  std::vector<std::int32_t> data_container(3);
+  if (communicator.rank() == 0)
+  {
+    data_container = {1, 2, 3};
+    communicator.send(data_container, 1);
+  }
+  if (communicator.rank() == 1)
+  {
+    communicator.receive(data_container, 0);
+  }
+```
+- Transmitting user-defined aggregates:
+```cpp
+  struct user_type
+  {
+    std::int32_t         id      ;
+    std::array<float, 3> position;
+  };
+
+  user_type user_object;
+  if (communicator.rank() == 0)
+  {
+    user_object = {42, {0.0f, 1.0f, 2.0f}};
+    communicator.send(user_object, 1);
+  }
+  if (communicator.rank() == 1)
+  {
+    communicator.receive(user_object, 0);
+  }
+```
+- Transmitting a container of user-defined aggregates:
+```cpp
+  std::vector<user_type> user_object_container(2);
+  if (communicator.rank() == 0)
+  {
+    user_object_container[0] = {42, {0.0f, 1.0f, 2.0f}};
+    user_object_container[1] = {84, {3.0f, 4.0f, 5.0f}};
+    communicator.send(user_object_container, 1);
+  }
+  if (communicator.rank() == 1)
+  {
+    communicator.receive(user_object_container, 0);
+  }
+```
+- See the tests for more.
+
 ### Usage Notes
 - Define `MPI_USE_EXCEPTIONS` to check the return values of all viable functions against `MPI_SUCCESS` and throw an exception otherwise.
 - Define `MPI_USE_RELAXED_TRAITS` to prevent the library from checking the types of aggregate elements and triggering static asserts for non-aggregates (useful for e.g. testing).

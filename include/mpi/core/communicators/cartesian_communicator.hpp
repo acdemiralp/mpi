@@ -20,7 +20,7 @@ public:
   {
 
   }
-  cartesian_communicator            (const communicator&            that, const std::vector<bool>&      periodic  , const bool reorder = true)
+  cartesian_communicator            (const communicator&            that, const std::vector<bool>&      periodic  , const bool reorder)
   : communicator(MPI_COMM_NULL, true)
   {
     std::vector<std::int32_t> sizes(periodic.size()), periods(periodic.size());
@@ -33,7 +33,7 @@ public:
 
     MPI_CHECK_ERROR_CODE(MPI_Cart_create, (that.native(), static_cast<std::int32_t>(periodic.size()), sizes.data(), periods.data(), reorder, &native_))
   }
-  cartesian_communicator            (const communicator&            that, const std::vector<dimension>& dimensions, const bool reorder = true)
+  cartesian_communicator            (const communicator&            that, const std::vector<dimension>& dimensions, const bool reorder)
   : communicator(MPI_COMM_NULL, true)
   {
     std::vector<std::int32_t> sizes(dimensions.size()), periods(dimensions.size());

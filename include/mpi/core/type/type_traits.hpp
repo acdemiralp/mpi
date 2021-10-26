@@ -6,8 +6,9 @@
 #include <type_traits>
 #include <vector>
 
-#include <mpi/core/type/compliant_traits.hpp>
 #include <mpi/core/type/data_type.hpp>
+#include <mpi/core/utility/complex_traits.hpp>
+#include <mpi/core/utility/tuple_traits.hpp>
 #include <mpi/core/utility/missing_implementation.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/third_party/pfr.hpp>
@@ -219,7 +220,7 @@ struct type_traits<std::array<std::array<std::array<std::array<type, size_4>, si
 };
 
 // Specialization for std::tuples (using MPI_Type_create_struct).
-template <compliant_tuple type>
+template <tuple type>
 struct type_traits<type>
 {
   static const data_type& get_data_type()
@@ -250,8 +251,8 @@ struct type_traits<type>
 };
 
 // Specialization for aggregate types (using MPI_Type_create_struct).
-template <compliant_aggregate type>
-struct type_traits<type>
+template <typename type>
+struct type_traits<type, std::enable_if_t<std::conjunction_v<std::negation<is_array<type>>, std::is_aggregate<type>>>>
 {
   static const data_type& get_data_type()
   {
@@ -266,7 +267,7 @@ struct type_traits<type>
   
       pfr::for_each_field(type(), [&] <typename lambda_type> (lambda_type& field)
       {
-        data_types   .push_back(type_traits<lambda_type>::get_data_type());
+        data_types   .push_back(type_traits<lambda_type>::get_data_type()); // Forcing compliant_aggregate leads to a compile-time error on this line (lambda_type unresolved).
         block_lengths.push_back(1);
         displacements.push_back(displacement);
         displacement += sizeof field;
