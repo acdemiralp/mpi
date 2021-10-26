@@ -1,69 +1,72 @@
 ### MPI
 Modern C++20 message passing interface wrapper.
 
-### Example Usage
+### Examples
+- Initialization:
 ```cpp
-std::int32_t main(std::int32_t argc, char** argv)
+mpi::environment environment;
+const auto& communicator = mpi::world_communicator;
+```
+- Transmitting basic types:
+```cpp
+std::int32_t data = 0;
+if (communicator.rank() == 0)
 {
-  mpi::environment environment  ;
-  const auto&      communicator = mpi::world_communicator;
-  
-  // Transmit a basic type.
-  std::int32_t data = 0;
-  if (communicator.rank() == 0)
-  {
-    data = 42;
-    communicator.send   (data, 1);
-  }
-  if (communicator.rank() == 1)
-  {
-    communicator.receive(data, 0);
-    std::cout << data << std::endl;
-  }
-  
-  // Transmit a container of basic types.
-  std::vector<std::int32_t> data_container(3);
-  if (communicator.rank() == 0)
-  {
-    data_container = {1, 2, 3};
-    communicator.send   (data_container, 1);
-  }
-  if (communicator.rank() == 1)
-  {
-    communicator.receive(data_container, 0);
-    std::cout << data_container[0] << " "
-              << data_container[1] << " "
-              << data_container[2] << std::endl;
-  }
-
-  // Transmit a user-defined aggregate.
-  struct user_type
-  {
-    std::int32_t         id      ;
-    std::array<float, 3> position;
-  };
-  user_type user_object;
-  if (communicator.rank() == 0)
-  {
-    user_object = {42, {0.0f, 1.0f, 2.0f}};
-    communicator.send   (user_object, 1);
-  }
-  if (communicator.rank() == 1)
-  {
-    communicator.receive(user_object, 0);
-    std::cout << user_object.id          << " "
-              << user_object.position[0] << " "
-              << user_object.position[1] << " "
-              << user_object.position[2] << std::endl;
-  }
-  
-  // Transmit a container of user-defined aggregates.
+  data = 42;
+  communicator.send(data, 1);
+}
+if (communicator.rank() == 1)
+{
+  communicator.receive(data, 0);
+  std::cout << data << std::endl;
+}
+```
+- Transmitting a container of basic types:
+```cpp
+std::vector<std::int32_t> data_container(3);
+if (communicator.rank() == 0)
+{
+  data_container = {1, 2, 3};
+  communicator.send(data_container, 1);
+}
+if (communicator.rank() == 1)
+{
+  communicator.receive(data_container, 0);
+  std::cout << data_container[0] << " "
+            << data_container[1] << " "
+            << data_container[2] << std::endl;
+}
+```
+- Transmitting a user-defined aggregate:
+```cpp
+struct user_type
+{
+  std::int32_t         id      ;
+  std::array<float, 3> position;
+};
+user_type user_object;
+if (communicator.rank() == 0)
+{
+  user_object = {42, {0.0f, 1.0f, 2.0f}};
+  communicator.send(user_object, 1);
+}
+if (communicator.rank() == 1)
+{
+  communicator.receive(user_object, 0);
+  std::cout << user_object.id          << " "
+            << user_object.position[0] << " "
+            << user_object.position[1] << " "
+            << user_object.position[2] << std::endl;
+}
+```
+- Transmitting a container of user-defined aggregates:
+```cpp
   std::vector<user_type> user_object_container(2);
   if (communicator.rank() == 0)
   {
     user_object_container[0] = {42, {0.0f, 1.0f, 2.0f}};
     user_object_container[1] = {84, {3.0f, 4.0f, 5.0f}};
-    communicator.send   (user_object_container, 1);
+    communicator.send(user_object_container, 1);
   }
   if (communicator.rank() == 1)
   {
@@ -77,8 +80,8 @@ std::int32_t main(std::int32_t argc, char** argv)
               << user_object_container[1].position[1] << " "
               << user_object_container[1].position[2] << std::endl;
   }
-}
 ```
+- See the tests for more.
 
 ### Usage Notes
 - Define `MPI_USE_EXCEPTIONS` to check the return values of all viable functions against `MPI_SUCCESS` and throw an exception otherwise.
