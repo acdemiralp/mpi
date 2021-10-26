@@ -40,6 +40,7 @@ Modern C++20 message passing interface wrapper.
     std::int32_t         id      ;
     std::array<float, 3> position;
   };
+
   user_type user_object;
   if (communicator.rank() == 0)
   {
