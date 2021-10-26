@@ -39,7 +39,7 @@ public:
     return 1;
   }
 
-  static void              resize   (type& container, const std::size_t size)
+  static void              resize   (      type& container, const std::size_t size)
   {
     // Do nothing. Compliant types are not resizable.
   }
@@ -74,7 +74,7 @@ public:
     return container.size();
   }
   
-  static void              resize   (type& container, const std::size_t size)
+  static void              resize   (      type& container, const std::size_t size)
   {
     // Spans are not resizable.
     if constexpr (!is_span_v<type>)
