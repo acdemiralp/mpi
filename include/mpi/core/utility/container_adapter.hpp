@@ -13,11 +13,11 @@
 // Container adapters unify the interface to obtain the `buffer`, `count` and `data_type` of single compliant objects and contiguous sequential containers.
 namespace mpi
 {
-template <typename type>
+template <typename type, typename = void>
 class container_adapter;
 
-template <compliant type>
-class container_adapter<type>
+template <typename type>
+class container_adapter<type, std::enable_if_t<std::conjunction_v<std::negation<is_compliant_contiguous_sequential_container<type>>, is_compliant<type>>>>
 {
 public:
   using value_type = type;
@@ -45,8 +45,8 @@ public:
   }
 };
 
-template <compliant_contiguous_sequential_container type>
-class container_adapter<type>
+template <typename type>
+class container_adapter<type, std::enable_if_t<is_compliant_contiguous_sequential_container_v<type>>>
 {
 public:
   using value_type  = typename type::value_type;
