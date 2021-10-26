@@ -18,7 +18,6 @@ if (communicator.rank() == 0)
 if (communicator.rank() == 1)
 {
   communicator.receive(data, 0);
-  std::cout << data << std::endl;
 }
 ```
 - Transmitting a container of basic types:
@@ -32,12 +31,9 @@ if (communicator.rank() == 0)
 if (communicator.rank() == 1)
 {
   communicator.receive(data_container, 0);
-  std::cout << data_container[0] << " "
-            << data_container[1] << " "
-            << data_container[2] << std::endl;
 }
 ```
-- Transmitting a user-defined aggregate:
+- Transmitting user-defined aggregates:
 ```cpp
 struct user_type
 {
@@ -53,33 +49,21 @@ if (communicator.rank() == 0)
 if (communicator.rank() == 1)
 {
   communicator.receive(user_object, 0);
-  std::cout << user_object.id          << " "
-            << user_object.position[0] << " "
-            << user_object.position[1] << " "
-            << user_object.position[2] << std::endl;
 }
 ```
 - Transmitting a container of user-defined aggregates:
 ```cpp
-  std::vector<user_type> user_object_container(2);
-  if (communicator.rank() == 0)
-  {
-    user_object_container[0] = {42, {0.0f, 1.0f, 2.0f}};
-    user_object_container[1] = {84, {3.0f, 4.0f, 5.0f}};
-    communicator.send(user_object_container, 1);
-  }
-  if (communicator.rank() == 1)
-  {
-    communicator.receive(user_object_container, 0);
-    std::cout << user_object_container[0].id          << " "
-              << user_object_container[0].position[0] << " "
-              << user_object_container[0].position[1] << " "
-              << user_object_container[0].position[2] << std::endl
-              << user_object_container[1].id          << " "
-              << user_object_container[1].position[0] << " "
-              << user_object_container[1].position[1] << " "
-              << user_object_container[1].position[2] << std::endl;
-  }
+std::vector<user_type> user_object_container(2);
+if (communicator.rank() == 0)
+{
+  user_object_container[0] = {42, {0.0f, 1.0f, 2.0f}};
+  user_object_container[1] = {84, {3.0f, 4.0f, 5.0f}};
+  communicator.send(user_object_container, 1);
+}
+if (communicator.rank() == 1)
+{
+  communicator.receive(user_object_container, 0);
+}
 ```
 - See the tests for more.
 
