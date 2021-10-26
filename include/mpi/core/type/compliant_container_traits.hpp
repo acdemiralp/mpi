@@ -18,6 +18,7 @@ template <typename type>
 struct is_compliant_associative_container              <type, std::enable_if_t<std::conjunction_v<is_associative_container              <type>,                                is_compliant<typename type::value_type>>>> : std::true_type {};
 template <typename type>
 struct is_compliant_non_contiguous_sequential_container<type, std::enable_if_t<std::conjunction_v<is_non_contiguous_sequential_container<type>,                                is_compliant<typename type::value_type>>>> : std::true_type {};
+// Arrays are compliant types rather than compliant contiguous sequential containers.
 template <typename type>
 struct is_compliant_contiguous_sequential_container    <type, std::enable_if_t<std::conjunction_v<is_contiguous_sequential_container    <type>, std::negation<is_array<type>>, is_compliant<typename type::value_type>>>> : std::true_type {};
 
