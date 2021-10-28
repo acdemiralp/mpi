@@ -350,7 +350,7 @@ public:
   }
 #ifdef MPI_USE_LATEST                                                                 
   [[nodiscard]]                                                       
-  std::pair<communicator, request>          immediate_duplicate       (const std::information& information) const
+  std::pair<communicator, request>          immediate_duplicate           (const std::information& information) const
   {
     std::pair result { communicator(), request() };
     MPI_CHECK_ERROR_CODE(MPI_Comm_idup_with_info, (native_, information.native(), &result.first.native_, &result.second.native_))
