@@ -21,17 +21,18 @@ class file;
 class request
 {
 public:
-  explicit request  (const MPI_Request native, const bool managed = false)
-  : managed_(managed), native_(native)
+  explicit request  (const MPI_Request native, const bool managed = false, const bool persistent = false)
+  : managed_(managed), native_(native), persistent_(persistent)
   {
     
   }
   request           (const request&    that) = delete;
   request           (      request&&   temp) noexcept
-  : managed_(temp.managed_), native_(temp.native_)
+  : managed_(temp.managed_), native_(temp.native_), persistent_(temp.persistent_)
   {
-    temp.managed_ = false;
-    temp.native_  = MPI_REQUEST_NULL;
+    temp.managed_    = false;
+    temp.native_     = MPI_REQUEST_NULL;
+    temp.persistent_ = false;
   }
   virtual ~request  ()
   {
@@ -46,11 +47,13 @@ public:
       if (managed_ && native_ != MPI_REQUEST_NULL)
         MPI_CHECK_ERROR_CODE(MPI_Request_free, (&native_))
 
-      managed_      = temp.managed_;
-      native_       = temp.native_ ;
+      managed_         = temp.managed_   ;
+      native_          = temp.native_    ;
+      persistent_      = temp.persistent_;
 
-      temp.managed_ = false;
-      temp.native_  = MPI_REQUEST_NULL;
+      temp.managed_    = false           ;
+      temp.native_     = MPI_REQUEST_NULL;
+      temp.persistent_ = false           ;
     }
     return *this;
   }
@@ -119,6 +122,11 @@ public:
   {
     return native_;
   }
+  [[nodiscard]]
+  bool                  persistent         () const
+  {
+    return persistent_;
+  }
 
 protected:
   friend class communicator;
@@ -126,8 +134,9 @@ protected:
   friend class window;
   friend class io::file;
 
-  bool        managed_ = false;
-  MPI_Request native_  = MPI_REQUEST_NULL;
+  bool        managed_    = false;
+  MPI_Request native_     = MPI_REQUEST_NULL;
+  bool        persistent_ = false;
 };
 
 inline std::optional<std::vector<status>>               test_all (const std::vector<request>& requests)

@@ -498,7 +498,7 @@ public:
   [[nodiscard]]                                                           
   request                                   persistent_send               (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Send_init, (data, size, data_type.native(), destination, tag, native_, &result.native_))
     return result;
   }
@@ -511,7 +511,7 @@ public:
   [[nodiscard]]                                                           
   request                                   persistent_synchronous_send   (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Ssend_init, (data, size, data_type.native(), destination, tag, native_, &result.native_))
     return result;
   }
@@ -524,7 +524,7 @@ public:
   [[nodiscard]]
   request                                   persistent_buffered_send      (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Bsend_init, (data, size, data_type.native(), destination, tag, native_, &result.native_))
     return result;
   }
@@ -537,7 +537,7 @@ public:
   [[nodiscard]]                                                           
   request                                   persistent_ready_send         (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Rsend_init, (data, size, data_type.native(), destination, tag, native_, &result.native_))
     return result;
   }
@@ -552,7 +552,7 @@ public:
   [[nodiscard]]                                                           
   request                                   partitioned_send              (const std::int32_t partitions, const void* data, const std::int64_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Psend_init, (data, partitions, size, data_type.native(), destination, tag, native_, info.native(), &result.native_))
     return result;
   }
@@ -593,7 +593,7 @@ public:
   [[nodiscard]]
   request                                   persistent_receive            (      void* data, const std::int32_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Recv_init, (data, size, data_type.native(), source, tag, native_, &result.native_))
     return result;
   }
@@ -607,7 +607,7 @@ public:
   [[nodiscard]]
   request                                   partitioned_receive           (const std::int32_t partitions, void* data, const std::int64_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Precv_init, (data, partitions, size, data_type.native(), source, tag, native_, info.native(), &result.native_))
     return result;
   }
@@ -736,7 +736,7 @@ public:
   [[nodiscard]]                                                           
   request                                   persistent_barrier            (const mpi::information& info = mpi::information()) const
   {
-    request request(MPI_REQUEST_NULL, true);
+    request request(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Barrier_init, (native_, info.native(), &request.native_))
     return request;
   }
@@ -794,7 +794,7 @@ public:
   request                                   persistent_all_to_all         (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
                                                                                  void*        received, const std::int32_t received_size, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Alltoall_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -895,7 +895,7 @@ public:
   request                                   persistent_all_to_all_varying (const void*          sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int32_t>& sent_displacements    , const data_type& sent_data_type    ,
                                                                                  void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& received_displacements, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Alltoallv_init, (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_type    .native(), 
                                               received, received_sizes.data(), received_displacements.data(), received_data_type.native(), native_, info.native(), &result.native_))
     return result;
@@ -939,7 +939,7 @@ public:
   request                                   persistent_all_to_all_general (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int32_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
                                                                                  void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Alltoallw_init, (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
                                               received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_, info.native(), &result.native_))
     return result;
@@ -998,7 +998,7 @@ public:
   request                                   persistent_all_gather         (const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
                                                                                  void*        received, const std::int32_t received_size, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Allgather_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -1092,7 +1092,7 @@ public:
   request                                   persistent_all_gather_varying (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
                                                                                  void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Allgatherv_init, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -1152,7 +1152,7 @@ public:
   [[nodiscard]]
   request                                   persistent_all_reduce         (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Allreduce_init, (sent, received, size, data_type.native(), op.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -1209,7 +1209,7 @@ public:
   [[nodiscard]]
   request                                   persistent_reduce_scatter     (const void* sent, void* received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Reduce_scatter_init, (sent, received, sizes.data(), data_type.native(), op.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -1266,7 +1266,7 @@ public:
   [[nodiscard]]
   request                                   persistent_reduce_scatter_block(const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Reduce_scatter_block_init, (sent, received, size, data_type.native(), op.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -1341,7 +1341,7 @@ public:
                                                                                  void*        received    , const std::int32_t      received_size , const data_type& received_data_type,  
                                                                            const std::int32_t root     = 0, const mpi::information& info          = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Gather_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, info.native(), &result.native_))
     return  result;
   }
@@ -1435,7 +1435,7 @@ public:
   request                                   persistent_gather_varying     (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
                                                                                  void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Gatherv_init, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), root, native_, info.native(), &result.native_))
     return  result;
   }
@@ -1512,7 +1512,7 @@ public:
   [[nodiscard]]
   request                                   persistent_reduce             (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Reduce_init, (sent, received, size, data_type.native(), op.native(), root, native_, info.native(), &result.native_))
     return  result;
   }
@@ -1559,7 +1559,7 @@ public:
   [[nodiscard]]                                                           
   request                                   persistent_broadcast          (void* data, const std::int32_t count, const data_type& data_type, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Bcast_init, (data, count, data_type.native(), root, native_, info.native(), &result.native_))
     return result;
   }
@@ -1626,7 +1626,7 @@ public:
                                                                                  void*        received   , const std::int32_t      received_size , const data_type& received_data_type, 
                                                                            const std::int32_t root    = 0, const mpi::information& info          = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Scatter_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, info.native(), &result.native_))
     return  result;
   }
@@ -1720,7 +1720,7 @@ public:
   request                                   persistent_scatter_varying    (const void* sent    , const std::vector<std::int32_t>& sent_sizes, const std::vector<std::int32_t>& displacements, const data_type& sent_data_type    ,
                                                                                  void* received, const std::int32_t received_size                                                           , const data_type& received_data_type, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Scatterv_init, (sent, sent_sizes.data(), displacements.data(), sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, info, &result.native_))
     return  result;
   }
@@ -1782,7 +1782,7 @@ public:
   [[nodiscard]]
   request                                   persistent_inclusive_scan     (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Scan_init, (sent, received, size, data_type.native(), op.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -1839,7 +1839,7 @@ public:
   [[nodiscard]]
   request                                   persistent_exclusive_scan     (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Exscan_init, (sent, received, size, data_type.native(), op.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -1895,7 +1895,7 @@ public:
   request                                   persistent_neighbor_all_to_all(const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
                                                                                  void* received, const std::int32_t received_size, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoall_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -1966,7 +1966,7 @@ public:
   request                                   persistent_neighbor_all_to_all_varying(const void*          sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int32_t>& sent_displacements    , const data_type& sent_data_type    ,
                                                                                          void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& received_displacements, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoallv_init, (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_type    .native(), 
                                                        received, received_sizes.data(), received_displacements.data(), received_data_type.native(), native_, info.native(), &result.native_))
     return result;
@@ -2004,7 +2004,7 @@ public:
   request                                   persistent_neighbor_all_to_all_general(const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
                                                                                          void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoallw_init, (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
                                                        received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_, info.native(), &result.native_))
     return result;
@@ -2047,7 +2047,7 @@ public:
   request                                   persistent_neighbor_all_gather(const void*        sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
                                                                                  void*        received, const std::int32_t received_size, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_allgather_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, info.native(), &result.native_))
     return  result;
   }
@@ -2111,7 +2111,7 @@ public:
   request                                   persistent_neighbor_all_gather_varying (const void* sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
                                                                                           void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
   {
-    request result(MPI_REQUEST_NULL, true);
+    request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_allgatherv_init, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), native_, info.native(), &result.native_))
     return  result;
   }
