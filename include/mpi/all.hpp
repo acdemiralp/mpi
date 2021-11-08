@@ -69,6 +69,8 @@
 #include <mpi/core/version.hpp>
 #include <mpi/core/window.hpp>
 
+#include <mpi/extensions/detach.hpp>
+
 #include <mpi/io/enums/access_mode.hpp>
 #include <mpi/io/enums/seek_mode.hpp>
 #include <mpi/io/structs/file_view.hpp>

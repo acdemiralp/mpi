@@ -112,6 +112,10 @@ public:
   }
 #endif
 
+#ifdef MPI_USE_DETACH
+  void                  detach             (const std::function<void(const status&)>& function);
+#endif
+
   [[nodiscard]]
   bool                  managed            () const
   {
