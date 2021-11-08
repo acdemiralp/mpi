@@ -12,11 +12,11 @@ namespace mpi
 class status : public MPI_Status
 {
 public:
-  status           () : MPI_Status {0, 0, 0, 0, 0}
+  status           () : MPI_Status {}
   {
-    
+
   }
-  explicit status  (const MPI_Status& native) : MPI_Status(native)
+  status           (const MPI_Status& native) : MPI_Status(native)
   {
     
   }
@@ -31,7 +31,7 @@ public:
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Get_count, (this, type.native(), &result))
-    MPI_CHECK_UNDEFINED (MPI_Get_count, size)
+    MPI_CHECK_UNDEFINED (MPI_Get_count, result)
     return result;
   }
 

@@ -192,7 +192,7 @@ public:
   [[nodiscard]]
   status                               read                  (void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read, (native_, data, count, data_type.native(), &result))
     return result;
   }
@@ -213,7 +213,7 @@ public:
   [[nodiscard]]
   status                               read_all              (void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_all, (native_, data, count, data_type.native(), &result))
     return result;
   }
@@ -245,7 +245,7 @@ public:
   [[nodiscard]]
   status                               read_all_end          (void* data) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_all_end, (native_, data, &result))
     return result;
   }
@@ -258,7 +258,7 @@ public:
   [[nodiscard]]
   status                               read_at               (const std::int64_t offset, void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_at, (native_, offset, data, count, data_type.native(), &result))
     return result;
   }
@@ -279,7 +279,7 @@ public:
   [[nodiscard]]
   status                               read_at_all           (const std::int64_t offset, void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_at_all, (native_, offset, data, count, data_type.native(), &result))
     return result;
   }
@@ -311,7 +311,7 @@ public:
   [[nodiscard]]
   status                               read_at_all_end       (void* data) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_at_all_end, (native_, data, &result))
     return result;
   }
@@ -324,7 +324,7 @@ public:
   [[nodiscard]]
   status                               read_ordered          (void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_ordered, (native_, data, count, data_type.native(), &result))
     return result;
   }
@@ -356,7 +356,7 @@ public:
   [[nodiscard]]
   status                               read_ordered_end      (void* data) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_ordered_end, (native_, data, &result))
     return result;
   }
@@ -369,7 +369,7 @@ public:
   [[nodiscard]]
   status                               read_shared           (void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_shared, (native_, data, count, data_type.native(), &result))
     return result;
   }
@@ -459,7 +459,7 @@ public:
   [[nodiscard]]
   status                               write                 (const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write, (native_, data, count, data_type.native(), &result))
     return result;
   }
@@ -472,7 +472,7 @@ public:
   [[nodiscard]]                                              
   status                               write_all             (const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_all, (native_, data, count, data_type.native(), &result))
     return result;
   }
@@ -496,7 +496,7 @@ public:
   [[nodiscard]]                                              
   status                               write_all_end         (const void* data) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_all_end, (native_, data, &result))
     return result;
   }
@@ -509,7 +509,7 @@ public:
   [[nodiscard]]                                              
   status                               write_at              (const std::int64_t offset, const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_at, (native_, offset, data, count, data_type.native(), &result))
     return result;
   }
@@ -522,7 +522,7 @@ public:
   [[nodiscard]]                                              
   status                               write_at_all          (const std::int64_t offset, const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_at_all, (native_, offset, data, count, data_type.native(), &result))
     return result;
   }
@@ -546,7 +546,7 @@ public:
   [[nodiscard]]                                              
   status                               write_at_all_end      (const void* data) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_at_all_end, (native_, data, &result))
     return result;
   }
@@ -559,7 +559,7 @@ public:
   [[nodiscard]]                                              
   status                               write_ordered         (const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_ordered, (native_, data, count, data_type.native(), &result))
     return result;
   }
@@ -583,7 +583,7 @@ public:
   [[nodiscard]]                                              
   status                               write_ordered_end     (const void* data) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_ordered_end, (native_, data, &result))
     return result;
   }
@@ -596,7 +596,7 @@ public:
   [[nodiscard]]                                              
   status                               write_shared          (const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_shared, (native_, data, count, data_type.native(), &result))
     return result;
   }

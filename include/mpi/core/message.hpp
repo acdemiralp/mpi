@@ -26,7 +26,7 @@ public:
   [[nodiscard]]
   status      receive          (void* data, const std::int32_t size, const data_type& data_type)
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_Mrecv, (data, size, data_type.native(), &native_, &result))
     return result;
   }
