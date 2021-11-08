@@ -14,11 +14,12 @@ namespace mpi
 class future
 {
 public:
-  explicit future  (request& request) noexcept
+  future           (request&& request) noexcept
   : request_(request.persistent() ? mpi::request(request.native(), false, true) : std::move(request)) // If persistent create and start an unmanaged copy, else move.
   {
-    if (request_.persistent())
-      request_.start();
+    // TODO CORRECT 
+    //if (request_.persistent())
+    //  request_.start();
   }
   future           (const future&  that) = delete ;
   future           (      future&& temp) = default;
@@ -44,49 +45,49 @@ public:
     return state_ || request_.get_status() != std::nullopt;
   }
 
-  void               wait      ()
+  void               wait      () // Forced non-const.
   {
     state_ = request_.wait();
   }
   template <typename representation, typename period>
   std::future_status wait_for  (const std::chrono::duration<representation, period>& duration) const
   {
-    // TODO
-
-    if (state_)
+    // TODO CORRECT 
+    if (is_ready())
       return std::future_status::ready;
 
     std::this_thread::sleep_for(duration);
 
     if (is_ready())
-      return std::future_status::deferred;
+      return std::future_status::ready;
 
     return std::future_status::timeout;
   }
   template <typename clock, typename duration>
   std::future_status wait_until(const std::chrono::time_point<clock, duration>&      time    ) const
   {
-    // TODO
-
-    if (state_)
+    // TODO CORRECT 
+    if (is_ready())
       return std::future_status::ready;
 
     std::this_thread::sleep_until(time);
 
     if (is_ready())
-      return std::future_status::deferred;
+      return std::future_status::ready;
 
     return std::future_status::timeout;
   }
-
-  future             then      (const std::function<void()>& function)
+  [[nodiscard]]
+  future             then      (std::function<future(future)> function)
   {
     // TODO
+    return std::move(*this);
   }
 
 protected:
   request               request_;
   std::optional<status> state_  ;
 };
+// TODO: mpi::when_all, mpi::when_any, mpi::make_ready_future.
 // TODO: mpi::shared_future. mpi::shared_future mpi::future::share() noexcept.
 }

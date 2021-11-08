@@ -70,6 +70,7 @@
 #include <mpi/core/window.hpp>
 
 #include <mpi/extensions/detach.hpp>
+#include <mpi/extensions/future.hpp>
 
 #include <mpi/io/enums/access_mode.hpp>
 #include <mpi/io/enums/seek_mode.hpp>
