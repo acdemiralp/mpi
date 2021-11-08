@@ -1,8 +1,9 @@
 #pragma once
 
-#include <chrono>
+#include <functional>
 #include <future>
 #include <optional>
+#include <utility>
 
 #include <mpi/core/request.hpp>
 
@@ -59,26 +60,27 @@ protected:
   std::optional<status> state_  ;
 };
 
-template <typename sequence>
-struct when_any_result
-{
-  std::size_t index  ;
-  sequence    futures;
-};
-
 [[nodiscard]]
-inline future                                                                                       make_ready_future()
+inline future make_ready_future()
 {
   return request(MPI_REQUEST_NULL);
 }
-template <typename iterator_type> [[nodiscard]]
-std::future<                std::vector<typename std::iterator_traits<iterator_type>::value_type>>  when_all         (iterator_type begin, iterator_type end)
+[[nodiscard]]
+inline future when_all         (std::vector<request>& requests)
 {
-  
-}
-template <typename iterator_type> [[nodiscard]]
-std::future<when_any_result<std::vector<typename std::iterator_traits<iterator_type>::value_type>>> when_any         (iterator_type begin, iterator_type end)
-{
+  future result;
 
+  wait_all(requests);
+  
+  return result;
+}
+[[nodiscard]]
+inline future when_any         (std::vector<request>& requests)
+{
+  future result;
+
+  wait_any(requests);
+
+  return result;
 }
 }
