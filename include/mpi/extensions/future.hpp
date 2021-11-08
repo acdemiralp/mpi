@@ -17,9 +17,8 @@ public:
   future           (request&& request) noexcept
   : request_(request.persistent() ? mpi::request(request.native(), false, true) : std::move(request)) // If persistent create and start an unmanaged copy, else move.
   {
-    // TODO CORRECT 
-    //if (request_.persistent())
-    //  request_.start();
+    if (request_.persistent())
+      request_.start();
   }
   future           (const future&  that) = delete ;
   future           (      future&& temp) = default;
@@ -28,66 +27,58 @@ public:
   future& operator=(      future&& temp) = default;
 
   [[nodiscard]]
-  status             get       ()
-  {
-    wait();
-    return *state_;
-  }
-  [[nodiscard]]
-  bool               valid     () const noexcept
+  bool   valid   () const noexcept
   {
     // Note: Persistent requests are always valid until destruction.
     return request_.native() != MPI_REQUEST_NULL; 
   }
   [[nodiscard]]
-  bool               is_ready  () const noexcept
+  bool   is_ready() const noexcept
   {
     return state_ || request_.get_status() != std::nullopt;
   }
 
-  void               wait      () // Forced non-const.
+  void   wait    () // Forced non-const.
   {
     state_ = request_.wait();
   }
-  template <typename representation, typename period>
-  std::future_status wait_for  (const std::chrono::duration<representation, period>& duration) const
+  [[nodiscard]]
+  status get     ()
   {
-    // TODO CORRECT 
-    if (is_ready())
-      return std::future_status::ready;
-
-    std::this_thread::sleep_for(duration);
-
-    if (is_ready())
-      return std::future_status::ready;
-
-    return std::future_status::timeout;
-  }
-  template <typename clock, typename duration>
-  std::future_status wait_until(const std::chrono::time_point<clock, duration>&      time    ) const
-  {
-    // TODO CORRECT 
-    if (is_ready())
-      return std::future_status::ready;
-
-    std::this_thread::sleep_until(time);
-
-    if (is_ready())
-      return std::future_status::ready;
-
-    return std::future_status::timeout;
+    wait();
+    return *state_;
   }
   [[nodiscard]]
-  future             then      (std::function<future(future)> function)
+  future then    (const std::function<future(future)>& function)
   {
-    // TODO
-    return std::move(*this);
+    return function(std::move(*this));
   }
 
 protected:
   request               request_;
   std::optional<status> state_  ;
 };
-// TODO: mpi::when_all, mpi::when_any, mpi::make_ready_future.
-// TODO: mpi::shared_future. mpi::shared_future mpi::future::share() noexcept.
+
+template <typename sequence>
+struct when_any_result
+{
+  std::size_t index  ;
+  sequence    futures;
+};
+
+[[nodiscard]]
+inline future                                                                                       make_ready_future()
+{
+  return request(MPI_REQUEST_NULL);
+}
+template <typename iterator_type> [[nodiscard]]
+std::future<                std::vector<typename std::iterator_traits<iterator_type>::value_type>>  when_all         (iterator_type begin, iterator_type end)
+{
+  
+}
+template <typename iterator_type> [[nodiscard]]
+std::future<when_any_result<std::vector<typename std::iterator_traits<iterator_type>::value_type>>> when_any         (iterator_type begin, iterator_type end)
+{
+
+}
 }
