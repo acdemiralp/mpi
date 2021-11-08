@@ -1,4 +1,8 @@
+#include <iostream>
+
 #include "internal/doctest.h"
+
+#define MPI_USE_EXCEPTIONS
 
 #include <mpi/all.hpp>
 
@@ -53,4 +57,32 @@ TEST_CASE("Future Test")
     })
     .get();
   REQUIRE(data == 3);
+
+  std::int32_t data_1 = 0;
+  std::int32_t data_2 = 0;
+  if (communicator.rank() == 0)
+    data_1 = 1;
+  if (communicator.rank() == 1)
+    data_2 = 1;
+
+  std::vector<mpi::request> requests;
+  requests.push_back(communicator.immediate_broadcast(data_1, 0));
+  requests.push_back(communicator.immediate_broadcast(data_2, 1));
+  wait_all(requests);
+
+  REQUIRE(data_1 == 1);
+  REQUIRE(data_2 == 1);
+
+  if (communicator.rank() == 0)
+    data_1 = 2;
+  if (communicator.rank() == 1)
+    data_2 = 2;
+
+  requests.clear();
+  requests.push_back(communicator.immediate_broadcast(data_1, 0));
+  requests.push_back(communicator.immediate_broadcast(data_2, 1));
+  when_all(requests).get();
+
+  REQUIRE(data_1 == 2);
+  REQUIRE(data_2 == 2);
 }

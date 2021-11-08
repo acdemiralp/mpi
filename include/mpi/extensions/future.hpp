@@ -49,6 +49,7 @@ public:
     wait();
     return *state_;
   }
+
   [[nodiscard]]
   future then    (const std::function<future(future)>& function)
   {
@@ -68,19 +69,21 @@ inline future make_ready_future()
 [[nodiscard]]
 inline future when_all         (std::vector<request>& requests)
 {
-  future result;
-
-  wait_all(requests);
-  
-  return result;
+  return make_ready_future().then([&] (future future)
+  {
+    auto result = future.get();
+    wait_all(requests);
+    return make_ready_future();
+  });
 }
 [[nodiscard]]
 inline future when_any         (std::vector<request>& requests)
 {
-  future result;
-
-  wait_any(requests);
-
-  return result;
+  return make_ready_future().then([&] (future future)
+  {
+    auto result = future.get();
+    wait_any(requests);
+    return make_ready_future();
+  });
 }
 }
