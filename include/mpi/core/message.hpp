@@ -26,7 +26,7 @@ public:
   [[nodiscard]]
   status      receive          (void* data, const std::int32_t size, const data_type& data_type)
   {
-    status result;
+    MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_Mrecv, (data, size, data_type.native(), &native_, &result))
     return result;
   }
@@ -50,7 +50,7 @@ public:
   request     immediate_receive(type& data)
   {
     using adapter = container_adapter<type>;
-    return receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 
   [[nodiscard]]

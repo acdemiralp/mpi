@@ -7,6 +7,7 @@
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 #include <mpi/core/request.hpp>
+#include <mpi/core/status.hpp>
 
 namespace mpi
 {
@@ -27,9 +28,9 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Grequest_start, (query_function, free_function, cancel_function, extra_state, &native_))
   }
   explicit generalized_request  (
-    const std::function<error_code(MPI_Status&)>& query_function , 
-    const std::function<error_code()>&            free_function  ,
-    const std::function<error_code(bool)>&        cancel_function)
+    const std::function<error_code(status)>& query_function , 
+    const std::function<error_code()>&       free_function  ,
+    const std::function<error_code(bool)>&   cancel_function)
   : request(MPI_REQUEST_NULL, true), query_function_(query_function), free_function_(free_function), cancel_function_(cancel_function)
   {
     MPI_CHECK_ERROR_CODE(MPI_Grequest_start, (
@@ -63,8 +64,8 @@ public:
   }
 
 protected:
-  std::function<error_code(MPI_Status&)> query_function_ ;
-  std::function<error_code()>            free_function_  ;
-  std::function<error_code(bool)>        cancel_function_;
+  std::function<error_code(status)> query_function_ ;
+  std::function<error_code()>       free_function_  ;
+  std::function<error_code(bool)>   cancel_function_;
 };
 }
