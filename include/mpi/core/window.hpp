@@ -89,7 +89,7 @@ public:
 
   // A static member function for construction is bad practice but constructors do not support templates if the type does not appear in the arguments.
   template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void>>>
-  static window allocate (const communicator& communicator, const std::int64_t size, const bool shared = false, const information& information = mpi::information())
+  static window allocate (const communicator& communicator, const std::int64_t size = 1, const bool shared = false, const information& information = mpi::information())
   {
     window result;
     void*  base_pointer; // Unused. Call base_pointer() explicitly.
