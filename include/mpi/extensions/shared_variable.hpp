@@ -4,6 +4,7 @@
 
 #include <mpi/core/communicators/communicator.hpp>
 #include <mpi/core/type/type_traits.hpp>
+#include <mpi/core/window.hpp>
 
 namespace mpi
 {
@@ -70,7 +71,7 @@ public:
   using base = manual_shared_variable<type>;
 
   explicit automatic_shared_variable  (const communicator& communicator, const std::int32_t root = 0)
-  : manual_shared_variable<type>(communicator, root)
+  : base(communicator, root)
   {
 
   }
