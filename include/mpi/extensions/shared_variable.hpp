@@ -85,15 +85,9 @@ public:
     return base::get();
   }
 
-  void set_if_rank    (const type& value, const std::int32_t rank)
+  void set_if_rank(const type& value, const std::int32_t rank)
   {
     if (base::communicator_.rank() == rank)
-      base::set(value);
-    base::synchronize();
-  }
-  void set_if_not_rank(const type& value, const std::int32_t rank)
-  {
-    if (base::communicator_.rank() != rank)
       base::set(value);
     base::synchronize();
   }
