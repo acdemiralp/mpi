@@ -71,6 +71,7 @@
 
 #include <mpi/extensions/detach.hpp>
 #include <mpi/extensions/future.hpp>
+#include <mpi/extensions/sync_variable.hpp>
 
 #include <mpi/io/enums/access_mode.hpp>
 #include <mpi/io/enums/seek_mode.hpp>
