@@ -28,7 +28,7 @@ public:
   explicit window  (const communicator& communicator, const std::int64_t size, const std::int32_t displacement_unit = 1, const bool shared = false, const information& information = mpi::information())
   : managed_(true)
   {
-    void*  base_pointer; // Unused. Call base_pointer() explicitly.
+    void* base_pointer; // Unused. Call base_pointer() explicitly.
     if (shared)
       MPI_CHECK_ERROR_CODE(MPI_Win_allocate_shared, (size, displacement_unit, information.native(), communicator.native(), &base_pointer, &native_))
     else
@@ -89,7 +89,7 @@ public:
 
   // A static member function for construction is bad practice but constructors do not support templates if the type does not appear in the arguments.
   template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void>>>
-  static window allocate (const communicator& communicator, const std::int64_t size, const bool shared = false, const information& information = mpi::information())
+  static window allocate (const communicator& communicator, const std::int64_t size = 1, const bool shared = false, const information& information = mpi::information())
   {
     window result;
     void*  base_pointer; // Unused. Call base_pointer() explicitly.
@@ -157,7 +157,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Win_call_errhandler, (native_, value.native()))
   }
                                              
-  template <typename type>                   
+  template <typename type> [[nodiscard]]
   std::optional<type>  attribute             (const window_key_value& key) const
   {
     type         result;
@@ -285,13 +285,13 @@ public:
   }
 
   // Remote memory access operations.
-  void                 get                   (void*              source                                             , const std::int32_t source_size, const data_type& source_data_type, 
+  void                 get                   (      void*        source                                             , const std::int32_t source_size, const data_type& source_data_type, 
                                               const std::int32_t target_rank, const std::int64_t target_displacement, const std::int32_t target_size, const data_type& target_data_type) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Get, (source, source_size, source_data_type.native(), target_rank, target_displacement, target_size, target_data_type.native(), native_))
   }
   template <typename type>                   
-  void                 get                   (const type&        source     , 
+  void                 get                   (      type&        source     , 
                                               const std::int32_t target_rank, const std::int64_t target_displacement, const std::int32_t target_size, const data_type& target_data_type) const
   {
     using adapter = container_adapter<type>;
@@ -332,7 +332,7 @@ public:
   }
   template <typename source_type, typename result_type>
   void                 get_accumulate        (const source_type& source     , 
-                                              const result_type& result     ,
+                                                    result_type& result     ,
                                               const std::int32_t target_rank, const std::int64_t target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum) const
   {
     using source_adapter = container_adapter<source_type>;
@@ -343,30 +343,30 @@ public:
       target_rank, target_displacement, target_size, target_data_type, op);
   }
                                           
-  void                 fetch_and_op          (const void* source, void*       result, const data_type& data_type, const std::int32_t target_rank, const std::int64_t target_displacement, const op& op = ops::sum) const
+  void                 fetch_and_op          (const void* source,                      void* result, const data_type& data_type, const std::int32_t target_rank, const std::int64_t target_displacement, const op& op = ops::sum) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Fetch_and_op, (source, result, data_type.native(), target_rank, target_displacement, op.native(), native_))
   }
   template <typename type>
-  void                 fetch_and_op          (const type& source, const type& result,                             const std::int32_t target_rank, const std::int64_t target_displacement, const op& op = ops::sum) const
+  void                 fetch_and_op          (const type& source,                      type& result                            , const std::int32_t target_rank, const std::int64_t target_displacement, const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
     fetch_and_op(static_cast<const void*>(adapter::data(source)), static_cast<void*>(adapter::data(result)), adapter::data_type(), target_rank, target_displacement, op);
   }
                                   
-  void                 compare_and_swap      (const void* source, const void* compare, void*       result, const data_type& data_type, const std::int32_t target_rank, const std::int64_t target_displacement) const
+  void                 compare_and_swap      (const void* source, const void* compare, void* result, const data_type& data_type, const std::int32_t target_rank, const std::int64_t target_displacement) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Compare_and_swap, (source, compare, result, data_type.native(), target_rank, target_displacement, native_))
   }
   template <typename type>
-  void                 compare_and_swap      (const type& source, const type& compare, const type& result,                             const std::int32_t target_rank, const std::int64_t target_displacement) const
+  void                 compare_and_swap      (const type& source, const type& compare, type& result                            , const std::int32_t target_rank, const std::int64_t target_displacement) const
   {
     using adapter = container_adapter<type>;
     compare_and_swap(static_cast<const void*>(adapter::data(source)), static_cast<const void*>(adapter::data(compare)), static_cast<void*>(adapter::data(result)), adapter::data_type(), target_rank, target_displacement);
   }
 
   // Request remote memory access operations.
-  request              request_get           (void*              source                                             , const std::int32_t source_size, const data_type& source_data_type, 
+  request              request_get           (      void*        source                                             , const std::int32_t source_size, const data_type& source_data_type, 
                                               const std::int32_t target_rank, const std::int64_t target_displacement, const std::int32_t target_size, const data_type& target_data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
@@ -374,7 +374,7 @@ public:
     return result;
   }
   template <typename type>                   
-  request              request_get           (const type&        source     , 
+  request              request_get           (      type&        source     , 
                                               const std::int32_t target_rank, const std::int64_t target_displacement, const std::int32_t target_size, const data_type& target_data_type) const
   {
     using adapter = container_adapter<type>;
@@ -421,7 +421,7 @@ public:
   }
   template <typename source_type, typename result_type>
   request              request_get_accumulate(const source_type& source     , 
-                                              const result_type& result     ,
+                                                    result_type& result     ,
                                               const std::int32_t target_rank, const std::int64_t target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum) const
   {
     using source_adapter = container_adapter<source_type>;

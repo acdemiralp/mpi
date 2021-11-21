@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "internal/doctest.h"
 
 #define MPI_USE_EXCEPTIONS
