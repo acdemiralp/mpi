@@ -55,9 +55,9 @@ struct type_traits<type, std::enable_if_t<std::is_arithmetic_v<type>>>
       else if constexpr (std::is_same_v<type, std::uint16_t            >) return data_type(MPI_UINT16_T               );
       else if constexpr (std::is_same_v<type, std::uint32_t            >) return data_type(MPI_UINT32_T               );
       else if constexpr (std::is_same_v<type, std::uint64_t            >) return data_type(MPI_UINT64_T               );
-      else if constexpr (std::is_same_v<type, MPI_Aint                 >) return data_type(MPI_AINT                   );
-      else if constexpr (std::is_same_v<type, MPI_Count                >) return data_type(MPI_COUNT                  );
-      else if constexpr (std::is_same_v<type, MPI_Offset               >) return data_type(MPI_OFFSET                 );
+      else if constexpr (std::is_same_v<type, aint                     >) return data_type(MPI_AINT                   );
+      else if constexpr (std::is_same_v<type, count                    >) return data_type(MPI_COUNT                  );
+      else if constexpr (std::is_same_v<type, offset                   >) return data_type(MPI_OFFSET                 );
       else 
       {
         static_assert(missing_implementation<type>::value, "Missing get_data_type() implementation for arithmetic type.");

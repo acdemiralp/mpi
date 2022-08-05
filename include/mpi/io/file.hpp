@@ -69,16 +69,16 @@ public:
     return result;
   }
   [[nodiscard]]                                              
-  MPI_Offset                           byte_offset           (const MPI_Offset offset) const
+  offset                               byte_offset           (const offset value) const
   {
-    MPI_Offset result;
-    MPI_CHECK_ERROR_CODE(MPI_File_get_byte_offset    , (native_, offset, &result))
+    offset result;
+    MPI_CHECK_ERROR_CODE(MPI_File_get_byte_offset    , (native_, value, &result))
     return result;
   }
   [[nodiscard]]                                              
-  MPI_Aint                             extent                (const data_type& type) const
+  aint                                 extent                (const data_type& type) const
   {
-    MPI_Aint result;
+    aint result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_type_extent, (native_, type.native(), &result))
     return result;
   }
@@ -90,16 +90,16 @@ public:
     return result;
   }
   [[nodiscard]]                                              
-  MPI_Offset                           position              () const
+  offset                               position              () const
   {
-    MPI_Offset result;
+    offset result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_position       , (native_, &result))
     return result;
   }
   [[nodiscard]]                                              
-  MPI_Offset                           shared_position       () const
+  offset                               shared_position       () const
   {
-    MPI_Offset result;
+    offset result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_position_shared, (native_, &result))
     return result;
   }
@@ -117,9 +117,9 @@ public:
   }
                                                              
   [[nodiscard]]                                              
-  MPI_Offset                           size                  () const
+  offset                               size                  () const
   {
-    MPI_Offset result;
+    offset result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_size, (native_, &result))
     return result;
   }
