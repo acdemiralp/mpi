@@ -1,8 +1,7 @@
 #pragma once
 
-#include <cstdint>
-
 #include <mpi/core/type/data_type.hpp>
+#include <mpi/core/mpi.hpp>
 #include <mpi/io/data_representation.hpp>
 
 namespace mpi::io

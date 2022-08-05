@@ -56,9 +56,9 @@ struct event_source
   event_source& operator=(      event_source&& temp) = default;
 
   [[nodiscard]]
-  std::int64_t timestamp() const
+  count timestamp() const
   {
-    std::int64_t result;
+    count result;
     MPI_CHECK_ERROR_CODE(MPI_T_source_get_timestamp, (index, &result))
     return result;
   }
@@ -69,8 +69,8 @@ struct event_source
   std::string                description     ;
                              
   bool                       ordered         ;
-  std::int64_t               ticks_per_second;
-  std::int64_t               maximum_ticks   ;
+  count                      ticks_per_second;
+  count                      maximum_ticks   ;
 
   std::optional<information> information     ;
 };

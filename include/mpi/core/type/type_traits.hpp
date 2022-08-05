@@ -231,8 +231,8 @@ struct type_traits<type>
   
       std::vector<data_type>    data_types   ; data_types   .reserve(count);
       std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
-      std::vector<std::int64_t> displacements; displacements.reserve(count);
-      std::int64_t              displacement (0);
+      std::vector<aint>         displacements; displacements.reserve(count);
+      aint                      displacement (0);
 
       tuple_for_each([&] <typename lambda_type> (lambda_type& field)
       {
@@ -262,8 +262,8 @@ struct type_traits<type, std::enable_if_t<std::conjunction_v<std::negation<is_ar
   
       std::vector<data_type>    data_types   ; data_types   .reserve(count);
       std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
-      std::vector<std::int64_t> displacements; displacements.reserve(count);
-      std::int64_t              displacement (0);
+      std::vector<aint>         displacements; displacements.reserve(count);
+      aint                      displacement (0);
   
       pfr::for_each_field(type(), [&] <typename lambda_type> (lambda_type& field)
       {

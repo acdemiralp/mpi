@@ -2,12 +2,14 @@
 
 #include <cstdint>
 
+#include <mpi/core/mpi.hpp>
+
 namespace mpi
 {
 struct window_information
 {
   void*        base        ;
-  std::int64_t size        ;
+  aint         size        ;
   std::int32_t displacement;
 };
 }

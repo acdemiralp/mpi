@@ -88,7 +88,7 @@ public:
   }
 
   template <typename type>
-  type                                 read       () const
+  type                                 read   () const
   {
     type result;
     container_adapter<type>::resize(result, count_);
@@ -96,28 +96,28 @@ public:
     return result;
   }
   template <typename type>
-  void                                 write      (const type& value) const
+  void                                 write  (const type& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_T_cvar_write, (native_, container_adapter<type>::data(value)))
   }
 
   [[nodiscard]]
-  bool                                 managed    () const
+  bool                                 managed() const
   {
     return managed_;
   }
   [[nodiscard]]
-  MPI_T_cvar_handle                    native     () const
+  MPI_T_cvar_handle                    native () const
   {
     return native_;
   }
   [[nodiscard]]
-  std::int32_t                         count      () const
+  std::int32_t                         count  () const
   {
     return count_;
   }
   [[nodiscard]]
-  const std::optional<object_variant>& object     () const
+  const std::optional<object_variant>& object () const
   {
     return object_;
   }

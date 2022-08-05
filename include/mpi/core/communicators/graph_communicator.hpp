@@ -74,6 +74,5 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Graph_neighbors, (native_, rank, static_cast<std::int32_t>(result.size()), result.data()))
     return result;
   }
-
 };
 }

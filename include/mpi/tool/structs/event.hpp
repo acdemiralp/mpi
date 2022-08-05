@@ -81,7 +81,7 @@ struct event
   verbosity                  verbosity    ;
 
   std::vector<data_type>     data_types   ;
-  std::vector<std::int64_t>  displacements;
+  std::vector<aint>          displacements;
 
   std::optional<information> information  ;
   std::optional<enumeration> enumeration  ;
