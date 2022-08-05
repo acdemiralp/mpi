@@ -55,9 +55,9 @@ struct type_traits<type, std::enable_if_t<std::is_arithmetic_v<type>>>
       else if constexpr (std::is_same_v<type, std::uint16_t            >) return data_type(MPI_UINT16_T               );
       else if constexpr (std::is_same_v<type, std::uint32_t            >) return data_type(MPI_UINT32_T               );
       else if constexpr (std::is_same_v<type, std::uint64_t            >) return data_type(MPI_UINT64_T               );
-      else if constexpr (std::is_same_v<type, MPI_Aint                 >) return data_type(MPI_AINT                   );
-      else if constexpr (std::is_same_v<type, MPI_Count                >) return data_type(MPI_COUNT                  );
-      else if constexpr (std::is_same_v<type, MPI_Offset               >) return data_type(MPI_OFFSET                 );
+      else if constexpr (std::is_same_v<type, aint                     >) return data_type(MPI_AINT                   );
+      else if constexpr (std::is_same_v<type, count                    >) return data_type(MPI_COUNT                  );
+      else if constexpr (std::is_same_v<type, offset                   >) return data_type(MPI_OFFSET                 );
       else 
       {
         static_assert(missing_implementation<type>::value, "Missing get_data_type() implementation for arithmetic type.");
@@ -231,8 +231,8 @@ struct type_traits<type>
   
       std::vector<data_type>    data_types   ; data_types   .reserve(count);
       std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
-      std::vector<std::int64_t> displacements; displacements.reserve(count);
-      std::int64_t              displacement (0);
+      std::vector<aint>         displacements; displacements.reserve(count);
+      aint                      displacement (0);
 
       tuple_for_each([&] <typename lambda_type> (lambda_type& field)
       {
@@ -262,8 +262,8 @@ struct type_traits<type, std::enable_if_t<std::conjunction_v<std::negation<is_ar
   
       std::vector<data_type>    data_types   ; data_types   .reserve(count);
       std::vector<std::int32_t> block_lengths; block_lengths.reserve(count);
-      std::vector<std::int64_t> displacements; displacements.reserve(count);
-      std::int64_t              displacement (0);
+      std::vector<aint>         displacements; displacements.reserve(count);
+      aint                      displacement (0);
   
       pfr::for_each_field(type(), [&] <typename lambda_type> (lambda_type& field)
       {

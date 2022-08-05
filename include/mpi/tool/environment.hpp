@@ -17,7 +17,7 @@ public:
   }
   environment           (const environment&  that) = delete;
   environment           (      environment&& temp) = delete;
-  virtual ~environment  ()
+  virtual ~environment  () noexcept(false)
   {
     MPI_CHECK_ERROR_CODE(MPI_T_finalize, ())
   }

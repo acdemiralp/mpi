@@ -15,7 +15,7 @@ namespace mpi::tool
 class event_instance
 {
 public:
-  explicit event_instance  (const MPI_T_event_instance native, const std::int64_t copy_buffer_size = 8)
+  explicit event_instance  (const MPI_T_event_instance native, const std::size_t copy_buffer_size = 8)
   : native_(native), copy_buffer_size_(copy_buffer_size)
   {
     
@@ -27,9 +27,9 @@ public:
   event_instance& operator=(      event_instance&& temp) = default;
 
   [[nodiscard]]
-  std::int64_t         timestamp       () const
+  count                timestamp       () const
   {
-    std::int64_t result;
+    count result;
     MPI_CHECK_ERROR_CODE(MPI_T_event_get_timestamp, (native_, &result))
     return result;
   }
@@ -72,14 +72,14 @@ public:
     return native_;
   }
   [[nodiscard]]
-  std::int64_t         copy_buffer_size() const
+  std::size_t          copy_buffer_size() const
   {
     return copy_buffer_size_;
   }
 
 protected:
   MPI_T_event_instance native_;
-  std::int64_t         copy_buffer_size_;
+  std::size_t          copy_buffer_size_;
 };
 #endif
 }

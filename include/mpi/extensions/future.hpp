@@ -43,7 +43,6 @@ public:
   {
     state_ = request_.wait();
   }
-  [[nodiscard]]
   status get     ()
   {
     wait();

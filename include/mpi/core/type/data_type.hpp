@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include <mpi/core/enums/combiner.hpp>
 #include <mpi/core/enums/type_class.hpp>
 #include <mpi/core/structs/data_type_information.hpp>
 #include <mpi/core/structs/distributed_array_information.hpp>
@@ -36,7 +35,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_match_size, (static_cast<std::int32_t>(type), size, &native_))
   }
-  data_type           (const std::vector<data_type>& data_types, const std::vector<std::int32_t>& block_lengths, const std::vector<std::int64_t>& displacements)
+  data_type           (const std::vector<data_type>& data_types, const std::vector<std::int32_t>& block_lengths, const std::vector<aint>& displacements)
   : managed_(true)
   {
     std::vector<MPI_Datatype> raw_data_types(data_types.size());
@@ -52,7 +51,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_contiguous, (count, that.native_, &native_)) 
   }
-  data_type           (const data_type&  that, const std::int64_t lower_bound, const std::int64_t extent)
+  data_type           (const data_type&  that, const aint lower_bound, const aint extent)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_resized, (that.native_, lower_bound, extent, &native_)) 
@@ -62,7 +61,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_vector , (count, block_length, stride, that.native_, &native_)) 
   }
-  data_type           (const data_type&  that, const std::int32_t count, const std::int32_t block_length, const std::int64_t stride)
+  data_type           (const data_type&  that, const std::int32_t count, const std::int32_t block_length, const aint         stride)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_hvector, (count, block_length, stride, that.native_, &native_))
@@ -72,7 +71,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_indexed_block , (static_cast<std::int32_t>(displacements.size()), block_length, displacements.data(), that.native_, &native_))
   }
-  data_type           (const data_type&  that, const std::int32_t               block_length , const std::vector<std::int64_t>& displacements)
+  data_type           (const data_type&  that, const std::int32_t               block_length , const std::vector<aint>&         displacements)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_hindexed_block, (static_cast<std::int32_t>(displacements.size()), block_length, displacements.data(), that.native_, &native_))
@@ -82,7 +81,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_indexed        , (static_cast<std::int32_t>(block_lengths.size()), block_lengths.data(), displacements.data(), that.native_, &native_))
   }
-  data_type           (const data_type&  that, const std::vector<std::int32_t>& block_lengths, const std::vector<std::int64_t>& displacements)
+  data_type           (const data_type&  that, const std::vector<std::int32_t>& block_lengths, const std::vector<aint>&         displacements)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_hindexed, (static_cast<std::int32_t>(block_lengths.size()), block_lengths.data(), displacements.data(), that.native_, &native_))
@@ -123,7 +122,7 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_DATATYPE_NULL;
   }
-  virtual ~data_type  ()
+  virtual ~data_type  () noexcept(false)
   {
     if (managed_ && native_ != MPI_DATATYPE_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Type_free, (&native_))
@@ -140,7 +139,7 @@ public:
     }
     return *this;
   }
-  data_type& operator=(      data_type&& temp) noexcept
+  data_type& operator=(      data_type&& temp) noexcept(false)
   {
     if (this != &temp)
     {
@@ -157,7 +156,7 @@ public:
   }
 
   [[nodiscard]]
-  std::int32_t                size            () const
+  std::int32_t          size            () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Type_size, (native_, &result))
@@ -165,51 +164,51 @@ public:
     return result;
   }
   [[nodiscard]]
-  std::int64_t                size_x          () const
+  count                 size_x          () const
   {
-    std::int64_t result;
+    count result;
     MPI_CHECK_ERROR_CODE(MPI_Type_size_x, (native_, &result))
     MPI_CHECK_UNDEFINED (MPI_Type_size_x, result)
     return result;
   }
   [[nodiscard]]
-  std::array<std::int64_t, 2> extent          () const
+  std::array<aint , 2>  extent          () const
   {
-    std::array<std::int64_t, 2> result {};
+    std::array<aint, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_extent, (native_, &result[0], &result[1]))
     MPI_CHECK_UNDEFINED (MPI_Type_get_extent, result[0])
     MPI_CHECK_UNDEFINED (MPI_Type_get_extent, result[1])
     return result;
   }
   [[nodiscard]]
-  std::array<std::int64_t, 2> extent_x        () const
+  std::array<count, 2>  extent_x        () const
   {
-    std::array<std::int64_t, 2> result {};
+    std::array<count, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_extent_x, (native_, &result[0], &result[1]))
     MPI_CHECK_UNDEFINED (MPI_Type_get_extent_x, result[0])
     MPI_CHECK_UNDEFINED (MPI_Type_get_extent_x, result[1])
     return result;
   }
   [[nodiscard]]
-  std::array<std::int64_t, 2> true_extent     () const
+  std::array<aint , 2>  true_extent     () const
   {
-    std::array<std::int64_t, 2> result {};
+    std::array<aint, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent, (native_, &result[0], &result[1]))
     MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent, result[0])
     MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent, result[1])
     return result;
   }
   [[nodiscard]]
-  std::array<std::int64_t, 2> true_extent_x   () const
+  std::array<count, 2>  true_extent_x   () const
   {
-    std::array<std::int64_t, 2> result {};
+    std::array<count, 2> result {};
     MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent_x, (native_, &result[0], &result[1]))
     MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent_x, result[0])
     MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent_x, result[1])
     return result;
   }
   [[nodiscard]]
-  data_type_information       information     () const
+  data_type_information information     () const
   {
     data_type_information result;
 
@@ -244,7 +243,7 @@ public:
   }
 
   [[nodiscard]]
-  std::string                 name            () const
+  std::string           name            () const
   {
     std::string  result(MPI_MAX_OBJECT_NAME, '\n');
     std::int32_t count (0);
@@ -252,13 +251,13 @@ public:
     result.resize(count);
     return result;
   }
-  void                        set_name        (const std::string& value) const
+  void                  set_name        (const std::string& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_set_name, (native_, value.data()))
   }
 
   template <typename type>
-  std::optional<type>         attribute       (const data_type_key_value& key) const
+  std::optional<type>   attribute       (const data_type_key_value& key) const
   {
     type         result;
     std::int32_t exists;
@@ -266,27 +265,27 @@ public:
     return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
   }
   template <typename type>
-  void                        set_attribute   (const data_type_key_value& key, const type& value) const
+  void                  set_attribute   (const data_type_key_value& key, const type& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
   }
-  void                        remove_attribute(const data_type_key_value& key) const
+  void                  remove_attribute(const data_type_key_value& key) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_delete_attr, (native_, key.native()))
   }
 
-  void                        commit          ()
+  void                  commit          ()
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_commit, (&native_))
   }
 
   [[nodiscard]]
-  bool                        managed         () const
+  bool                  managed         () const
   {
     return managed_;
   }
   [[nodiscard]]
-  MPI_Datatype                native          () const
+  MPI_Datatype          native          () const
   {
     return native_;
   }

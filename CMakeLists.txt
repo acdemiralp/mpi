@@ -8,6 +8,11 @@ set                   (CMAKE_CXX_STANDARD 20)
 include               (set_max_warning_level)
 set_max_warning_level ()
 
+# Necessary to suppress the ... changes the meaning of symbol ...
+if                    (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set                 (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+endif                 ()
+
 ##################################################    Options     ##################################################
 option(BUILD_TESTS "Build tests." OFF)
 

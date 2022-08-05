@@ -77,13 +77,13 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_GROUP_NULL;
   }
-  virtual ~group    ()
+  virtual ~group    () noexcept(false)
   {
     if (managed_ && native_ != MPI_GROUP_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Group_free, (&native_))
   }
   group&  operator= (const group&  that) = delete;
-  group&  operator= (      group&& temp) noexcept
+  group&  operator= (      group&& temp) noexcept(false)
   {
     if (this != &temp)
     {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <optional>
@@ -20,7 +21,7 @@ class event_handle
 {
 public:
   using callback_type        = void (*) (MPI_T_event_instance, MPI_T_event_registration,               MPI_T_cb_safety, void*);
-  using dropped_handler_type = void (*) (std::int64_t        , MPI_T_event_registration, std::int32_t, MPI_T_cb_safety, void*);
+  using dropped_handler_type = void (*) (count               , MPI_T_event_registration, std::int32_t, MPI_T_cb_safety, void*);
   using callback_map_type    = std::unordered_map<callback_safety, std::function<void(const event_instance&, const event_handle&, callback_safety)>>;
 
   explicit event_handle  (const event& event, const information& information = mpi::information())
@@ -67,13 +68,13 @@ public:
     temp.callback_map_     .clear();
     temp.copy_buffer_size_ = 0;
   }
-  virtual ~event_handle  ()
+  virtual ~event_handle  () noexcept(false)
   {
     if (managed_ && native_ != MPI_T_EVENT_HANDLE_NULL)
       MPI_CHECK_ERROR_CODE(MPI_T_event_handle_free, (native_, nullptr, nullptr)) // Destructor cannot have parameters, hence pass nullptr to the callback and user data.
   }
   event_handle& operator=(const event_handle&  that) = delete;
-  event_handle& operator=(      event_handle&& temp) noexcept
+  event_handle& operator=(      event_handle&& temp) noexcept(false)
   {
     if (this != &temp)
     {
@@ -159,7 +160,7 @@ public:
     return callback_map_;
   }
   [[nodiscard]]
-  std::int64_t                         copy_buffer_size        () const
+  std::size_t                          copy_buffer_size        () const
   {
     return copy_buffer_size_;
   }
@@ -169,7 +170,7 @@ protected:
   MPI_T_event_registration      native_           = MPI_T_EVENT_HANDLE_NULL;
   std::optional<object_variant> object_           = std::nullopt;
   callback_map_type             callback_map_     = {};
-  std::int64_t                  copy_buffer_size_ = 0; // Auxiliary for event interface antics.
+  std::size_t                   copy_buffer_size_ = 0; // Auxiliary for event interface antics.
 };
 #endif
 }

@@ -156,7 +156,7 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_COMM_NULL;
   }
-  virtual ~communicator   ()
+  virtual ~communicator   () noexcept(false)
   {
     if (managed_ && native_ != MPI_COMM_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Comm_free, (&native_))
@@ -173,7 +173,7 @@ public:
     }
     return *this;
   }
-  communicator& operator= (      communicator&& temp) noexcept
+  communicator& operator= (      communicator&& temp) noexcept(false)
   {
     if (this != &temp)
     {
@@ -550,28 +550,27 @@ public:
 
 #ifdef MPI_USE_LATEST 
   [[nodiscard]]                                                           
-  request                                   partitioned_send              (const std::int32_t partitions, const void* data, const std::int64_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
+  request                                   partitioned_send              (const std::int32_t partitions, const void* data, const count size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Psend_init, (data, partitions, size, data_type.native(), destination, tag, native_, info.native(), &result.native_))
     return result;
   }
   template <typename type> [[nodiscard]]                                                           
-  request                                   partitioned_send              (const std::int32_t partitions, const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
+  request                                   partitioned_send              (const std::int32_t partitions, const type& data,                                               const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
-    return partitioned_send(partitions, static_cast<const void*>(adapter::data(data)), static_cast<std::int64_t>(adapter::size(data)), adapter::data_type(), destination, tag, info);
+    return partitioned_send(partitions, static_cast<const void*>(adapter::data(data)), static_cast<count>(adapter::size(data)), adapter::data_type(), destination, tag, info);
   }
 #endif
   
-  [[nodiscard]]
   status                                    receive                       (      void* data, const std::int32_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
     MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_Recv, (data, size, data_type.native(), source, tag, native_, &result))
     return result;
   }
-  template <typename type> [[nodiscard]]
+  template <typename type>
   status                                    receive                       (      type& data,                                                      const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
     using adapter = container_adapter<type>;
@@ -605,21 +604,20 @@ public:
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]
-  request                                   partitioned_receive           (const std::int32_t partitions, void* data, const std::int64_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
+  request                                   partitioned_receive           (const std::int32_t partitions, void* data, const count size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Precv_init, (data, partitions, size, data_type.native(), source, tag, native_, info.native(), &result.native_))
     return result;
   }
   template <typename type> [[nodiscard]]
-  request                                   partitioned_receive           (const std::int32_t partitions, type& data,                                                      const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
+  request                                   partitioned_receive           (const std::int32_t partitions, type& data,                                               const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
-    return partitioned_receive(partitions, static_cast<void*>(adapter::data(data)), static_cast<std::int64_t>(adapter::size(data)), adapter::data_type(), source, tag, info);
+    return partitioned_receive(partitions, static_cast<void*>(adapter::data(data)), static_cast<count>(adapter::size(data)), adapter::data_type(), source, tag, info);
   }
 #endif
 
-  [[nodiscard]]
   status                                    send_receive                  (const void*         sent       , const std::int32_t sent_size    , const data_type&   sent_data_type    , const std::int32_t destination                 , const std::int32_t send_tag    ,
                                                                                  void*         received   , const std::int32_t received_size, const data_type&   received_data_type, const std::int32_t source      = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
@@ -628,7 +626,7 @@ public:
                                         received, received_size, received_data_type.native(), source     , receive_tag, native_, &result))
     return result;
   }
-  template <typename sent_type, typename received_type> [[nodiscard]]                                                      
+  template <typename sent_type, typename received_type>                                                 
   status                                    send_receive                  (const sent_type&     sent      , const std::int32_t destination  ,                 const std::int32_t send_tag    ,
                                                                                  received_type& received  , const std::int32_t source       = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
@@ -637,8 +635,7 @@ public:
     return send_receive(
       static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter   ::size(sent    )), send_adapter   ::data_type(), destination, send_tag   , 
       static_cast<      void*>(receive_adapter::data(received)), static_cast<std::int32_t>(receive_adapter::size(received)), receive_adapter::data_type(), source     , receive_tag);
-  }
-  [[nodiscard]]                                                                                                                                                                    
+  }                                                                                                                                                             
   status                                    send_receive_replace          (      void*         data       , const std::int32_t size         , const data_type&   data_type                 , 
                                                                            const std::int32_t  destination, const std::int32_t send_tag     , const std::int32_t source    = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
@@ -646,7 +643,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Sendrecv_replace, (data, size, data_type.native(), destination, send_tag, source, receive_tag, native_, &result))
     return result;
   }
-  template <typename type> [[nodiscard]]                                                                                                                                           
+  template <typename type>                                                                                                                                          
   status                                    send_receive_replace          (const type&         data       , const std::int32_t destination  , const std::int32_t send_tag, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
     using adapter = container_adapter<type>;
@@ -2257,15 +2254,15 @@ public:
 #endif
 
   // The alltoallw is the only family of functions that do not have convenience wrappers (because it just cannot be made convenient).
-  void                                      neighbor_all_to_all_general           (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
-                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
+  void                                      neighbor_all_to_all_general           (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<aint>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<aint>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoallw     ,  (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
                                                         received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_))
   }
   [[nodiscard]]
-  request                                   immediate_neighbor_all_to_all_general (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
-                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
+  request                                   immediate_neighbor_all_to_all_general (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<aint>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<aint>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Ineighbor_alltoallw    , (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
@@ -2274,8 +2271,8 @@ public:
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]
-  request                                   persistent_neighbor_all_to_all_general(const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
-                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types, const mpi::information& info = mpi::information()) const
+  request                                   persistent_neighbor_all_to_all_general(const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<aint>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<aint>& received_displacements, const std::vector<MPI_Datatype>& received_data_types, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoallw_init, (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 

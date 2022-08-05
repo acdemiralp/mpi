@@ -20,7 +20,7 @@ public:
   }
   service           (const service&  that)          = delete;
   service           (      service&& temp) noexcept = delete;
-  virtual ~service  ()
+  virtual ~service  () noexcept(false)
   {
     MPI_CHECK_ERROR_CODE(MPI_Unpublish_name, (name_.c_str(), info_.native(), port_.name().c_str()))
   }

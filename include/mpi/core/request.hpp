@@ -34,13 +34,13 @@ public:
     temp.native_     = MPI_REQUEST_NULL;
     temp.persistent_ = false;
   }
-  virtual ~request  ()
+  virtual ~request  () noexcept(false)
   {
     if (managed_ && native_ != MPI_REQUEST_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Request_free, (&native_))
   }
   request& operator=(const request&    that) = delete;
-  request& operator=(      request&&   temp) noexcept
+  request& operator=(      request&&   temp) noexcept(false)
   {
     if (this != &temp)
     {
@@ -169,10 +169,10 @@ inline std::optional<std::vector<status>>               test_all (std::vector<re
 }
 inline std::optional<std::tuple <std::int32_t, status>> test_any (std::vector<request>& requests)
 {
-  std::vector<MPI_Request>         raw_requests(requests.size());
-  std::int32_t                     complete    (0);
-  std::int32_t                     index       (0);
-  MPI_Status                       status;
+  std::vector<MPI_Request> raw_requests(requests.size());
+  std::int32_t             complete    (0);
+  std::int32_t             index       (0);
+  MPI_Status               status;
 
   std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {

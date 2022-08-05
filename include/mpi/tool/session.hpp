@@ -25,13 +25,13 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_T_PVAR_SESSION_NULL;
   }
-  virtual ~session  ()
+  virtual ~session () noexcept(false) 
   {
     if (managed_ && native_)
       MPI_CHECK_ERROR_CODE(MPI_T_pvar_session_free,  (&native_))
   }
   session& operator=(const session&  that) = delete;
-  session& operator=(      session&& temp) noexcept
+  session& operator=(      session&& temp) noexcept(false)
   {
     if (this != &temp)
     {

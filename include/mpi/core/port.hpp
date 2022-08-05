@@ -29,13 +29,13 @@ public:
     temp.managed_ = false;
     temp.name_.clear();
   }
-  virtual ~port  ()
+  virtual ~port  () noexcept(false)
   {
     if (managed_ && !name_.empty())
       MPI_CHECK_ERROR_CODE(MPI_Close_port, (name_.c_str()))
   }
   port& operator=(const port&  that) = delete;
-  port& operator=(      port&& temp) noexcept
+  port& operator=(      port&& temp) noexcept(false)
   {
     if (this != &temp)
     {

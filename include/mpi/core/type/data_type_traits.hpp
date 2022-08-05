@@ -12,16 +12,16 @@ template <MPI_Datatype data_type>
 struct data_type_traits {};
 
 template <> struct data_type_traits<MPI_CHAR                   > { using type = char                     ; };
-template <> struct data_type_traits<MPI_SHORT                  > { using type = std::int16_t             ; };
-template <> struct data_type_traits<MPI_INT                    > { using type = std::int32_t             ; };
+template <> struct data_type_traits<MPI_SHORT                  > { using type = short                    ; };
+template <> struct data_type_traits<MPI_INT                    > { using type = int                      ; };
 template <> struct data_type_traits<MPI_LONG                   > { using type = long                     ; };
-template <> struct data_type_traits<MPI_LONG_LONG              > { using type = std::int64_t             ; };
-template <> struct data_type_traits<MPI_SIGNED_CHAR            > { using type = std::int8_t              ; };
-template <> struct data_type_traits<MPI_UNSIGNED_CHAR          > { using type = std::uint8_t             ; };
-template <> struct data_type_traits<MPI_UNSIGNED_SHORT         > { using type = std::uint16_t            ; };
-template <> struct data_type_traits<MPI_UNSIGNED               > { using type = std::uint32_t            ; };
+template <> struct data_type_traits<MPI_LONG_LONG              > { using type = long long                ; };
+template <> struct data_type_traits<MPI_SIGNED_CHAR            > { using type = signed char              ; };
+template <> struct data_type_traits<MPI_UNSIGNED_CHAR          > { using type = unsigned char            ; };
+template <> struct data_type_traits<MPI_UNSIGNED_SHORT         > { using type = unsigned short           ; };
+template <> struct data_type_traits<MPI_UNSIGNED               > { using type = unsigned                 ; };
 template <> struct data_type_traits<MPI_UNSIGNED_LONG          > { using type = unsigned long            ; };
-template <> struct data_type_traits<MPI_UNSIGNED_LONG_LONG     > { using type = std::uint64_t            ; };
+template <> struct data_type_traits<MPI_UNSIGNED_LONG_LONG     > { using type = unsigned long long       ; };
 template <> struct data_type_traits<MPI_FLOAT                  > { using type = float                    ; };
 template <> struct data_type_traits<MPI_DOUBLE                 > { using type = double                   ; };
 template <> struct data_type_traits<MPI_LONG_DOUBLE            > { using type = long double              ; };
@@ -34,9 +34,9 @@ template <> struct data_type_traits<MPI_UINT8_T                > { using type = 
 template <> struct data_type_traits<MPI_UINT16_T               > { using type = std::uint16_t            ; };
 template <> struct data_type_traits<MPI_UINT32_T               > { using type = std::uint32_t            ; };
 template <> struct data_type_traits<MPI_UINT64_T               > { using type = std::uint64_t            ; };
-template <> struct data_type_traits<MPI_AINT                   > { using type = std::int64_t             ; };
-template <> struct data_type_traits<MPI_COUNT                  > { using type = std::int64_t             ; };
-template <> struct data_type_traits<MPI_OFFSET                 > { using type = std::int64_t             ; };
+template <> struct data_type_traits<MPI_AINT                   > { using type = aint                     ; };
+template <> struct data_type_traits<MPI_COUNT                  > { using type = count                    ; };
+template <> struct data_type_traits<MPI_OFFSET                 > { using type = offset                   ; };
 template <> struct data_type_traits<MPI_BYTE                   > { using type = std::byte                ; };
 template <> struct data_type_traits<MPI_CXX_BOOL               > { using type = bool                     ; };
 template <> struct data_type_traits<MPI_CXX_FLOAT_COMPLEX      > { using type = std::complex<float      >; };

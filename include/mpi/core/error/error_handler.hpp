@@ -27,13 +27,13 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_ERRHANDLER_NULL;
   }
-  virtual ~error_handler  ()
+  virtual ~error_handler  () noexcept(false)
   {
     if (managed_ && native_ != MPI_ERRHANDLER_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Errhandler_free, (&native_))
   }
   error_handler& operator=(const error_handler&  that) = delete;
-  error_handler& operator=(      error_handler&& temp) noexcept
+  error_handler& operator=(      error_handler&& temp) noexcept(false)
   {
     if (this != &temp)
     {
