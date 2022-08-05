@@ -4,7 +4,6 @@
 #include <mpi/core/information.hpp>
 #include <mpi/core/mpi.hpp>
 
-// There is no reason to prefer the following over native functionality. They are included for completeness.
 namespace mpi
 {
 template <typename type = void>

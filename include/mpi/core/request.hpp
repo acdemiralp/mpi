@@ -169,10 +169,10 @@ inline std::optional<std::vector<status>>               test_all (std::vector<re
 }
 inline std::optional<std::tuple <std::int32_t, status>> test_any (std::vector<request>& requests)
 {
-  std::vector<MPI_Request>         raw_requests(requests.size());
-  std::int32_t                     complete    (0);
-  std::int32_t                     index       (0);
-  MPI_Status                       status;
+  std::vector<MPI_Request> raw_requests(requests.size());
+  std::int32_t             complete    (0);
+  std::int32_t             index       (0);
+  MPI_Status               status;
 
   std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {

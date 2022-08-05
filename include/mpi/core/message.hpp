@@ -13,7 +13,7 @@ namespace mpi
 class message
 {
 public:
-  explicit message  (const MPI_Message native) : native_(native)
+  explicit message  (const MPI_Message native = MPI_MESSAGE_NULL) : native_(native)
   {
     
   }
@@ -60,6 +60,6 @@ public:
 protected:
   friend class communicator;
 
-  MPI_Message native_ = MPI_MESSAGE_NULL;
+  MPI_Message native_;
 };
 }

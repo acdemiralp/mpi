@@ -4,12 +4,12 @@
 #include <cstdint>
 #include <span>
 #include <string>
+#include <vector>
 
 #include <mpi/core/enums/profiling_level.hpp>
 #include <mpi/core/enums/thread_support.hpp>
 #include <mpi/core/structs/overhead_type.hpp>
-#include <mpi/core/utility/container_adapter.hpp>
-#include <mpi/core/utility/sequential_container_traits.hpp>
+#include <mpi/core/type/compliant_traits.hpp>
 #include <mpi/core/exception.hpp>
 #include <mpi/core/mpi.hpp>
 
@@ -37,32 +37,32 @@ public:
   environment& operator=(      environment&& temp) noexcept = delete;
 };
 
-inline bool                           initialized         ()
+inline bool                 initialized         ()
 {
   std::int32_t result;
   MPI_CHECK_ERROR_CODE(MPI_Initialized   , (&result))
   return static_cast<bool>(result);
 }
-inline bool                           finalized           ()
+inline bool                 finalized           ()
 {
   std::int32_t result;
   MPI_CHECK_ERROR_CODE(MPI_Finalized     , (&result))
   return static_cast<bool>(result);
 }
 
-inline thread_support                 query_thread_support()
+inline thread_support       query_thread_support()
 {
   std::int32_t result;
   MPI_CHECK_ERROR_CODE(MPI_Query_thread  , (&result))
   return static_cast<thread_support>(result);
 }
-inline bool                           is_thread_main      ()
+inline bool                 is_thread_main      ()
 {
   std::int32_t result;
   MPI_CHECK_ERROR_CODE(MPI_Is_thread_main, (&result))
   return static_cast<bool>(result);
 }
-inline std::string                    processor_name      ()
+inline std::string          processor_name      ()
 {
   std::string  result(MPI_MAX_PROCESSOR_NAME, '\n');
   std::int32_t size  (0);
@@ -71,16 +71,16 @@ inline std::string                    processor_name      ()
   return result;
 }
 
-inline void                           set_profiling_level (const profiling_level level)
+inline void                 set_profiling_level (const profiling_level level)
 {
   MPI_CHECK_ERROR_CODE(MPI_Pcontrol, (static_cast<std::int32_t>(level)))
 }
 
-inline void                           attach_buffer       (const std::span<std::byte>&  buffer)
+inline void                 attach_buffer       (const std::span<std::byte>&  buffer)
 {
   MPI_CHECK_ERROR_CODE(MPI_Buffer_attach, (buffer.data(), static_cast<std::int32_t>(buffer.size())))
 }
-inline std::span<std::byte>           detach_buffer       ()
+inline std::span<std::byte> detach_buffer       ()
 {
   void*        buffer;
   std::int32_t size  ;
@@ -90,7 +90,7 @@ inline std::span<std::byte>           detach_buffer       ()
 }
 
 // Convenience for attaching an internally managed buffer.
-inline void                           attach_buffer       (const std::int32_t size)
+inline void                 attach_buffer       (const std::int32_t size)
 {
   static std::vector<std::byte> buffer;
   buffer.resize(size);
@@ -98,15 +98,14 @@ inline void                           attach_buffer       (const std::int32_t si
 }
 // Convenience for inferring the necessary buffer size from a set of compliant types.
 template <compliant... types>
-void                                  attach_buffer       (const buffer_type<types...>& buffer)
+void                        attach_buffer       (const buffer_type<types...>& buffer)
 {
   attach_buffer(std::span<std::byte>(static_cast<std::byte*>(&buffer), sizeof(buffer_type<types...>)));
 }
 // Convenience for attaching an internally managed buffer, inferring the necessary buffer size from a set of compliant types.
 template <compliant... types>
-void                                  attach_buffer       ()
+void                        attach_buffer       ()
 {
   attach_buffer(sizeof(buffer_type<types...>));
 }
-
 }
