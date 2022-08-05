@@ -550,17 +550,17 @@ public:
 
 #ifdef MPI_USE_LATEST 
   [[nodiscard]]                                                           
-  request                                   partitioned_send              (const std::int32_t partitions, const void* data, const std::int64_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
+  request                                   partitioned_send              (const std::int32_t partitions, const void* data, const count size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Psend_init, (data, partitions, size, data_type.native(), destination, tag, native_, info.native(), &result.native_))
     return result;
   }
   template <typename type> [[nodiscard]]                                                           
-  request                                   partitioned_send              (const std::int32_t partitions, const type& data,                                                      const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
+  request                                   partitioned_send              (const std::int32_t partitions, const type& data,                                               const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
-    return partitioned_send(partitions, static_cast<const void*>(adapter::data(data)), static_cast<std::int64_t>(adapter::size(data)), adapter::data_type(), destination, tag, info);
+    return partitioned_send(partitions, static_cast<const void*>(adapter::data(data)), static_cast<count>(adapter::size(data)), adapter::data_type(), destination, tag, info);
   }
 #endif
   
@@ -604,17 +604,17 @@ public:
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]
-  request                                   partitioned_receive           (const std::int32_t partitions, void* data, const std::int64_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
+  request                                   partitioned_receive           (const std::int32_t partitions, void* data, const count size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Precv_init, (data, partitions, size, data_type.native(), source, tag, native_, info.native(), &result.native_))
     return result;
   }
   template <typename type> [[nodiscard]]
-  request                                   partitioned_receive           (const std::int32_t partitions, type& data,                                                      const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
+  request                                   partitioned_receive           (const std::int32_t partitions, type& data,                                               const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
-    return partitioned_receive(partitions, static_cast<void*>(adapter::data(data)), static_cast<std::int64_t>(adapter::size(data)), adapter::data_type(), source, tag, info);
+    return partitioned_receive(partitions, static_cast<void*>(adapter::data(data)), static_cast<count>(adapter::size(data)), adapter::data_type(), source, tag, info);
   }
 #endif
 
@@ -2254,15 +2254,15 @@ public:
 #endif
 
   // The alltoallw is the only family of functions that do not have convenience wrappers (because it just cannot be made convenient).
-  void                                      neighbor_all_to_all_general           (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
-                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
+  void                                      neighbor_all_to_all_general           (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<aint>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<aint>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoallw     ,  (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
                                                         received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_))
   }
   [[nodiscard]]
-  request                                   immediate_neighbor_all_to_all_general (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
-                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
+  request                                   immediate_neighbor_all_to_all_general (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<aint>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<aint>& received_displacements, const std::vector<MPI_Datatype>& received_data_types) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Ineighbor_alltoallw    , (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
@@ -2271,8 +2271,8 @@ public:
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]
-  request                                   persistent_neighbor_all_to_all_general(const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int64_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
-                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int64_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types, const mpi::information& info = mpi::information()) const
+  request                                   persistent_neighbor_all_to_all_general(const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<aint>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
+                                                                                         void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<aint>& received_displacements, const std::vector<MPI_Datatype>& received_data_types, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoallw_init, (sent    , sent_sizes    .data(), sent_displacements    .data(), sent_data_types    .data(), 
