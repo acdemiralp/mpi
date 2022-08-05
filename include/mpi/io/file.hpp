@@ -69,16 +69,16 @@ public:
     return result;
   }
   [[nodiscard]]                                              
-  std::int64_t                         byte_offset           (const std::int64_t offset) const
+  MPI_Offset                           byte_offset           (const MPI_Offset offset) const
   {
-    std::int64_t result;
+    MPI_Offset result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_byte_offset    , (native_, offset, &result))
     return result;
   }
   [[nodiscard]]                                              
-  std::int64_t                         extent                (const data_type& type) const
+  MPI_Aint                             extent                (const data_type& type) const
   {
-    std::int64_t result;
+    MPI_Aint result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_type_extent, (native_, type.native(), &result))
     return result;
   }
@@ -90,16 +90,16 @@ public:
     return result;
   }
   [[nodiscard]]                                              
-  std::int64_t                         position              () const
+  MPI_Offset                           position              () const
   {
-    std::int64_t result;
+    MPI_Offset result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_position       , (native_, &result))
     return result;
   }
   [[nodiscard]]                                              
-  std::int64_t                         shared_position       () const
+  MPI_Offset                           shared_position       () const
   {
-    std::int64_t result;
+    MPI_Offset result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_position_shared, (native_, &result))
     return result;
   }
@@ -117,9 +117,9 @@ public:
   }
                                                              
   [[nodiscard]]                                              
-  std::int64_t                         size                  () const
+  MPI_Offset                           size                  () const
   {
-    std::int64_t result;
+    MPI_Offset result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_size, (native_, &result))
     return result;
   }
