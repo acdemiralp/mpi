@@ -29,7 +29,7 @@ public:
   }
   environment           (const environment&  that)          = delete;
   environment           (      environment&& temp) noexcept = delete;
-  virtual ~environment  ()
+  virtual ~environment  () noexcept(false)
   {
     MPI_CHECK_ERROR_CODE(MPI_Finalize, ())
   }
@@ -100,13 +100,13 @@ inline void                           attach_buffer       (const std::int32_t si
 template <compliant... types>
 void                                  attach_buffer       (const buffer_type<types...>& buffer)
 {
-  attach_buffer({static_cast<std::byte*>(&buffer), sizeof buffer_type<types...>});
+  attach_buffer(std::span<std::byte>(static_cast<std::byte*>(&buffer), sizeof(buffer_type<types...>)));
 }
 // Convenience for attaching an internally managed buffer, inferring the necessary buffer size from a set of compliant types.
 template <compliant... types>
 void                                  attach_buffer       ()
 {
-  attach_buffer(sizeof buffer_type<types...>);
+  attach_buffer(sizeof(buffer_type<types...>));
 }
 
 }

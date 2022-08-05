@@ -22,9 +22,9 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_KEYVAL_INVALID;
   }
-  virtual ~key_value  ()                       = default;
-  key_value& operator=(const key_value&  that) = delete ;
-  key_value& operator=(      key_value&& temp) = default;
+  virtual ~key_value  ()                       noexcept(false) = default;
+  key_value& operator=(const key_value&  that)                 = delete ;
+  key_value& operator=(      key_value&& temp) noexcept(false) = default;
 
   [[nodiscard]]
   bool         managed() const
@@ -63,13 +63,13 @@ public:
   }
   communicator_key_value           (const communicator_key_value&  that)          = delete ;
   communicator_key_value           (      communicator_key_value&& temp) noexcept = default;
- ~communicator_key_value           ()                                    override
+ ~communicator_key_value           () noexcept(false) override
   {
     if (managed_ && native_ != MPI_KEYVAL_INVALID)
       MPI_CHECK_ERROR_CODE(MPI_Comm_free_keyval, (&native_))
   }
   communicator_key_value& operator=(const communicator_key_value&  that)          = delete ;
-  communicator_key_value& operator=(      communicator_key_value&& temp) noexcept
+  communicator_key_value& operator=(      communicator_key_value&& temp) noexcept(false)
   {
     if (this != &temp)
     {
@@ -107,13 +107,13 @@ public:
   }
   data_type_key_value           (const data_type_key_value&  that)          = delete ;
   data_type_key_value           (      data_type_key_value&& temp) noexcept = default;
- ~data_type_key_value           ()                                 override
+ ~data_type_key_value           () noexcept(false) override
   {
     if (managed_ && native_ != MPI_KEYVAL_INVALID)
       MPI_CHECK_ERROR_CODE(MPI_Type_free_keyval, (&native_))
   }
   data_type_key_value& operator=(const data_type_key_value&  that)          = delete ;
-  data_type_key_value& operator=(      data_type_key_value&& temp) noexcept
+  data_type_key_value& operator=(      data_type_key_value&& temp) noexcept(false)
   {
     if (this != &temp)
     {
@@ -151,13 +151,13 @@ public:
   }
   window_key_value           (const window_key_value&  that)          = delete ;
   window_key_value           (      window_key_value&& temp) noexcept = default;
- ~window_key_value           ()                              override
+ ~window_key_value           () noexcept(false) override
   {
     if (managed_ && native_ != MPI_KEYVAL_INVALID)
       MPI_CHECK_ERROR_CODE(MPI_Win_free_keyval, (&native_))
   }
   window_key_value& operator=(const window_key_value&  that)          = delete ;
-  window_key_value& operator=(      window_key_value&& temp) noexcept
+  window_key_value& operator=(      window_key_value&& temp) noexcept(false)
   {
     if (this != &temp)
     {

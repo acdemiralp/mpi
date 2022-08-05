@@ -61,7 +61,7 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_INFO_NULL;
   }
-  virtual ~information   ()
+  virtual ~information   () noexcept(false)
   {
     if (managed_ && native_ != MPI_INFO_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Info_free, (&native_))
@@ -78,7 +78,7 @@ public:
     }
     return *this;
   }
-  information& operator= (      information&& temp  ) noexcept
+  information& operator= (      information&& temp  ) noexcept(false)
   {
     if (this != &temp)
     {
@@ -140,7 +140,7 @@ public:
     return result;
   }
 #else
-  [[nodiscard, deprecated]]                                
+  [[nodiscard]]                                
   bool                       contains(const std::string& key  ) const
   {
     auto size(0), exists(0);
@@ -148,7 +148,7 @@ public:
 
     return static_cast<bool>(exists);
   }
-  [[nodiscard, deprecated]]
+  [[nodiscard]]
   std::optional<std::string> at      (const std::string& key  ) const
   {
     auto size(0), exists(0);

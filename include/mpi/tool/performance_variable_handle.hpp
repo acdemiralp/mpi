@@ -58,7 +58,7 @@ public:
     temp.count_   = 1;
     temp.object_  = std::nullopt;
   }
-  virtual ~performance_variable_handle  ()
+  virtual ~performance_variable_handle  () noexcept(false)
   {
     if (managed_ && native_ != MPI_T_PVAR_HANDLE_NULL)
       MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_free, (session_.native(), &native_))

@@ -29,13 +29,13 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_OP_NULL;
   }
-  virtual ~op  ()
+  virtual ~op  () noexcept(false)
   {
     if (managed_ && native_ != MPI_OP_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Op_free, (&native_))
   }   
   op& operator=(const op&    that) = delete;
-  op& operator=(      op&&   temp) noexcept
+  op& operator=(      op&&   temp) noexcept(false)
   {
     if (this != &temp)
     {

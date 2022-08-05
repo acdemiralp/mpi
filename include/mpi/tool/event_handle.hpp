@@ -67,13 +67,13 @@ public:
     temp.callback_map_     .clear();
     temp.copy_buffer_size_ = 0;
   }
-  virtual ~event_handle  ()
+  virtual ~event_handle  () noexcept(false)
   {
     if (managed_ && native_ != MPI_T_EVENT_HANDLE_NULL)
       MPI_CHECK_ERROR_CODE(MPI_T_event_handle_free, (native_, nullptr, nullptr)) // Destructor cannot have parameters, hence pass nullptr to the callback and user data.
   }
   event_handle& operator=(const event_handle&  that) = delete;
-  event_handle& operator=(      event_handle&& temp) noexcept
+  event_handle& operator=(      event_handle&& temp) noexcept(false)
   {
     if (this != &temp)
     {

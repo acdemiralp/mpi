@@ -61,13 +61,13 @@ public:
     temp.count_   = 1;
     temp.object_  = std::nullopt;
   }
-  virtual ~control_variable_handle  ()
+  virtual ~control_variable_handle  () noexcept(false)
   {
     if (managed_ && native_ != MPI_T_CVAR_HANDLE_NULL)
       MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_free, (&native_))
   }
   control_variable_handle& operator=(const control_variable_handle&  that) = delete;
-  control_variable_handle& operator=(      control_variable_handle&& temp) noexcept
+  control_variable_handle& operator=(      control_variable_handle&& temp) noexcept(false)
   {
     if (this != &temp)
     {

@@ -39,13 +39,13 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_FILE_NULL;
   }
-  virtual ~file  ()
+  virtual ~file  () noexcept(false)
   {
     if (managed_ && native_ != MPI_FILE_NULL)
       MPI_CHECK_ERROR_CODE(MPI_File_close, (&native_))
   }
   file& operator=(const file&  that) = delete;
-  file& operator=(      file&& temp) noexcept
+  file& operator=(      file&& temp) noexcept(false)
   {
     if (this != &temp)
     {

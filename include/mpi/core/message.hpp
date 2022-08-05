@@ -23,7 +23,6 @@ public:
   message& operator=(const message&    that) = default;
   message& operator=(      message&&   temp) = default;
 
-  [[nodiscard]]
   status      receive          (void* data, const std::int32_t size, const data_type& data_type)
   {
     MPI_Status result;
@@ -31,7 +30,6 @@ public:
     return result;
   }
   template <typename type>
-  [[nodiscard]]
   status      receive          (type& data)
   {
     using adapter = container_adapter<type>;

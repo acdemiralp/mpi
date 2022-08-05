@@ -156,7 +156,7 @@ public:
     temp.managed_ = false;
     temp.native_  = MPI_COMM_NULL;
   }
-  virtual ~communicator   ()
+  virtual ~communicator   () noexcept(false)
   {
     if (managed_ && native_ != MPI_COMM_NULL)
       MPI_CHECK_ERROR_CODE(MPI_Comm_free, (&native_))
@@ -173,7 +173,7 @@ public:
     }
     return *this;
   }
-  communicator& operator= (      communicator&& temp) noexcept
+  communicator& operator= (      communicator&& temp) noexcept(false)
   {
     if (this != &temp)
     {
@@ -564,14 +564,13 @@ public:
   }
 #endif
   
-  [[nodiscard]]
   status                                    receive                       (      void* data, const std::int32_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
     MPI_Status result;
     MPI_CHECK_ERROR_CODE(MPI_Recv, (data, size, data_type.native(), source, tag, native_, &result))
     return result;
   }
-  template <typename type> [[nodiscard]]
+  template <typename type>
   status                                    receive                       (      type& data,                                                      const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
     using adapter = container_adapter<type>;
@@ -619,7 +618,6 @@ public:
   }
 #endif
 
-  [[nodiscard]]
   status                                    send_receive                  (const void*         sent       , const std::int32_t sent_size    , const data_type&   sent_data_type    , const std::int32_t destination                 , const std::int32_t send_tag    ,
                                                                                  void*         received   , const std::int32_t received_size, const data_type&   received_data_type, const std::int32_t source      = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
@@ -628,7 +626,7 @@ public:
                                         received, received_size, received_data_type.native(), source     , receive_tag, native_, &result))
     return result;
   }
-  template <typename sent_type, typename received_type> [[nodiscard]]                                                      
+  template <typename sent_type, typename received_type>                                                 
   status                                    send_receive                  (const sent_type&     sent      , const std::int32_t destination  ,                 const std::int32_t send_tag    ,
                                                                                  received_type& received  , const std::int32_t source       = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
@@ -637,8 +635,7 @@ public:
     return send_receive(
       static_cast<const void*>(send_adapter   ::data(sent    )), static_cast<std::int32_t>(send_adapter   ::size(sent    )), send_adapter   ::data_type(), destination, send_tag   , 
       static_cast<      void*>(receive_adapter::data(received)), static_cast<std::int32_t>(receive_adapter::size(received)), receive_adapter::data_type(), source     , receive_tag);
-  }
-  [[nodiscard]]                                                                                                                                                                    
+  }                                                                                                                                                             
   status                                    send_receive_replace          (      void*         data       , const std::int32_t size         , const data_type&   data_type                 , 
                                                                            const std::int32_t  destination, const std::int32_t send_tag     , const std::int32_t source    = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
@@ -646,7 +643,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Sendrecv_replace, (data, size, data_type.native(), destination, send_tag, source, receive_tag, native_, &result))
     return result;
   }
-  template <typename type> [[nodiscard]]                                                                                                                                           
+  template <typename type>                                                                                                                                          
   status                                    send_receive_replace          (const type&         data       , const std::int32_t destination  , const std::int32_t send_tag, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
     using adapter = container_adapter<type>;
