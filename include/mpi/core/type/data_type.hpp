@@ -251,7 +251,7 @@ public:
     result.resize(count);
     return result;
   }
-  void                  set_name        (const std::string& value) const
+  void                  set_name        (const std::string& value)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_set_name, (native_, value.data()))
   }
@@ -259,17 +259,17 @@ public:
   template <typename type>
   std::optional<type>   attribute       (const data_type_key_value& key) const
   {
-    type         result;
+    type*        result;
     std::int32_t exists;
     MPI_CHECK_ERROR_CODE(MPI_Type_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
-    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
+    return static_cast<bool>(exists) ? *result : std::optional<type>(std::nullopt);
   }
   template <typename type>
-  void                  set_attribute   (const data_type_key_value& key, const type& value) const
+  void                  set_attribute   (const data_type_key_value& key, const type& value)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
   }
-  void                  remove_attribute(const data_type_key_value& key) const
+  void                  remove_attribute(const data_type_key_value& key)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_delete_attr, (native_, key.native()))
   }

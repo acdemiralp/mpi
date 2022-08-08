@@ -114,11 +114,11 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Session_get_errhandler , (native_, &result.native_))
     return result;
   }
-  void                     set_error_handler      (const window_error_handler& value) const
+  void                     set_error_handler      (const window_error_handler& value)
   {
     MPI_CHECK_ERROR_CODE(MPI_Session_set_errhandler , (native_, value.native()))
   }
-  void                     call_error_handler     (const error_code&           value) const
+  void                     call_error_handler     (const error_code&           value)
   {
     MPI_CHECK_ERROR_CODE(MPI_Session_call_errhandler, (native_, value.native()))
   }

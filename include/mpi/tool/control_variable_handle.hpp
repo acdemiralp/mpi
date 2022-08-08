@@ -88,7 +88,7 @@ public:
   }
 
   template <typename type>
-  type                                 read   () const
+  type                                 read   ()
   {
     type result;
     container_adapter<type>::resize(result, count_);

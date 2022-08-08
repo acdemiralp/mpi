@@ -160,10 +160,10 @@ public:
   template <typename type> [[nodiscard]]
   std::optional<type>  attribute             (const window_key_value& key) const
   {
-    type         result;
+    type*        result;
     std::int32_t exists;
     MPI_CHECK_ERROR_CODE(MPI_Win_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
-    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
+    return static_cast<bool>(exists) ? *result : std::optional<type>(std::nullopt);
   }
   template <typename type>                   
   void                 set_attribute         (const window_key_value& key, const type& value) const

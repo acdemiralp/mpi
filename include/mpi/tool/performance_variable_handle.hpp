@@ -67,7 +67,7 @@ public:
   performance_variable_handle& operator=(      performance_variable_handle&& temp) = delete; // Assignment is disabled due to a constant reference member variable.
 
   template <typename type>
-  type                                 read      () const
+  type                                 read      ()
   {
     type result;
     container_adapter<type>::resize(result, count_);
@@ -75,7 +75,7 @@ public:
     return result;
   }
   template <typename type>
-  type                                 read_reset() const
+  type                                 read_reset()
   {
     type result;
     container_adapter<type>::resize(result, count_);

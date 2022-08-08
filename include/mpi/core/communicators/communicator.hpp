@@ -304,11 +304,11 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Comm_get_errhandler, (native_, &result.native_))
     return result;
   }
-  void                                      set_error_handler             (const communicator_error_handler& value) const
+  void                                      set_error_handler             (const communicator_error_handler& value)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_set_errhandler, (native_, value.native()))
   }
-  void                                      call_error_handler            (const error_code& value) const
+  void                                      call_error_handler            (const error_code& value)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_call_errhandler, (native_, value.native()))
   }
@@ -316,17 +316,17 @@ public:
   template <typename type> [[nodiscard]]                                              
   std::optional<type>                       attribute                     (const communicator_key_value& key) const
   {
-    type         result;
+    type*        result;
     std::int32_t exists;
     MPI_CHECK_ERROR_CODE(MPI_Comm_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
-    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
+    return static_cast<bool>(exists) ? *result : std::optional<type>(std::nullopt);
   }
   template <typename type>                                                
-  void                                      set_attribute                 (const communicator_key_value& key, const type& value) const
+  void                                      set_attribute                 (const communicator_key_value& key, const type& value)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
   }
-  void                                      remove_attribute              (const communicator_key_value& key) const
+  void                                      remove_attribute              (const communicator_key_value& key)
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_delete_attr, (native_, key.native()))
   }

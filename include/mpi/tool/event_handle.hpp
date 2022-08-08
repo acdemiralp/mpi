@@ -103,7 +103,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_T_event_handle_get_info, (native_, &result.native_))
     return result;
   }
-  void                                 set_information         (const mpi::information& value) const
+  void                                 set_information         (const mpi::information& value)
   {
     MPI_CHECK_ERROR_CODE(MPI_T_event_handle_set_info, (native_, value.native()))
   }
@@ -115,7 +115,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_T_event_callback_get_info, (native_, static_cast<MPI_T_cb_safety>(safety), &result.native_))
     return result;
   }
-  void                                 set_callback_information(const callback_safety safety, const mpi::information& value) const
+  void                                 set_callback_information(const callback_safety safety, const mpi::information& value)
   {
     MPI_CHECK_ERROR_CODE(MPI_T_event_callback_set_info, (native_, static_cast<MPI_T_cb_safety>(safety), value.native()))
   }

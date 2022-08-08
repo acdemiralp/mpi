@@ -182,15 +182,15 @@ public:
     return result;
   }
 
-  void                       emplace (const std::string& key, const std::string& value) const
+  void                       emplace (const std::string& key, const std::string& value)
   {
     MPI_CHECK_ERROR_CODE(MPI_Info_set   , (native_, key.c_str(), value.c_str()))
   }
-  void                       erase   (const std::string& key) const
+  void                       erase   (const std::string& key)
   {
     MPI_CHECK_ERROR_CODE(MPI_Info_delete, (native_, key.c_str()))
   }
-  void                       clear   () const
+  void                       clear   ()
   {
     while (size() > 0)
       erase(key_at(0));

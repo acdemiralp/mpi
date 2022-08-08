@@ -42,7 +42,7 @@ public:
   }
 
   template <typename type = std::vector<std::byte>> [[nodiscard]]
-  type                 copy            () const
+  type                 copy            ()
   {
     type result;
     container_adapter<type>::resize(result, copy_buffer_size_);
@@ -51,7 +51,7 @@ public:
   }
   // The type must match the ith data type of the event.
   template <typename type> [[nodiscard]]
-  type                 read            (const std::int32_t index) const
+  type                 read            (const std::int32_t index)
   {
     type result;
     container_adapter<type>::resize(result, 1); // MPI deficit: No size data available for string types.

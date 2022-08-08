@@ -70,17 +70,20 @@ public:
   }
   [[nodiscard]]
   aint               pack     (const void* input , const std::int32_t input_size , const data_type& input_data_type ,
-                                     void* output, const aint         output_size, const aint       output_position ) const
+                                     void* output, const aint         output_size, const aint       output_position = 0) const
   {
     aint result(output_position);
     MPI_CHECK_ERROR_CODE(MPI_Pack_external     , (name_.c_str(), input, input_size, input_data_type.native(), output, output_size, &result ))
     return result;
   }
   template <typename input_type, typename output_type> [[nodiscard]]
-  aint               pack     (const input_type& input, const output_type& output, const aint       output_position ) const
+  aint               pack     (const input_type& input,       output_type& output, const aint       output_position = 0, const bool resize = false)
   {
     using input_adapter  = container_adapter<input_type >;
     using output_adapter = container_adapter<output_type>;
+
+    if (resize)
+      output_adapter::resize(output, pack_size(input_adapter::size(input), input_adapter::data_type()));
 
     return pack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<aint>(output_adapter::size(output)), output_position);
   }
@@ -93,7 +96,7 @@ public:
     return result;
   }
   template <typename input_type, typename output_type> [[nodiscard]]
-  aint               unpack   (const input_type& input, const output_type& output, const aint       input_position  ) const
+  aint               unpack   (const input_type& input,       output_type& output, const aint       input_position  = 0)
   {
     using input_adapter  = container_adapter<input_type >;
     using output_adapter = container_adapter<output_type>;
