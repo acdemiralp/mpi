@@ -100,7 +100,7 @@ inline void                 attach_buffer       (const std::int32_t size)
 template <compliant... types>
 void                        attach_buffer       (const buffer_type<types...>& buffer)
 {
-  attach_buffer(std::span<std::byte>(static_cast<std::byte*>(&buffer), sizeof(buffer_type<types...>)));
+  attach_buffer(std::span(static_cast<std::byte*>(&buffer), sizeof(buffer_type<types...>)));
 }
 // Convenience for attaching an internally managed buffer, inferring the necessary buffer size from a set of compliant types.
 template <compliant... types>

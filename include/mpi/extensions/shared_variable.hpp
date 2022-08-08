@@ -22,9 +22,9 @@ public:
   manual_shared_variable                   (const manual_shared_variable&  that) = delete ;
   manual_shared_variable                   (      manual_shared_variable&& temp) = default;
   virtual ~manual_shared_variable          ()                                    = default;
-  virtual manual_shared_variable& operator=(const manual_shared_variable&  that) = delete ;
-          manual_shared_variable& operator=(      manual_shared_variable&& temp) = default;
-  virtual manual_shared_variable& operator=(const type& value)
+  manual_shared_variable& operator=(const manual_shared_variable&  that) = delete ;
+  manual_shared_variable& operator=(      manual_shared_variable&& temp) = default;
+  manual_shared_variable& operator=(const type& value)
   {
     set(value);
     return *this;
@@ -75,12 +75,12 @@ public:
   {
 
   }
-  automatic_shared_variable           (const automatic_shared_variable&  that)          = delete ;
-  automatic_shared_variable           (      automatic_shared_variable&& temp)          = default;
- ~automatic_shared_variable           () override                                       = default;
-  automatic_shared_variable& operator=(const automatic_shared_variable&  that) override = delete ;
-  automatic_shared_variable& operator=(      automatic_shared_variable&& temp)          = default;
-  automatic_shared_variable& operator=(const type& value)                      override = delete ;
+  automatic_shared_variable           (const automatic_shared_variable&  that) = delete ;
+  automatic_shared_variable           (      automatic_shared_variable&& temp) = default;
+ ~automatic_shared_variable           () override                              = default;
+  automatic_shared_variable& operator=(const automatic_shared_variable&  that) = delete ;
+  automatic_shared_variable& operator=(      automatic_shared_variable&& temp) = default;
+  automatic_shared_variable& operator=(const type& value)                      = delete ;
   operator type() const
   {
     return base::get();

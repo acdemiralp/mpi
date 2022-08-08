@@ -98,15 +98,15 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Parrived    , (native_, partition, &result))
     return static_cast<bool>(result);
   }
-  void                  set_partition_ready(const std::int32_t               partition )
+  void                  set_partition_ready(const std::int32_t               partition ) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Pready      , (partition, native_))
   }
-  void                  set_partition_ready(const std::vector<std::int32_t>& partitions)
+  void                  set_partition_ready(const std::vector<std::int32_t>& partitions) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Pready_list , (static_cast<std::int32_t>(partitions.size()), partitions.data(), native_))
   }
-  void                  set_partition_ready(const std::int32_t lower, const std::int32_t upper)
+  void                  set_partition_ready(const std::int32_t lower, const std::int32_t upper) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Pready_range, (lower, upper, native_))
   }

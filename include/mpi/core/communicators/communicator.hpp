@@ -304,11 +304,11 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Comm_get_errhandler, (native_, &result.native_))
     return result;
   }
-  void                                      set_error_handler             (const communicator_error_handler& value)
+  void                                      set_error_handler             (const communicator_error_handler& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_set_errhandler, (native_, value.native()))
   }
-  void                                      call_error_handler            (const error_code& value)
+  void                                      call_error_handler            (const error_code& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_call_errhandler, (native_, value.native()))
   }
