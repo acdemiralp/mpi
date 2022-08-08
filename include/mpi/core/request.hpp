@@ -62,23 +62,23 @@ public:
   std::optional<status> get_status         () const
   {
     std::int32_t complete;
-    MPI_Status   result  ;
-    MPI_CHECK_ERROR_CODE(MPI_Request_get_status, (native_, &complete, &result))
+    status       result  ;
+    MPI_CHECK_ERROR_CODE(MPI_Request_get_status, (native_, &complete, &result.native_))
     return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
   }
   [[nodiscard]]
   std::optional<status> test               ()
   {
     std::int32_t complete;
-    MPI_Status   result  ;
-    MPI_CHECK_ERROR_CODE(MPI_Test, (&native_, &complete, &result))
+    status       result  ;
+    MPI_CHECK_ERROR_CODE(MPI_Test, (&native_, &complete, &result.native_))
     return static_cast<bool>(complete) ? result : std::optional<status>(std::nullopt);
   }
 
   status                wait               ()
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_Wait, (&native_, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_Wait, (&native_, &result.native_))
     return result;
   }
 
@@ -170,20 +170,20 @@ inline std::optional<std::tuple <std::int32_t, status>> test_any (std::vector<re
   std::vector<MPI_Request> raw_requests(requests.size());
   std::int32_t             complete    (0);
   std::int32_t             index       (0);
-  MPI_Status               status;
+  status                   status;
 
   std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });
 
-  MPI_CHECK_ERROR_CODE(MPI_Testany, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &index, &complete, &status))
-  // MPI_CHECK_UNDEFINED (MPI_Testany, std::get<0>(result)) // MPI_UNDEFINED should not cause an exception in this case.
+  MPI_CHECK_ERROR_CODE(MPI_Testany, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &index, &complete, &status.native_))
+  // MPI_CHECK_UNDEFINED (MPI_Testany, index) // MPI_UNDEFINED should not cause an exception in this case.
 
   for (std::size_t i = 0; i < requests.size(); ++i)
     requests[i].native_ = raw_requests[i];
 
-  return static_cast<bool>(complete) ? std::tuple<std::int32_t, mpi::status>{index, status} : std::optional<std::tuple<std::int32_t, mpi::status>>(std::nullopt);
+  return static_cast<bool>(complete) ? std::tuple{index, status} : std::optional<std::tuple<std::int32_t, mpi::status>>(std::nullopt);
 }
 inline std::vector  <std::tuple <std::int32_t, status>> test_some(std::vector<request>& requests)
 {
@@ -238,14 +238,14 @@ inline std::tuple <std::int32_t, status>                wait_any (std::vector<re
 {
   std::vector<MPI_Request>         raw_requests(requests.size());
   std::int32_t                     index;
-  MPI_Status                       status;
+  status                           status;
 
   std::ranges::transform(requests, raw_requests.begin(), [ ] (const auto& request)
   {
     return request.native();
   });
 
-  MPI_CHECK_ERROR_CODE(MPI_Waitany, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &index, &status))
+  MPI_CHECK_ERROR_CODE(MPI_Waitany, (static_cast<std::int32_t>(requests.size()), raw_requests.data(), &index, &status.native_))
   // MPI_CHECK_UNDEFINED (MPI_Waitany, std::get<0>(result)) // MPI_UNDEFINED should not cause an exception in this case.
 
   for (std::size_t i = 0; i < requests.size(); ++i)

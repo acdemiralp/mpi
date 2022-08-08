@@ -191,8 +191,8 @@ public:
   // Read operations.
   status                               read                  (void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_read, (native_, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read, (native_, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>               
@@ -211,8 +211,8 @@ public:
   }
   status                               read_all              (void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_read_all, (native_, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_all, (native_, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>             
@@ -242,8 +242,8 @@ public:
   }
   status                               read_all_end          (void* data) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_read_all_end, (native_, data, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_all_end, (native_, data, &result.native_))
     return result;
   }
   template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void*>>> [[nodiscard]]                   
@@ -254,8 +254,8 @@ public:
   }
   status                               read_at               (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_read_at, (native_, offset, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_at, (native_, offset, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>                  
@@ -274,8 +274,8 @@ public:
   }
   status                               read_at_all           (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_read_at_all, (native_, offset, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_at_all, (native_, offset, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>                 
@@ -305,8 +305,8 @@ public:
   }
   status                               read_at_all_end       (void* data) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_read_at_all_end, (native_, data, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_at_all_end, (native_, data, &result.native_))
     return result;
   }
   template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void*>>>                  
@@ -317,8 +317,8 @@ public:
   }
   status                               read_ordered          (void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_read_ordered, (native_, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_ordered, (native_, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>            
@@ -348,8 +348,8 @@ public:
   }
   status                               read_ordered_end      (void* data) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_read_ordered_end, (native_, data, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_ordered_end, (native_, data, &result.native_))
     return result;
   }
   template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void*>>> [[nodiscard]]                   
@@ -360,8 +360,8 @@ public:
   }
   status                               read_shared           (void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_read_shared, (native_, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_read_shared, (native_, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>                  
@@ -449,8 +449,8 @@ public:
   // Write operations.
   status                               write                 (const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_write, (native_, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_write, (native_, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>              
@@ -461,8 +461,8 @@ public:
   }                                           
   status                               write_all             (const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_write_all, (native_, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_write_all, (native_, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>             
@@ -484,8 +484,8 @@ public:
   }                                       
   status                               write_all_end         (const void* data) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_write_all_end, (native_, data, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_write_all_end, (native_, data, &result.native_))
     return result;
   }
   template <typename type, typename = std::enable_if_t<!std::is_same_v<type, const void*>>>
@@ -496,8 +496,8 @@ public:
   }                                          
   status                               write_at              (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_write_at, (native_, offset, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_write_at, (native_, offset, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>
@@ -508,8 +508,8 @@ public:
   }
   status                               write_at_all          (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_write_at_all, (native_, offset, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_write_at_all, (native_, offset, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>
@@ -531,8 +531,8 @@ public:
   }                                             
   status                               write_at_all_end      (const void* data) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_write_at_all_end, (native_, data, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_write_at_all_end, (native_, data, &result.native_))
     return result;
   }
   template <typename type, typename = std::enable_if_t<!std::is_same_v<type, const void*>>>
@@ -543,8 +543,8 @@ public:
   }                                    
   status                               write_ordered         (const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_write_ordered, (native_, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_write_ordered, (native_, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>               
@@ -566,8 +566,8 @@ public:
   }                                            
   status                               write_ordered_end     (const void* data) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_write_ordered_end, (native_, data, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_write_ordered_end, (native_, data, &result.native_))
     return result;
   }
   template <typename type, typename = std::enable_if_t<!std::is_same_v<type, const void*>>>
@@ -578,8 +578,8 @@ public:
   }                                       
   status                               write_shared          (const void* data, const std::int32_t count, const data_type& data_type) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_File_write_shared, (native_, data, count, data_type.native(), &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_File_write_shared, (native_, data, count, data_type.native(), &result.native_))
     return result;
   }
   template <typename type>

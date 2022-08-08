@@ -566,8 +566,8 @@ public:
   
   status                                    receive                       (      void* data, const std::int32_t size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_Recv, (data, size, data_type.native(), source, tag, native_, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_Recv, (data, size, data_type.native(), source, tag, native_, &result.native_))
     return result;
   }
   template <typename type>
@@ -621,9 +621,9 @@ public:
   status                                    send_receive                  (const void*         sent       , const std::int32_t sent_size    , const data_type&   sent_data_type    , const std::int32_t destination                 , const std::int32_t send_tag    ,
                                                                                  void*         received   , const std::int32_t received_size, const data_type&   received_data_type, const std::int32_t source      = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
-    MPI_Status result;
+    status result;
     MPI_CHECK_ERROR_CODE(MPI_Sendrecv, (sent    , sent_size    , sent_data_type    .native(), destination, send_tag   ,
-                                        received, received_size, received_data_type.native(), source     , receive_tag, native_, &result))
+                                        received, received_size, received_data_type.native(), source     , receive_tag, native_, &result.native_))
     return result;
   }
   template <typename sent_type, typename received_type>                                                 
@@ -639,8 +639,8 @@ public:
   status                                    send_receive_replace          (      void*         data       , const std::int32_t size         , const data_type&   data_type                 , 
                                                                            const std::int32_t  destination, const std::int32_t send_tag     , const std::int32_t source    = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_Sendrecv_replace, (data, size, data_type.native(), destination, send_tag, source, receive_tag, native_, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_Sendrecv_replace, (data, size, data_type.native(), destination, send_tag, source, receive_tag, native_, &result.native_))
     return result;
   }
   template <typename type>                                                                                                                                          
@@ -688,34 +688,34 @@ public:
   [[nodiscard]]                                                       
   status                                    probe                         (const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
-    MPI_Status result;
-    MPI_CHECK_ERROR_CODE(MPI_Probe, (source, tag, native_, &result))
+    status result;
+    MPI_CHECK_ERROR_CODE(MPI_Probe, (source, tag, native_, &result.native_))
     return result;
   }
   [[nodiscard]]                                                       
   std::pair<message, status>                probe_message                 (const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
-    message    message(MPI_MESSAGE_NULL);
-    MPI_Status status;
-    MPI_CHECK_ERROR_CODE(MPI_Mprobe , (source, tag, native_, &message.native_, &status))
-    return {message, status};
+    message message(MPI_MESSAGE_NULL);
+    status  result;
+    MPI_CHECK_ERROR_CODE(MPI_Mprobe , (source, tag, native_, &message.native_, &result.native_))
+    return {message, result};
   }
   [[nodiscard]]                                                           
   std::optional<status>                     immediate_probe               (const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
-    MPI_Status   result;
+    status       result;
     std::int32_t exists;
-    MPI_CHECK_ERROR_CODE(MPI_Iprobe, (source, tag, native_, &exists, &result))
+    MPI_CHECK_ERROR_CODE(MPI_Iprobe, (source, tag, native_, &exists, &result.native_))
     return static_cast<bool>(exists) ? result : std::optional<status>(std::nullopt);
   }
   [[nodiscard]]                                                           
   std::optional<std::pair<message, status>> immediate_probe_message       (const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG) const
   {
     message      message(MPI_MESSAGE_NULL);
-    MPI_Status   status;
+    status       result;
     std::int32_t exists;
-    MPI_CHECK_ERROR_CODE(MPI_Improbe, (source, tag, native_, &exists, &message.native_, &status))
-    return static_cast<bool>(exists) ? std::pair<mpi::message, mpi::status>{message, status} : std::optional<std::pair<mpi::message, mpi::status>>(std::nullopt);
+    MPI_CHECK_ERROR_CODE(MPI_Improbe, (source, tag, native_, &exists, &message.native_, &result.native_))
+    return static_cast<bool>(exists) ? std::pair {message, result} : std::optional<std::pair<mpi::message, status>>(std::nullopt);
   }
 
   // All to all collective operations.
