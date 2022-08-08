@@ -237,7 +237,7 @@ public:
       raw_data_types   .data()))
 
     for (auto& type : raw_data_types)
-      result.data_types.emplace_back(type, true); // Creates managed data types.
+      result.data_types.emplace_back(type, true); // Creates managed data types. Standard: ... the user is responsible for freeing these data types with MPI_TYPE_FREE ...
 
     return result;
   }
@@ -251,7 +251,7 @@ public:
     result.resize(count);
     return result;
   }
-  void                  set_name        (const std::string& value)
+  void                  set_name        (const std::string& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_set_name, (native_, value.data()))
   }
@@ -261,15 +261,15 @@ public:
   {
     type*        result;
     std::int32_t exists;
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_attr   , (native_, key.native(), &result, &exists))
     return static_cast<bool>(exists) ? *result : std::optional<type>(std::nullopt);
   }
   template <typename type>
-  void                  set_attribute   (const data_type_key_value& key, const type& value)
+  void                  set_attribute   (const data_type_key_value& key, type& value) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
+    MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), &value))
   }
-  void                  remove_attribute(const data_type_key_value& key)
+  void                  remove_attribute(const data_type_key_value& key) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_delete_attr, (native_, key.native()))
   }

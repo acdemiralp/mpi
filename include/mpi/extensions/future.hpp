@@ -70,7 +70,7 @@ inline future when_all         (std::vector<request>& requests)
 {
   return make_ready_future().then([&] (future future)
   {
-    auto result = future.get();
+    [[maybe_unused]] auto result = future.get();
     wait_all(requests);
     return make_ready_future();
   });
@@ -80,7 +80,7 @@ inline future when_any         (std::vector<request>& requests)
 {
   return make_ready_future().then([&] (future future)
   {
-    auto result = future.get();
+    [[maybe_unused]] auto result = future.get();
     wait_any(requests);
     return make_ready_future();
   });

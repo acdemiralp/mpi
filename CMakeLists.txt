@@ -14,7 +14,17 @@ if                    (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif                 ()
 
 ##################################################    Options     ##################################################
-option(BUILD_TESTS "Build tests." OFF)
+option(MPI_BUILD_TESTS "Build tests." OFF)
+option(MPI_USE_EXCEPTIONS "Use exceptions." OFF)
+option(MPI_USE_RELAXED_TRAITS "Use relaxed traits." OFF)
+
+if    (MPI_USE_EXCEPTIONS)
+  list(APPEND PROJECT_COMPILE_DEFINITIONS -DMPI_USE_EXCEPTIONS)
+endif ()
+
+if    (MPI_USE_RELAXED_TRAITS)
+  list(APPEND PROJECT_COMPILE_DEFINITIONS -DMPI_USE_RELAXED_TRAITS)
+endif ()
 
 ##################################################    Sources     ##################################################
 file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp)
@@ -53,7 +63,7 @@ target_compile_definitions(${PROJECT_NAME}_ PUBLIC ${PROJECT_COMPILE_DEFINITIONS
 set_target_properties     (${PROJECT_NAME}_ PROPERTIES LINKER_LANGUAGE CXX)
 
 ##################################################    Testing     ##################################################
-if(BUILD_TESTS)
+if(MPI_BUILD_TESTS)
   enable_testing     ()
   set                (TEST_MAIN_NAME test_main)
   set                (TEST_MAIN_SOURCES tests/internal/main.cpp)
