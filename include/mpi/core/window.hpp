@@ -124,7 +124,7 @@ public:
     result.resize(static_cast<std::size_t>(length));
     return result;
   }
-  void                 set_name              (const std::string&      value)
+  void                 set_name              (const std::string&      value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_set_name, (native_, value.c_str()))
   }
@@ -136,7 +136,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Win_get_info, (native_, &result.native_))
     return result;
   }
-  void                 set_information       (const mpi::information& value)
+  void                 set_information       (const mpi::information& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_set_info, (native_, value.native()))
   }
@@ -148,11 +148,11 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Win_get_errhandler, (native_, &result.native_))
     return result;
   }
-  void                 set_error_handler     (const window_error_handler& value)
+  void                 set_error_handler     (const window_error_handler& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_set_errhandler, (native_, value.native()))
   }
-  void                 call_error_handler    (const error_code& value)
+  void                 call_error_handler    (const error_code& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_call_errhandler, (native_, value.native()))
   }
@@ -166,11 +166,11 @@ public:
     return static_cast<bool>(exists) ? *result : std::optional<type>(std::nullopt);
   }
   template <typename type>                   
-  void                 set_attribute         (const window_key_value& key, const type& value)
+  void                 set_attribute         (const window_key_value& key, const type& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
   }
-  void                 remove_attribute      (const window_key_value& key)
+  void                 remove_attribute      (const window_key_value& key) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_delete_attr, (native_, key.native()))
   }
@@ -202,41 +202,41 @@ public:
     return *attribute<std::int32_t>(window_key_value(MPI_WIN_MODEL)) == MPI_WIN_UNIFIED;
   }
 
-  void                 attach                (void* value, const aint size)
+  void                 attach                (void* value, const aint size) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_attach, (native_, value, size))
   }
   template <typename type, typename = std::enable_if_t<!std::is_same_v<type, void>>>
-  void                 attach                (type* value, const aint size)
+  void                 attach                (type* value, const aint size) const
   {
     attach(static_cast<void*>(value), sizeof(type) * size);
   }
-  void                 detach                (const void* value)
+  void                 detach                (const void* value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_detach, (native_, value))
   }
                                              
-  void                 post                  (const mpi::group& group, const std::optional<mode> assert = std::nullopt)
+  void                 post                  (const mpi::group& group, const std::optional<mode> assert = std::nullopt) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_post    , (group.native(), assert ? static_cast<std::int32_t>(*assert) : 0, native_))
   }
-  void                 start                 (const mpi::group& group, const std::optional<mode> assert = std::nullopt)
+  void                 start                 (const mpi::group& group, const std::optional<mode> assert = std::nullopt) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_start   , (group.native(), assert ? static_cast<std::int32_t>(*assert) : 0, native_))
   }
-  void                 complete              ()
+  void                 complete              () const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_complete, (native_))
   }
                                              
   [[nodiscard]]                              
-  bool                 test                  ()
+  bool                 test                  () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Win_test, (native_, &result))
     return static_cast<bool>(result);
   }
-  void                 wait                  ()
+  void                 wait                  () const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_wait, (native_))
   }
@@ -267,19 +267,19 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Win_unlock_all, (native_))
   }
                                              
-  void                 flush                 (const std::int32_t rank)
+  void                 flush                 (const std::int32_t rank) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_flush          , (rank, native_))
   }
-  void                 flush_all             ()
+  void                 flush_all             () const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_flush_all      , (      native_))
   }
-  void                 flush_local           (const std::int32_t rank)
+  void                 flush_local           (const std::int32_t rank) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_flush_local    , (rank, native_))
   }
-  void                 flush_local_all       ()
+  void                 flush_local_all       () const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_flush_local_all, (      native_))
   }
@@ -390,12 +390,12 @@ public:
     fetch_and_op(static_cast<const void*>(adapter::data(source)), static_cast<void*>(adapter::data(result)), adapter::data_type(), target_rank, target_displacement, op);
   }
                                   
-  void                 compare_and_swap      (const void* source, const void* compare, void* result, const data_type& data_type, const std::int32_t target_rank, const aint target_displacement)
+  void                 compare_and_swap      (const void* source, const void* compare, void* result, const data_type& data_type, const std::int32_t target_rank, const aint target_displacement) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Compare_and_swap, (source, compare, result, data_type.native(), target_rank, target_displacement, native_))
   }
   template <typename type>
-  void                 compare_and_swap      (const type& source, const type& compare, type& result                            , const std::int32_t target_rank, const aint target_displacement)
+  void                 compare_and_swap      (const type& source, const type& compare, type& result                            , const std::int32_t target_rank, const aint target_displacement) const
   {
     using adapter = container_adapter<type>;
     compare_and_swap(static_cast<const void*>(adapter::data(source)), static_cast<const void*>(adapter::data(compare)), static_cast<void*>(adapter::data(result)), adapter::data_type(), target_rank, target_displacement);
@@ -404,7 +404,7 @@ public:
   // Request remote memory access operations.
   [[nodiscard]]
   request              request_get           (      void*        source                                     , const std::int32_t source_size, const data_type& source_data_type, 
-                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type)
+                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Rget, (source, source_size, source_data_type.native(), target_rank, target_displacement, target_size, target_data_type.native(), native_, &result.native_))
@@ -412,7 +412,7 @@ public:
   }
   template <typename type> [[nodiscard]]
   request              request_get           (      type&        source     , 
-                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type)
+                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type) const
   {
     using adapter = container_adapter<type>;
     return request_get(static_cast<void*>(adapter::data(source)), static_cast<std::int32_t>(adapter::size(source)), adapter::data_type(), target_rank, target_displacement, target_size, target_data_type);
@@ -420,7 +420,7 @@ public:
 
   [[nodiscard]]
   request              request_put           (const void*        source                                     , const std::int32_t source_size, const data_type& source_data_type, 
-                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type)
+                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Rput, (source, source_size, source_data_type.native(), target_rank, target_displacement, target_size, target_data_type.native(), native_, &result.native_))
@@ -428,7 +428,7 @@ public:
   }
   template <typename type> [[nodiscard]]
   request              request_put           (const type&        source     , 
-                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type)
+                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type) const
   {
     using adapter = container_adapter<type>;
     return request_put(static_cast<const void*>(adapter::data(source)), static_cast<std::int32_t>(adapter::size(source)), adapter::data_type(), target_rank, target_displacement, target_size, target_data_type);
@@ -436,7 +436,7 @@ public:
 
   [[nodiscard]]        
   request              request_accumulate    (const void*        source                                     , const std::int32_t source_size, const data_type& source_data_type, 
-                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum)
+                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Raccumulate, (source, source_size, source_data_type.native(), target_rank, target_displacement, target_size, target_data_type.native(), op.native(), native_, &result.native_))
@@ -444,7 +444,7 @@ public:
   }
   template <typename type> [[nodiscard]] 
   request              request_accumulate    (const type&        source     , 
-                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum)
+                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
     return request_accumulate(static_cast<const void*>(adapter::data(source)), static_cast<std::int32_t>(adapter::size(source)), adapter::data_type(), target_rank, target_displacement, target_size, target_data_type, op);
@@ -453,7 +453,7 @@ public:
   [[nodiscard]]
   request              request_get_accumulate(const void*        source                                     , const std::int32_t source_size, const data_type& source_data_type,
                                                     void*        result                                     , const std::int32_t result_size, const data_type& result_data_type,
-                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum)
+                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum) const
   {
     request request(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Rget_accumulate, (source, source_size, source_data_type.native(), result, result_size, result_data_type.native(), target_rank, target_displacement, target_size, target_data_type.native(), op.native(), native_, &request.native_))
@@ -462,7 +462,7 @@ public:
   template <typename source_type, typename result_type> [[nodiscard]]
   request              request_get_accumulate(const source_type& source     , 
                                                     result_type& result     ,
-                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum)
+                                              const std::int32_t target_rank, const aint target_displacement, const std::int32_t target_size, const data_type& target_data_type, const op& op = ops::sum) const
   {
     using source_adapter = container_adapter<source_type>;
     using result_adapter = container_adapter<result_type>;

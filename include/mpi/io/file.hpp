@@ -22,7 +22,7 @@ namespace mpi::io
 class file
 {
 public:
-  explicit file  (const communicator& communicator, const std::string& filepath, const access_mode access_mode, const information& information = mpi::information())
+  explicit file  (const communicator& communicator, const std::string& filepath, const access_mode access_mode = access_mode::create | access_mode::read_write, const information& information = mpi::information())
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_File_open, (communicator.native(), filepath.c_str(), static_cast<std::int32_t>(access_mode), information.native(), &native_))
