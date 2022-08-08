@@ -84,11 +84,40 @@ TEST_CASE("C++ Interface")
   }
 
   {
-    // TODO: Asynchronous calls, futures.
+    std::vector<std::int32_t> values(communicator_size);
+    if (communicator_rank == 0)
+      std::iota(values.begin(), values.end(), 0);
+
+    std::int32_t local_value(0);
+
+    mpi::future(mpi::world_communicator.immediate_scatter(values, local_value, 0))
+    .then ([&] (auto future)
+    {
+      future.get();
+      local_value *= communicator_rank;
+      return mpi::world_communicator.immediate_gather(local_value, values, 0);
+    })
+    .get();
   }
 
   {
-    // TODO: IO.
+    
+
+
+
+    mpi::io::file file(mpi::world_communicator, "test.txt", mpi::io::access_mode::create | mpi::io::access_mode::read_write);
+    file.write_all(communicator_rank);
+    // File is freed at scope exit.
+
+
+  }
+
+  {
+    // TODO: One-sided communication.
+  }
+
+  {
+    // TODO: Tool interface.
   }
 
   // mpi::environment takes care of finalization at scope exit.

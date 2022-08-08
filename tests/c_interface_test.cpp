@@ -84,11 +84,40 @@ TEST_CASE("C Interface")
   }
 
   {
-    // TODO: Asynchronous calls, futures.
+    std::vector<std::int32_t> values(communicator_size);
+    if (communicator_rank == 0)
+      std::iota(values.begin(), values.end(), 0);
+
+    std::int32_t local_value(0);
+
+    MPI_Request request;
+    MPI_Iscatter    (values.data(), 1, MPI_INT, &local_value, 1, MPI_INT, 0, MPI_COMM_WORLD, &request);
+    MPI_Wait        (&request, MPI_STATUS_IGNORE);
+    MPI_Request_free(&request);
+    local_value *= communicator_rank;
+    MPI_Igather     (&local_value, 1, MPI_INT, values.data(), 1, MPI_INT, 0, MPI_COMM_WORLD, &request);
+    MPI_Wait        (&request, MPI_STATUS_IGNORE);
+    MPI_Request_free(&request);
   }
 
   {
-    // TODO: IO.
+    MPI_Info information;
+    MPI_Info_create(&information);
+
+    MPI_File file;
+    MPI_File_open     (MPI_COMM_WORLD, "test.txt", MPI_MODE_CREATE | MPI_MODE_RDWR, information, &file);
+    MPI_File_write_all(file, &communicator_rank, 1, MPI_INT, MPI_STATUS_IGNORE);
+    MPI_File_close    (&file);
+
+    MPI_Info_free(&information);
+  }
+
+  {
+    // TODO: One-sided communication.
+  }
+
+  {
+    // TODO: Tool interface.
   }
 
   MPI_Finalize ();
