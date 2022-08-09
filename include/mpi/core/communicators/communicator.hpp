@@ -367,34 +367,34 @@ public:
     return result;
   }
   [[nodiscard]]
-  std::int32_t                              pack                          (const void*       input, const std::int32_t input_size, const data_type&   input_data_type, void*              output, const std::int32_t output_size, const std::int32_t output_position ) const
+  std::int32_t                              pack                          (const void*       input, const std::int32_t input_size, const data_type&   input_data_type, void*        output, const std::int32_t output_size, const std::int32_t output_position = 0) const
   {
     std::int32_t result(output_position);
     MPI_CHECK_ERROR_CODE(MPI_Pack, (input, input_size, input_data_type.native(), output, output_size, &result, native_))
     return result;
   }
   template <typename input_type, typename output_type> [[nodiscard]]
-  std::int32_t                              pack                          (const input_type& input,                                                                    const output_type& output                                , const std::int32_t output_position ) const
+  std::int32_t                              pack                          (const input_type& input,                                                                    output_type& output                                , const std::int32_t output_position = 0) const
   {
     using input_adapter  = container_adapter<input_type >;
     using output_adapter = container_adapter<output_type>;
 
-    return pack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_position);
+    return pack(static_cast<const void*>(input_adapter::data(input)), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), static_cast<void*>(output_adapter::data(output)), static_cast<std::int32_t>(output_adapter::size(output)), output_position);
   }
   [[nodiscard]]
-  std::int32_t                              unpack                        (const void*       input, const std::int32_t input_size, const std::int32_t input_position , void*              output, const std::int32_t output_size, const data_type&   output_data_type) const
+  std::int32_t                              unpack                        (const void*       input, const std::int32_t input_size, const std::int32_t input_position , void*        output, const std::int32_t output_size, const data_type&   output_data_type   ) const
   {
     std::int32_t result(input_position);
     MPI_CHECK_ERROR_CODE(MPI_Unpack, (input, input_size, &result, output, output_size, output_data_type.native(), native_))
     return result;
   }
   template <typename input_type, typename output_type> [[nodiscard]]
-  std::int32_t                              unpack                        (const input_type& input,                                                                    const output_type& output                                , const std::int32_t input_position  ) const
+  std::int32_t                              unpack                        (const input_type& input,                                                                    output_type& output                                , const std::int32_t input_position  = 0) const
   {
     using input_adapter  = container_adapter<input_type >;
     using output_adapter = container_adapter<output_type>;
 
-    return unpack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_position, output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_adapter::data_type());
+    return unpack(static_cast<const void*>(input_adapter::data(input)), static_cast<std::int32_t>(input_adapter::size(input)), input_position, static_cast<void*>(output_adapter::data(output)), static_cast<std::int32_t>(output_adapter::size(output)), output_adapter::data_type());
   }
 
   // Point-to-point operations.                                   
@@ -647,7 +647,7 @@ public:
   status                                    send_receive_replace          (const type&         data       , const std::int32_t destination  , const std::int32_t send_tag, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
     using adapter = container_adapter<type>;
-    return send_receive_replace(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, send_tag, source, receive_tag);
+    return send_receive_replace(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, send_tag, source, receive_tag);
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]
@@ -681,7 +681,7 @@ public:
   request                                   immediate_send_receive_replace(const type&         data       , const std::int32_t  destination , const std::int32_t send_tag, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
     using adapter = container_adapter<type>;
-    return immediate_send_receive_replace(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, send_tag, source, receive_tag);
+    return immediate_send_receive_replace(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, send_tag, source, receive_tag);
   }
 #endif 
 
@@ -1240,7 +1240,7 @@ public:
   void                                      all_reduce                    (const type& sent, type& received,                                                      const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
-    all_reduce(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+    all_reduce(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
   }
   template <typename type>                            
   void                                      all_reduce                    (      type& data,                                                                      const op& op = ops::sum) const
@@ -1259,7 +1259,7 @@ public:
   request                                   immediate_all_reduce          (const type& sent, type& received,                                                      const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
-    return immediate_all_reduce(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+    return immediate_all_reduce(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
   }
   template <typename type> [[nodiscard]]                           
   request                                   immediate_all_reduce          (      type& data,                                                                      const op& op = ops::sum) const
@@ -1279,7 +1279,7 @@ public:
   request                                   persistent_all_reduce         (const type& sent, type& received,                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
-    return persistent_all_reduce(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, info);
+    return persistent_all_reduce(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, info);
   }
   template <typename type> [[nodiscard]]                           
   request                                   persistent_all_reduce         (      type& data,                                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
@@ -1665,7 +1665,7 @@ public:
   void                                      reduce_local                  (const type& sent, type& received,                                                      const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
-    reduce_local(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+    reduce_local(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
   }
   template <typename type>                            
   void                                      reduce_local                  (      type& data,                                                                      const op& op = ops::sum) const
@@ -1682,7 +1682,7 @@ public:
   void                                      reduce                        (const type& sent, type& received,                                                      const op& op = ops::sum, const std::int32_t root = 0) const
   {
     using adapter = container_adapter<type>;
-    reduce(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, root);
+    reduce(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, root);
   }
   template <typename type>                            
   void                                      reduce                        (      type& data,                                                                      const op& op = ops::sum, const std::int32_t root = 0) const
@@ -1701,7 +1701,7 @@ public:
   request                                   immediate_reduce              (const type& sent, type& received,                                                      const op& op = ops::sum, const std::int32_t root = 0) const
   {
     using adapter = container_adapter<type>;
-    return immediate_reduce(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, root);
+    return immediate_reduce(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, root);
   }
   template <typename type> [[nodiscard]]                           
   request                                   immediate_reduce              (      type& data,                                                                      const op& op = ops::sum, const std::int32_t root = 0) const
@@ -1721,7 +1721,7 @@ public:
   request                                   persistent_reduce             (const type& sent, type& received,                                                      const op& op = ops::sum, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
-    return persistent_reduce(static_cast<void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, root, info);
+    return persistent_reduce(static_cast<const void*>(adapter::data(sent)), static_cast<void*>(adapter::data(received)), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, root, info);
   }
   template <typename type> [[nodiscard]]                           
   request                                   persistent_reduce             (      type& data,                                                                      const op& op = ops::sum, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
