@@ -166,7 +166,7 @@ public:
     return static_cast<bool>(exists) ? *result : std::optional<type>(std::nullopt);
   }
   template <typename type>                   
-  void                 set_attribute         (const window_key_value& key, const type& value) const
+  void                 set_attribute         (const window_key_value& key, type& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Win_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
   }

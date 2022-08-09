@@ -322,11 +322,11 @@ public:
     return static_cast<bool>(exists) ? *result : std::optional<type>(std::nullopt);
   }
   template <typename type>                                                
-  void                                      set_attribute                 (const communicator_key_value& key, const type& value)
+  void                                      set_attribute                 (const communicator_key_value& key, type& value) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
   }
-  void                                      remove_attribute              (const communicator_key_value& key)
+  void                                      remove_attribute              (const communicator_key_value& key) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_delete_attr, (native_, key.native()))
   }
@@ -352,7 +352,7 @@ public:
   [[nodiscard]]                                                       
   std::pair<communicator, request>          immediate_duplicate           (const std::information& information) const
   {
-    std::pair result { communicator(), request() };
+    std::pair result { communicator(MPI_COMM_NULL, true), request(MPI_REQUEST_NULL, true) };
     MPI_CHECK_ERROR_CODE(MPI_Comm_idup_with_info, (native_, information.native(), &result.first.native_, &result.second.native_))
     return result;
   }
