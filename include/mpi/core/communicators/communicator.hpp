@@ -1412,7 +1412,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Gather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_))
   }
   template <typename sent_type, typename received_type>                            
-  void                                      gather                        (sent_type& sent_data, received_type& received_data, const std::int32_t root = 0) const
+  void                                      gather                        (const sent_type& sent_data, received_type& received_data, const std::int32_t root = 0) const
   {
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
@@ -1523,7 +1523,7 @@ public:
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
 
-    const std::int32_t        local_size    (static_cast<std::int32_t>(send_adapter::size(sent)));
+    const auto                local_size    (static_cast<std::int32_t>(send_adapter::size(sent)));
     std::vector<std::int32_t> received_sizes(size());
     gather(local_size, received_sizes, root);
 

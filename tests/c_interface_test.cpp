@@ -69,7 +69,7 @@ TEST_CASE("C Interface")
     if (communicator_rank == 1)
       local_values.resize(20, 2.0f);
 
-    const std::int32_t        local_size    (static_cast<std::int32_t>(local_values.size()));
+    const auto                local_size    (static_cast<std::int32_t>(local_values.size()));
     std::vector<std::int32_t> gathered_sizes(communicator_size);
     MPI_Gather(&local_size, 1, MPI_INT, gathered_sizes.data(), communicator_size, MPI_INT, 0, MPI_COMM_WORLD);
     
