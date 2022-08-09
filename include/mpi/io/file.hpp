@@ -202,7 +202,7 @@ public:
     return read(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_count            (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
+  std::pair<type, status>              read_n                (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -223,7 +223,7 @@ public:
     return read_all(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_all_count        (const std::int32_t count = 1) const
+  std::pair<type, status>              read_all_n            (const std::int32_t count = 1) const
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -268,7 +268,7 @@ public:
     return read_at(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_at_count         (const offset offset, const std::int32_t count = 1) const
+  std::pair<type, status>              read_at_n             (const offset offset, const std::int32_t count = 1) const
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -289,7 +289,7 @@ public:
     return read_at_all(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_at_all_count     (const offset offset, const std::int32_t count = 1) const
+  std::pair<type, status>              read_at_all_n         (const offset offset, const std::int32_t count = 1) const
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -334,7 +334,7 @@ public:
     return read_ordered(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_ordered_count    (const std::int32_t count = 1) const
+  std::pair<type, status>              read_ordered_n        (const std::int32_t count = 1) const
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -379,7 +379,7 @@ public:
     return read_shared(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_shared_count     (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
+  std::pair<type, status>              read_shared_n         (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
