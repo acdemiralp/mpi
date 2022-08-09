@@ -25,7 +25,7 @@ class file;
 class data_type
 {
 public:
-  explicit data_type  (const MPI_Datatype native, const bool managed = false)
+  explicit data_type  (const MPI_Datatype native = MPI_DATATYPE_NULL, const bool managed = false)
   : managed_(managed), native_(native)
   {
     
