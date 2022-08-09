@@ -84,7 +84,7 @@ public:
     using output_adapter = container_adapter<output_type>;
 
     if (resize)
-      output_adapter::resize(output, pack_size(input_adapter::size(input), input_adapter::data_type()));
+      output_adapter::resize(output, pack_size(input_adapter::size(input), input_adapter::data_type()) / sizeof(typename output_adapter::value_type));
 
     return pack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<aint>(output_adapter::size(output)), output_position);
   }
@@ -117,6 +117,5 @@ protected:
   std::function<std::int32_t(void*, const data_type&, std::int32_t, void*, offset)> read_function_  ;
   std::function<std::int32_t(void*, const data_type&, std::int32_t, void*, offset)> write_function_ ;
   std::function<std::int32_t(       const data_type&, aint*                      )> extent_function_;
-
 };
 }

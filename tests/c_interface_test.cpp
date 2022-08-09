@@ -69,7 +69,7 @@ TEST_CASE("C Interface")
     if (communicator_rank == 1)
       local_values.resize(20, 2.0f);
 
-    std::int32_t              local_size    (local_values.size());
+    const std::int32_t        local_size    (static_cast<std::int32_t>(local_values.size()));
     std::vector<std::int32_t> gathered_sizes(communicator_size);
     MPI_Gather(&local_size, 1, MPI_INT, gathered_sizes.data(), communicator_size, MPI_INT, 0, MPI_COMM_WORLD);
     
@@ -80,7 +80,7 @@ TEST_CASE("C Interface")
     std::vector<std::int32_t> displacements(gathered_sizes.size());
     std::exclusive_scan(gathered_sizes.begin(), gathered_sizes.end(), displacements.begin(), 0);
 
-    MPI_Gatherv(local_values.data(), local_values.size(), MPI_FLOAT, gathered_values.data(), gathered_sizes.data(), displacements.data(), MPI_FLOAT, 0, MPI_COMM_WORLD);
+    MPI_Gatherv(local_values.data(), static_cast<std::int32_t>(local_values.size()), MPI_FLOAT, gathered_values.data(), gathered_sizes.data(), displacements.data(), MPI_FLOAT, 0, MPI_COMM_WORLD);
   }
 
   {

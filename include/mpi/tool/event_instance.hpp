@@ -2,7 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <vector>
+#include <optional>
 
 #include <mpi/core/utility/container_adapter.hpp>
 #include <mpi/core/exception.hpp>
@@ -41,20 +41,20 @@ public:
     return result;
   }
 
-  template <typename type = std::vector<std::byte>> [[nodiscard]]
-  type                 copy            () const
+  template <typename type> [[nodiscard]]
+  type                 copy            (const std::optional<std::size_t> force_size = std::nullopt) const
   {
     type result;
-    container_adapter<type>::resize(result, copy_buffer_size_);
+    container_adapter<type>::resize(result, force_size ? *force_size : static_cast<std::size_t>(copy_buffer_size_ / sizeof(typename container_adapter<type>::value_type))); // copy_buffer_size_ is in bytes.
     MPI_CHECK_ERROR_CODE(MPI_T_event_copy, (native_, container_adapter<type>::data(result))) // MPI deficit: Should just return size, rather than forcing user to forward it from event info to handle to instance...
     return result;
   }
   // The type must match the ith data type of the event.
   template <typename type> [[nodiscard]]
-  type                 read            (const std::int32_t index) const
+  type                 read            (const std::int32_t index, const std::size_t size = 1) const
   {
     type result;
-    container_adapter<type>::resize(result, 1); // MPI deficit: No size data available for string types.
+    container_adapter<type>::resize(result, size); // MPI deficit: No size data available for string types.
     MPI_CHECK_ERROR_CODE(MPI_T_event_read, (native_, index, container_adapter<type>::data(result)))
     return result;
   }

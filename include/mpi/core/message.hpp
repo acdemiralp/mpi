@@ -33,7 +33,7 @@ public:
   status      receive          (type& data)
   {
     using adapter = container_adapter<type>;
-    return receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return receive(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 
   [[nodiscard]]
@@ -48,7 +48,7 @@ public:
   request     immediate_receive(type& data)
   {
     using adapter = container_adapter<type>;
-    return immediate_receive(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_receive(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 
   [[nodiscard]]

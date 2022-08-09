@@ -199,7 +199,7 @@ public:
   status                               read                  (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
   std::pair<type, status>              read_count            (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
@@ -220,7 +220,7 @@ public:
   status                               read_all              (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_all(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_all(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
   std::pair<type, status>              read_all_count        (const std::int32_t count = 1) const
@@ -239,7 +239,7 @@ public:
   void                                 read_all_begin        (type& data) const
   {
     using adapter = container_adapter<type>;
-    read_all_begin(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    read_all_begin(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   
   status                               read_all_end          (void* data) const
@@ -252,7 +252,7 @@ public:
   status                               read_all_end          (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_all_end(static_cast<void*>(adapter::data(data)));
+    return read_all_end(adapter::data(data));
   }
 
   status                               read_at               (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
@@ -265,7 +265,7 @@ public:
   status                               read_at               (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_at(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_at(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
   std::pair<type, status>              read_at_count         (const offset offset, const std::int32_t count = 1) const
@@ -286,7 +286,7 @@ public:
   status                               read_at_all           (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_at_all(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_at_all(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
   std::pair<type, status>              read_at_all_count     (const offset offset, const std::int32_t count = 1) const
@@ -305,7 +305,7 @@ public:
   void                                 read_at_all_begin     (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    read_at_all_begin(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    read_at_all_begin(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   
   status                               read_at_all_end       (void* data) const
@@ -318,7 +318,7 @@ public:
   status                               read_at_all_end       (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_at_all_end(static_cast<void*>(adapter::data(data)));
+    return read_at_all_end(adapter::data(data));
   }
   
   status                               read_ordered          (void* data, const std::int32_t count, const data_type& data_type) const
@@ -331,7 +331,7 @@ public:
   status                               read_ordered          (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_ordered(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_ordered(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
   std::pair<type, status>              read_ordered_count    (const std::int32_t count = 1) const
@@ -350,7 +350,7 @@ public:
   void                                 read_ordered_begin    (type& data) const
   {
     using adapter = container_adapter<type>;
-    read_ordered_begin(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    read_ordered_begin(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   
   status                               read_ordered_end      (void* data) const
@@ -363,7 +363,7 @@ public:
   status                               read_ordered_end      (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_ordered_end(static_cast<void*>(adapter::data(data)));
+    return read_ordered_end(adapter::data(data));
   }
   
   status                               read_shared           (void* data, const std::int32_t count, const data_type& data_type) const
@@ -376,7 +376,7 @@ public:
   status                               read_shared           (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_shared(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_shared(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
   std::pair<type, status>              read_shared_count     (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
@@ -399,7 +399,7 @@ public:
   request                              immediate_read        (type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
   request                              immediate_read_all    (void* data, const std::int32_t count, const data_type& data_type) const
@@ -412,7 +412,7 @@ public:
   request                              immediate_read_all    (type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read_all(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read_all(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
   request                              immediate_read_at     (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
@@ -425,7 +425,7 @@ public:
   request                              immediate_read_at     (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read_at(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read_at(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
   request                              immediate_read_at_all (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
@@ -438,7 +438,7 @@ public:
   request                              immediate_read_at_all (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read_at_all(offset, static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read_at_all(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
   request                              immediate_read_shared (void* data, const std::int32_t count, const data_type& data_type) const
@@ -451,7 +451,7 @@ public:
   request                              immediate_read_shared (type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read_shared(static_cast<void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read_shared(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 
   // Write operations.
@@ -465,7 +465,7 @@ public:
   status                               write                 (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write    (static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write    (adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }                                           
   
   status                               write_all             (const void* data, const std::int32_t count, const data_type& data_type) const
@@ -478,7 +478,7 @@ public:
   status                               write_all             (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_all(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_all(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
                                                              
   void                                 write_all_begin       (const void* data, const std::int32_t count, const data_type& data_type) const
@@ -489,7 +489,7 @@ public:
   void                                 write_all_begin       (const type& data) const
   {
     using adapter = container_adapter<type>;
-    write_all_begin(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    write_all_begin(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }                                       
   
   status                               write_all_end         (const void* data) const
@@ -502,7 +502,7 @@ public:
   status                               write_all_end         (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_all_end(static_cast<const void*>(adapter::data(data)));
+    return write_all_end(adapter::data(data));
   }                                          
   
   status                               write_at              (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
@@ -515,7 +515,7 @@ public:
   status                               write_at              (const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_at(offset, static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_at(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   
   status                               write_at_all          (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
@@ -528,7 +528,7 @@ public:
   status                               write_at_all          (const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_at_all(offset, static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_at_all(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
                                                              
   void                                 write_at_all_begin    (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
@@ -539,7 +539,7 @@ public:
   void                                 write_at_all_begin    (const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    write_at_all_begin(offset, static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    write_at_all_begin(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }                                             
   
   status                               write_at_all_end      (const void* data) const
@@ -552,7 +552,7 @@ public:
   status                               write_at_all_end      (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_at_all_end(static_cast<const void*>(adapter::data(data)));
+    return write_at_all_end(adapter::data(data));
   }                                    
   
   status                               write_ordered         (const void* data, const std::int32_t count, const data_type& data_type) const
@@ -565,7 +565,7 @@ public:
   status                               write_ordered         (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_ordered(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_ordered(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
                                                              
   void                                 write_ordered_begin   (const void* data, const std::int32_t count, const data_type& data_type) const
@@ -576,7 +576,7 @@ public:
   void                                 write_ordered_begin   (const type& data) const
   {
     using adapter = container_adapter<type>;
-    write_ordered_begin(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    write_ordered_begin(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }                                            
   
   status                               write_ordered_end     (const void* data) const
@@ -589,7 +589,7 @@ public:
   status                               write_ordered_end     (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_ordered_end(static_cast<const void*>(adapter::data(data)));
+    return write_ordered_end(adapter::data(data));
   }
 
   status                               write_shared          (const void* data, const std::int32_t count, const data_type& data_type) const
@@ -602,7 +602,7 @@ public:
   status                               write_shared          (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_shared(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_shared(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 
   // Immediate write operations.
@@ -617,7 +617,7 @@ public:
   request                              immediate_write       (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]                                              
   request                              immediate_write_all   (const void* data, const std::int32_t count, const data_type& data_type) const
@@ -630,7 +630,7 @@ public:
   request                              immediate_write_all   (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write_all(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write_all(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]                                              
   request                              immediate_write_at    (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
@@ -643,7 +643,7 @@ public:
   request                              immediate_write_at    (const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write_at(offset, static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write_at(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
   request                              immediate_write_at_all(const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
@@ -656,7 +656,7 @@ public:
   request                              immediate_write_at_all(const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write_at_all(offset, static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write_at_all(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
   request                              immediate_write_shared(const void* data, const std::int32_t count, const data_type& data_type) const
@@ -669,7 +669,7 @@ public:
   request                              immediate_write_shared(const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write_shared(static_cast<const void*>(adapter::data(data)), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write_shared(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
   }
 
   [[nodiscard]]
