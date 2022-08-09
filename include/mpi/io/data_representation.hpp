@@ -86,7 +86,7 @@ public:
     if (resize)
       output_adapter::resize(output, pack_size(input_adapter::size(input), input_adapter::data_type()) / sizeof(typename output_adapter::value_type));
 
-    return pack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<aint>(output_adapter::size(output)), output_position);
+    return pack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<aint>(output_adapter::size(output) * sizeof(typename output_adapter::value_type)), output_position);
   }
   
   [[nodiscard]]
@@ -103,7 +103,7 @@ public:
     using input_adapter  = container_adapter<input_type >;
     using output_adapter = container_adapter<output_type>;
 
-    return unpack(input_adapter::data(input), static_cast<aint>(input_adapter::size(input)), input_position, output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_adapter::data_type());
+    return unpack(input_adapter::data(input), static_cast<aint>(input_adapter::size(input) * sizeof(typename input_adapter::value_type)), input_position, output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_adapter::data_type());
   }
 
   [[nodiscard]]

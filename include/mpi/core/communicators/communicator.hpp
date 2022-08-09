@@ -379,7 +379,7 @@ public:
     using input_adapter  = container_adapter<input_type >;
     using output_adapter = container_adapter<output_type>;
 
-    return pack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_position);
+    return pack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output) * sizeof(typename output_adapter::value_type)), output_position);
   }
   [[nodiscard]]
   std::int32_t                              unpack                        (const void*       input, const std::int32_t input_size, const std::int32_t input_position , void*        output, const std::int32_t output_size, const data_type&   output_data_type   ) const
@@ -394,7 +394,7 @@ public:
     using input_adapter  = container_adapter<input_type >;
     using output_adapter = container_adapter<output_type>;
 
-    return unpack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_position, output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_adapter::data_type());
+    return unpack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input) * sizeof(typename input_adapter::value_type)), input_position, output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_adapter::data_type());
   }
 
   // Point-to-point operations.                                   
@@ -408,7 +408,7 @@ public:
     using adapter = container_adapter<type>;
     send(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
   }
-                                                                            
+
   void                                      synchronous_send              (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Ssend, (data, size, data_type.native(), destination, tag, native_))
@@ -419,7 +419,7 @@ public:
     using adapter = container_adapter<type>;
     synchronous_send(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
   }
-                                                                            
+
   void                                      buffered_send                 (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Bsend, (data, size, data_type.native(), destination, tag, native_))
@@ -430,7 +430,7 @@ public:
     using adapter = container_adapter<type>;
     buffered_send(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
   }
-                                                               
+
   void                                      ready_send                    (const void* data, const std::int32_t size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Rsend, (data, size, data_type.native(), destination, tag, native_))
@@ -644,7 +644,7 @@ public:
     return result;
   }
   template <typename type>                                                                                                                                          
-  status                                    send_receive_replace          (const type&         data       , const std::int32_t destination  , const std::int32_t send_tag, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
+  status                                    send_receive_replace          (      type&         data       , const std::int32_t destination  , const std::int32_t send_tag, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
     using adapter = container_adapter<type>;
     return send_receive_replace(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, send_tag, source, receive_tag);
@@ -678,7 +678,7 @@ public:
     return result;
   }
   template <typename type> [[nodiscard]]                                                                                                                                                
-  request                                   immediate_send_receive_replace(const type&         data       , const std::int32_t  destination , const std::int32_t send_tag, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
+  request                                   immediate_send_receive_replace(      type&         data       , const std::int32_t  destination , const std::int32_t send_tag, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
     using adapter = container_adapter<type>;
     return immediate_send_receive_replace(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, send_tag, source, receive_tag);
