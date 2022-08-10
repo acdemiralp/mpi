@@ -1410,14 +1410,16 @@ public:
 
   // All to one collective operations.
 
-  void                                      gather                        (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type, 
-                                                                           const std::int32_t root = 0) const
+  void                                      gather                        (const void*          sent    , const std::int32_t      sent_size    , const data_type& sent_data_type    ,
+                                                                                 void*          received, const std::int32_t      received_size, const data_type& received_data_type, 
+                                                                           const std::int32_t   root = 0) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Gather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_))
   }
   template <typename sent_type, typename received_type>                            
-  void                                      gather                        (const sent_type& sent, received_type& received, const std::int32_t root = 0) const
+  void                                      gather                        (const sent_type&     sent    , 
+                                                                                 received_type& received, 
+                                                                           const std::int32_t   root = 0) const
   {
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
@@ -1426,65 +1428,72 @@ public:
       receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / size()), receive_adapter::data_type(), root);
   }
   template <typename type>                            
-  void                                      gather                        (type& data, const std::int32_t root = 0) const
+  void                                      gather                        (      type&          data    , 
+                                                                           const std::int32_t   root = 0) const
   {
     using adapter = container_adapter<type>;
     gather(
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
-      adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root);
+      adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type(), root);
   }
   [[nodiscard]]                                                           
-  request                                   immediate_gather              (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type,  
-                                                                           const std::int32_t root = 0) const
+  request                                   immediate_gather              (const void*          sent    , const std::int32_t      sent_size    , const data_type& sent_data_type    ,
+                                                                                 void*          received, const std::int32_t      received_size, const data_type& received_data_type,  
+                                                                           const std::int32_t   root = 0) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Igather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, &result.native_))
     return  result;
   }
   template <typename sent_type, typename received_type> [[nodiscard]]                                                           
-  request                                   immediate_gather              (sent_type& sent, received_type& received, const std::int32_t root = 0) const
+  request                                   immediate_gather              (const sent_type&     sent    , 
+                                                                                 received_type& received, 
+                                                                           const std::int32_t   root = 0) const
   {
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     return immediate_gather(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent    )), send_adapter   ::data_type(), 
-      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received)), receive_adapter::data_type(), root);
+      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent)             ), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / size()), receive_adapter::data_type(), root);
   }
   template <typename type> [[nodiscard]]                                                           
-  request                                   immediate_gather              (type& data, const std::int32_t root = 0) const
+  request                                   immediate_gather              (type&                data    , 
+                                                                           const std::int32_t   root = 0) const
   {
     using adapter = container_adapter<type>;
     return immediate_gather(
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
-      adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root);
+      adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type(), root);
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]                                                           
-  request                                   persistent_gather             (const void*        sent        , const std::int32_t      sent_size     , const data_type& sent_data_type    ,
-                                                                                 void*        received    , const std::int32_t      received_size , const data_type& received_data_type,  
-                                                                           const std::int32_t root     = 0, const mpi::information& info          = mpi::information()) const
+  request                                   persistent_gather             (const void*          sent    , const std::int32_t      sent_size    , const data_type& sent_data_type    ,
+                                                                                 void*          received, const std::int32_t      received_size, const data_type& received_data_type,  
+                                                                           const std::int32_t   root = 0, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Gather_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, info.native(), &result.native_))
     return  result;
   }
   template <typename sent_type, typename received_type> [[nodiscard]]                                                           
-  request                                   persistent_gather             (sent_type& sent_data, received_type& received_data, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  request                                   persistent_gather             (const sent_type&     sent    , 
+                                                                                 received_type& received, 
+                                                                           const std::int32_t   root = 0, const mpi::information& info = mpi::information()) const
   {
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     return persistent_gather(
-      send_adapter   ::data(sent_data    ), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
-      receive_adapter::data(received_data), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type(), root, info);
+      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent)             ), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / size()), receive_adapter::data_type(), root, info);
   }
   template <typename type> [[nodiscard]]                                                           
-  request                                   persistent_gather             (type& data,                                         const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  request                                   persistent_gather             (      type&          data    , 
+                                                                           const std::int32_t   root = 0, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
     return persistent_gather(
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
-      adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root, info);
+      adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type(), root, info);
   }
 #endif
 
@@ -1747,7 +1756,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Bcast, (data, count, data_type.native(), root, native_))
   }
   template <typename type>                                                
-  void                                      broadcast                     (type& data, const std::int32_t root = 0) const
+  void                                      broadcast                     (type& data,                                                       const std::int32_t root = 0) const
   {
     using adapter = container_adapter<type>;
     broadcast(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root);
@@ -1760,7 +1769,7 @@ public:
     return result;
   }
   template <typename type> [[nodiscard]]                                                           
-  request                                   immediate_broadcast           (type& data, const std::int32_t root = 0) const
+  request                                   immediate_broadcast           (type& data,                                                       const std::int32_t root = 0) const
   {
     using adapter = container_adapter<type>;
     return immediate_broadcast(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root);
@@ -1781,80 +1790,89 @@ public:
   }
 #endif
 
-  void                                      scatter                       (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type, 
-                                                                           const std::int32_t root = 0) const
+  void                                      scatter                       (const void*          sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void*          received, const std::int32_t received_size, const data_type& received_data_type, 
+                                                                           const std::int32_t   root = 0) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Scatter, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_))
   }
   template <typename sent_type, typename received_type>                            
-  void                                      scatter                       (sent_type& sent, received_type& received, const std::int32_t root = 0) const
+  void                                      scatter                       (const sent_type&     sent    , 
+                                                                                 received_type& received, 
+                                                                           const std::int32_t   root = 0) const
   {
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     scatter(
       send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent    ) / size()), send_adapter   ::data_type(), 
-      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received))         , receive_adapter::data_type(), root);
+      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received)         ), receive_adapter::data_type(), root);
   }
   template <typename type>                            
-  void                                      scatter                       (type& data, const std::int32_t root = 0) const
+  void                                      scatter                       (      type&          data    , 
+                                                                           const std::int32_t   root = 0) const
   {
     using adapter = container_adapter<type>;
     scatter(
-      adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), 
+      adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type(),
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root);
   }
   [[nodiscard]]                                                           
-  request                                   immediate_scatter             (const void* sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
-                                                                                 void* received, const std::int32_t received_size, const data_type& received_data_type, 
-                                                                           const std::int32_t root = 0) const
+  request                                   immediate_scatter             (const void*          sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
+                                                                                 void*          received, const std::int32_t received_size, const data_type& received_data_type, 
+                                                                           const std::int32_t   root = 0) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Iscatter, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, &result.native_))
     return  result;
   }
   template <typename sent_type, typename received_type> [[nodiscard]]                                                           
-  request                                   immediate_scatter             (sent_type& sent_data, received_type& received_data, const std::int32_t root = 0) const
+  request                                   immediate_scatter             (const sent_type&     sent    , 
+                                                                                 received_type& received, 
+                                                                           const std::int32_t   root = 0) const
   {
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     return immediate_scatter(
-      send_adapter   ::data(sent_data    ), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
-      receive_adapter::data(received_data), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type(), root);
+      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent    ) / size()), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received)         ), receive_adapter::data_type(), root);
   }
   template <typename type> [[nodiscard]]                                                           
-  request                                   immediate_scatter             (type& data, const std::int32_t root = 0) const
+  request                                   immediate_scatter             (      type&          data    , 
+                                                                           const std::int32_t   root = 0) const
   {
     using adapter = container_adapter<type>;
     return immediate_scatter(
-      adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), 
+      adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type(), 
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root);
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]                                                           
-  request                                   persistent_scatter            (const void*        sent       , const std::int32_t      sent_size     , const data_type& sent_data_type    ,
-                                                                                 void*        received   , const std::int32_t      received_size , const data_type& received_data_type, 
-                                                                           const std::int32_t root    = 0, const mpi::information& info          = mpi::information()) const
+  request                                   persistent_scatter            (const void*          sent    , const std::int32_t      sent_size     , const data_type& sent_data_type    ,
+                                                                                 void*          received, const std::int32_t      received_size , const data_type& received_data_type, 
+                                                                           const std::int32_t   root = 0, const mpi::information& info          = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Scatter_init, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, info.native(), &result.native_))
     return  result;
   }
   template <typename sent_type, typename received_type> [[nodiscard]]                                                           
-  request                                   persistent_scatter            (sent_type& sent_data, received_type& received_data, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  request                                   persistent_scatter            (const sent_type&     sent    , 
+                                                                                 received_type& received, 
+                                                                           const std::int32_t   root = 0, const mpi::information& info = mpi::information()) const
   {
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     return persistent_scatter(
-      send_adapter   ::data(sent_data    ), static_cast<std::int32_t>(send_adapter   ::size(sent_data    )), send_adapter   ::data_type(), 
-      receive_adapter::data(received_data), static_cast<std::int32_t>(receive_adapter::size(received_data)), receive_adapter::data_type(), root, info);
+      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent    ) / size()), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received)         ), receive_adapter::data_type(), root, info);
   }
   template <typename type> [[nodiscard]]                                                           
-  request                                   persistent_scatter            (type& data                                        , const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
+  request                                   persistent_scatter            (      type&          data    , 
+                                                                           const std::int32_t   root = 0, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
     return persistent_scatter(
-      adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), 
+      adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type(), 
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root, info);
   }
 #endif
@@ -2044,7 +2062,7 @@ public:
     return persistent_inclusive_scan(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op, info);
   }
 #endif
-  
+
   void                                      exclusive_scan                (const void*      sent, void*          received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Exscan, (sent, received, size, data_type.native(), op.native(), native_))
@@ -2104,7 +2122,7 @@ public:
     return persistent_exclusive_scan(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op, info);
   }
 #endif
-  
+
   [[nodiscard]]                                                           
   bool                                      managed                       () const
   {
