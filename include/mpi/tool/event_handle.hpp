@@ -120,7 +120,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_T_event_callback_set_info, (native_, static_cast<MPI_T_cb_safety>(safety), value.native()))
   }
 
-  void                                 set_dropped_handler     (const dropped_handler_type function)
+  void                                 set_dropped_handler     (const dropped_handler_type function) const
   {
     MPI_CHECK_ERROR_CODE(MPI_T_event_set_dropped_handler, (native_, function))
   }

@@ -25,7 +25,7 @@ class file;
 class data_type
 {
 public:
-  explicit data_type  (const MPI_Datatype native, const bool managed = false)
+  explicit data_type  (const MPI_Datatype native = MPI_DATATYPE_NULL, const bool managed = false)
   : managed_(managed), native_(native)
   {
     
@@ -237,7 +237,7 @@ public:
       raw_data_types   .data()))
 
     for (auto& type : raw_data_types)
-      result.data_types.emplace_back(type, true); // Creates managed data types.
+      result.data_types.emplace_back(type, true); // Creates managed data types. Standard: ... the user is responsible for freeing these data types with MPI_TYPE_FREE ...
 
     return result;
   }
@@ -259,15 +259,15 @@ public:
   template <typename type>
   std::optional<type>   attribute       (const data_type_key_value& key) const
   {
-    type         result;
+    type*        result;
     std::int32_t exists;
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_attr   , (native_, key.native(), static_cast<void*>(&result), &exists))
-    return static_cast<bool>(exists) ? result : std::optional<type>(std::nullopt);
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_attr   , (native_, key.native(), &result, &exists))
+    return static_cast<bool>(exists) ? *result : std::optional<type>(std::nullopt);
   }
   template <typename type>
-  void                  set_attribute   (const data_type_key_value& key, const type& value) const
+  void                  set_attribute   (const data_type_key_value& key, type& value) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), static_cast<void*>(&value)))
+    MPI_CHECK_ERROR_CODE(MPI_Type_set_attr   , (native_, key.native(), &value))
   }
   void                  remove_attribute(const data_type_key_value& key) const
   {

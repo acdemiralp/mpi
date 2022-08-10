@@ -23,7 +23,6 @@
 // - Use captures      instead of void* argument.
 namespace mpi
 {
-#ifdef MPI_USE_DETACH
 class detach_context
 {
 public:
@@ -142,7 +141,7 @@ public:
       auto   iterator  = single_requests_.begin();
       while (iterator != single_requests_.end  ())
       {
-        if (auto status = (*iterator)->request.test())
+        if ([[maybe_unused]] auto status = (*iterator)->request.test())
         {
           (*iterator)->function((*iterator)->status);
           delete *iterator;
@@ -220,7 +219,7 @@ protected:
 };
 
 // Arguments are only meaningful on the first call to this function.
-detach_context& get_detach_context(const bool create_progress_thread = true) 
+inline detach_context& get_detach_context(const bool create_progress_thread = true) 
 {
   static detach_context context(create_progress_thread);
   return context;
@@ -239,5 +238,4 @@ inline void detach_all (std::vector<request>& requests, const detach_context::de
 {
   get_detach_context().detach_all (requests, function);
 }
-#endif
 }

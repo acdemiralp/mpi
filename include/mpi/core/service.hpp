@@ -13,8 +13,8 @@ class service
 {
 public:
   // The info argument is last in order to have a default.
-  service           (const std::string& name, const port& port, const information& info = information())
-  : name_(name), info_(info), port_(port)
+  service           (std::string name, const port& port, information info = information())
+  : name_(std::move(name)), info_(std::move(info)), port_(port)
   {
     MPI_CHECK_ERROR_CODE(MPI_Publish_name  , (name_.c_str(), info_.native(), port_.name().c_str()))
   }

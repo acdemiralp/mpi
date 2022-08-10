@@ -14,14 +14,14 @@ template <typename type>
 class manual_shared_variable
 {
 public:
-  explicit manual_shared_variable  (const communicator& communicator, const std::int32_t root = 0)
+  explicit manual_shared_variable          (const communicator& communicator, const std::int32_t root = 0)
   : communicator_(communicator), root_(root), window_(communicator_, communicator_.rank() == root_ ? type_traits<type>::get_data_type().size() : 0)
   {
 
   }
-  manual_shared_variable           (const manual_shared_variable&  that) = delete ;
-  manual_shared_variable           (      manual_shared_variable&& temp) = default;
-  virtual ~manual_shared_variable  ()                                    = default;
+  manual_shared_variable                   (const manual_shared_variable&  that) = delete ;
+  manual_shared_variable                   (      manual_shared_variable&& temp) = default;
+  virtual ~manual_shared_variable          ()                                    = default;
   manual_shared_variable& operator=(const manual_shared_variable&  that) = delete ;
   manual_shared_variable& operator=(      manual_shared_variable&& temp) = default;
   manual_shared_variable& operator=(const type& value)
@@ -34,7 +34,7 @@ public:
     return get();
   }
 
-  void set        (const type& value)
+  void set        (const type& value) const
   {
     window_.lock  (root_, false);
     window_.put   (value , root_, 0, 1, type_traits<type>::get_data_type());
@@ -86,7 +86,7 @@ public:
     return base::get();
   }
 
-  void set_if_rank(const type& value, const std::int32_t rank)
+  void set_if_rank(const type& value, const std::int32_t rank) const
   {
     if (base::communicator_.rank() == rank)
       base::set(value);

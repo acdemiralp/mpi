@@ -10,20 +10,20 @@ template <typename type = void>
 type*       allocate   (const aint size, const information& info = information())
 {
   type* result {};
-  MPI_CHECK_ERROR_CODE(MPI_Alloc_mem, (size, info.native(), static_cast<void*>(result)))
+  MPI_CHECK_ERROR_CODE(MPI_Alloc_mem, (size, info.native(), result))
   return result;
 }
 template <typename type = void>
 void        free       (type* location)
 {
-  MPI_CHECK_ERROR_CODE(MPI_Free_mem , (static_cast<void*>(location)))
+  MPI_CHECK_ERROR_CODE(MPI_Free_mem , (location))
 }
 
 template <typename type = void>
 aint        get_address(const type* location)
 {
   aint result;
-  MPI_CHECK_ERROR_CODE(MPI_Get_address, (static_cast<const void*>(location), &result))
+  MPI_CHECK_ERROR_CODE(MPI_Get_address, (location, &result))
   return  result;
 }
 

@@ -28,10 +28,10 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Grequest_start, (query_function, free_function, cancel_function, extra_state, &native_))
   }
   explicit generalized_request  (
-    const std::function<error_code(status)>& query_function , 
-    const std::function<error_code()>&       free_function  ,
-    const std::function<error_code(bool)>&   cancel_function)
-  : request(MPI_REQUEST_NULL, true), query_function_(query_function), free_function_(free_function), cancel_function_(cancel_function)
+    std::function<error_code(status)> query_function ,
+    std::function<error_code()>       free_function  ,
+    std::function<error_code(bool)>   cancel_function)
+  : request(MPI_REQUEST_NULL, true), query_function_(std::move(query_function)), free_function_(std::move(free_function)), cancel_function_(std::move(cancel_function))
   {
     MPI_CHECK_ERROR_CODE(MPI_Grequest_start, (
       [ ] (void* this_pointer, MPI_Status* status)
