@@ -560,7 +560,7 @@ public:
   request                                   partitioned_send              (const std::int32_t partitions, const type& data,                                               const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
-    return partitioned_send(partitions, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type(), destination, tag, info);
+    return partitioned_send(partitions, adapter::data(data), static_cast<count>(adapter::size(data) / partitions), adapter::data_type(), destination, tag, info);
   }
 #endif
   
@@ -614,7 +614,7 @@ public:
   request                                   partitioned_receive           (const std::int32_t partitions, type& data,                                               const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
-    return partitioned_receive(partitions, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type(), source, tag, info);
+    return partitioned_receive(partitions, adapter::data(data), static_cast<count>(adapter::size(data) / partitions), adapter::data_type(), source, tag, info);
   }
 #endif
 
@@ -996,7 +996,7 @@ public:
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     all_gather(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent             )), send_adapter   ::data_type(), 
+      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent)             ), send_adapter   ::data_type(), 
       receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / size()), receive_adapter::data_type());
   }
   template <typename type>                            
@@ -1022,7 +1022,7 @@ public:
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     return immediate_all_gather(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent             )), send_adapter   ::data_type(), 
+      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent)             ), send_adapter   ::data_type(), 
       receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / size()), receive_adapter::data_type());
   }
   template <typename type> [[nodiscard]]                                                           
@@ -1237,171 +1237,180 @@ public:
   }
 #endif
 
-  void                                      all_reduce                    (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  void                                      all_reduce                     (const void*      sent, void*          received, const std::int32_t               size , const data_type& data_type, const op& op = ops::sum) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Allreduce, (sent, received, size, data_type.native(), op.native(), native_))
   }
-  template <typename type>                            
-  void                                      all_reduce                    (const type& sent, type& received,                                                      const op& op = ops::sum) const
+  template <typename sent_type, typename received_type>
+  void                                      all_reduce                     (const sent_type& sent, received_type& received,                                                                     const op& op = ops::sum) const
   {
-    using adapter = container_adapter<type>;
-    all_reduce(adapter::data(sent), adapter::data(received), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    all_reduce(send_adapter::data(sent), receive_adapter::data(received), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter::data_type(), op);
   }
   template <typename type>                            
-  void                                      all_reduce                    (      type& data,                                                                      const op& op = ops::sum) const
+  void                                      all_reduce                     (      type&      data,                                                                                              const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
     all_reduce(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
   }
   [[nodiscard]]
-  request                                   immediate_all_reduce          (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  request                                   immediate_all_reduce           (const void*      sent, void*          received, const std::int32_t               size , const data_type& data_type, const op& op = ops::sum) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Iallreduce, (sent, received, size, data_type.native(), op.native(), native_, &result.native_))
     return  result;
   }
-  template <typename type> [[nodiscard]]
-  request                                   immediate_all_reduce          (const type& sent, type& received,                                                      const op& op = ops::sum) const
+  template <typename sent_type, typename received_type> [[nodiscard]]
+  request                                   immediate_all_reduce           (const sent_type& sent, received_type& received,                                                                     const op& op = ops::sum) const
   {
-    using adapter = container_adapter<type>;
-    return immediate_all_reduce(adapter::data(sent), adapter::data(received), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_all_reduce(send_adapter::data(sent), receive_adapter::data(received), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter::data_type(), op);
   }
   template <typename type> [[nodiscard]]                           
-  request                                   immediate_all_reduce          (      type& data,                                                                      const op& op = ops::sum) const
+  request                                   immediate_all_reduce           (      type&      data,                                                                                              const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
     return immediate_all_reduce(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]
-  request                                   persistent_all_reduce         (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  request                                   persistent_all_reduce          (const void*      sent, void*          received, const std::int32_t               size , const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Allreduce_init, (sent, received, size, data_type.native(), op.native(), native_, info.native(), &result.native_))
     return  result;
   }
-  template <typename type> [[nodiscard]]
-  request                                   persistent_all_reduce         (const type& sent, type& received,                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  template <typename sent_type, typename received_type> [[nodiscard]]
+  request                                   persistent_all_reduce          (const sent_type& sent, received_type& received,                                                                     const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
-    using adapter = container_adapter<type>;
-    return persistent_all_reduce(adapter::data(sent), adapter::data(received), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, info);
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return persistent_all_reduce(send_adapter::data(sent), receive_adapter::data(received), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter::data_type(), op, info);
   }
   template <typename type> [[nodiscard]]                           
-  request                                   persistent_all_reduce         (      type& data,                                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  request                                   persistent_all_reduce          (      type&      data,                                                                                              const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
     return persistent_all_reduce(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op, info);
   }
 #endif
 
-  void                                      reduce_scatter                (const void* sent, void* received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum) const
+  void                                      reduce_scatter                 (const void*      sent, void*          received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Reduce_scatter, (sent, received, sizes.data(), data_type.native(), op.native(), native_))
   }
-  template <typename type>                            
-  void                                      reduce_scatter                (const type& sent, type& received, const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
+  template <typename sent_type, typename received_type>
+  void                                      reduce_scatter                 (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
   {
-    using adapter = container_adapter<type>;
-    reduce_scatter(adapter::data(sent), adapter::data(received), sizes, adapter::data_type(), op);
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    reduce_scatter(send_adapter::data(sent), receive_adapter::data(received), sizes, send_adapter::data_type(), op);
   }
   template <typename type>                            
-  void                                      reduce_scatter                (      type& data,                 const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
+  void                                      reduce_scatter                 (      type&      data,                          const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
     reduce_scatter(MPI_IN_PLACE, adapter::data(data), sizes, adapter::data_type(), op);
   }
   [[nodiscard]]
-  request                                   immediate_reduce_scatter      (const void* sent, void* received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum) const
+  request                                   immediate_reduce_scatter       (const void*      sent, void*          received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Ireduce_scatter, (sent, received, sizes.data(), data_type.native(), op.native(), native_, &result.native_))
     return  result;
   }
-  template <typename type> [[nodiscard]]
-  request                                   immediate_reduce_scatter      (const type& sent, type& received, const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
+  template <typename sent_type, typename received_type> [[nodiscard]]
+  request                                   immediate_reduce_scatter       (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
   {
-    using adapter = container_adapter<type>;
-    return immediate_reduce_scatter(adapter::data(sent), adapter::data(received), sizes, adapter::data_type(), op);
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_reduce_scatter(send_adapter::data(sent), receive_adapter::data(received), sizes, send_adapter::data_type(), op);
   }
   template <typename type> [[nodiscard]]                           
-  request                                   immediate_reduce_scatter      (      type& data,                 const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
+  request                                   immediate_reduce_scatter       (      type&      data,                          const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
     return immediate_reduce_scatter(MPI_IN_PLACE, adapter::data(data), sizes, adapter::data_type(), op);
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]
-  request                                   persistent_reduce_scatter     (const void* sent, void* received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  request                                   persistent_reduce_scatter      (const void*      sent, void*          received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Reduce_scatter_init, (sent, received, sizes.data(), data_type.native(), op.native(), native_, info.native(), &result.native_))
     return  result;
   }
-  template <typename type> [[nodiscard]]
-  request                                   persistent_reduce_scatter     (const type& sent, type& received, const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  template <typename sent_type, typename received_type> [[nodiscard]]
+  request                                   persistent_reduce_scatter      (const sent_type& sent, received_type& received, const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
-    using adapter = container_adapter<type>;
-    return persistent_reduce_scatter(adapter::data(sent), adapter::data(received), sizes, adapter::data_type(), op, info);
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return persistent_reduce_scatter(send_adapter::data(sent), receive_adapter::data(received), sizes, send_adapter::data_type(), op, info);
   }
   template <typename type> [[nodiscard]]                           
-  request                                   persistent_reduce_scatter     (      type& data,                 const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  request                                   persistent_reduce_scatter      (      type&      data,                          const std::vector<std::int32_t>& sizes,                             const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
     return persistent_reduce_scatter(MPI_IN_PLACE, adapter::data(data), sizes, adapter::data_type(), op, info);
   }
 #endif
 
-  void                                      reduce_scatter_block          (const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  void                                      reduce_scatter_block           (const void*      sent, void*          received, const std::int32_t               size , const data_type& data_type, const op& op = ops::sum) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Reduce_scatter_block, (sent, received, size, data_type.native(), op.native(), native_))
   }
-  template <typename type>                            
-  void                                      reduce_scatter_block          (const type& sent, type& received,                                                      const op& op = ops::sum) const
+  template <typename sent_type, typename received_type>
+  void                                      reduce_scatter_block           (const sent_type& sent, received_type& received,                                                                     const op& op = ops::sum) const
   {
-    using adapter = container_adapter<type>;
-    reduce_scatter_block(adapter::data(sent), adapter::data(received), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    reduce_scatter_block(send_adapter::data(sent), receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received)), send_adapter::data_type(), op);
   }
   template <typename type>                            
-  void                                      reduce_scatter_block          (      type& data,                                                                      const op& op = ops::sum) const
+  void                                      reduce_scatter_block           (      type&      data,                                                                                              const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
     reduce_scatter_block(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
   }
   [[nodiscard]]
-  request                                   immediate_reduce_scatter_block(const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
+  request                                   immediate_reduce_scatter_block (const void*      sent, void*          received, const std::int32_t               size , const data_type& data_type, const op& op = ops::sum) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Ireduce_scatter_block, (sent, received, size, data_type.native(), op.native(), native_, &result.native_))
     return  result;
   }
-  template <typename type> [[nodiscard]]
-  request                                   immediate_reduce_scatter_block(const type& sent, type& received,                                                      const op& op = ops::sum) const
+  template <typename sent_type, typename received_type> [[nodiscard]]
+  request                                   immediate_reduce_scatter_block (const sent_type& sent, received_type& received,                                                                     const op& op = ops::sum) const
   {
-    using adapter = container_adapter<type>;
-    return immediate_reduce_scatter_block(adapter::data(sent), adapter::data(received), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op);
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return immediate_reduce_scatter_block(send_adapter::data(sent), receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received)), send_adapter::data_type(), op);
   }
   template <typename type> [[nodiscard]]                           
-  request                                   immediate_reduce_scatter_block(      type& data,                                                                      const op& op = ops::sum) const
+  request                                   immediate_reduce_scatter_block (      type&      data,                                                                                              const op& op = ops::sum) const
   {
     using adapter = container_adapter<type>;
     return immediate_reduce_scatter_block(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
   }
 #ifdef MPI_USE_LATEST
   [[nodiscard]]
-  request                                   persistent_reduce_scatter_block(const void* sent, void* received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  request                                   persistent_reduce_scatter_block(const void*      sent, void*          received, const std::int32_t               size , const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
     MPI_CHECK_ERROR_CODE(MPI_Reduce_scatter_block_init, (sent, received, size, data_type.native(), op.native(), native_, info.native(), &result.native_))
     return  result;
   }
-  template <typename type> [[nodiscard]]
-  request                                   persistent_reduce_scatter_block(const type& sent, type& received,                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  template <typename sent_type, typename received_type> [[nodiscard]]
+  request                                   persistent_reduce_scatter_block(const sent_type& sent, received_type& received,                                                                     const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
-    using adapter = container_adapter<type>;
-    return persistent_reduce_scatter_block(adapter::data(sent), adapter::data(received), static_cast<std::int32_t>(adapter::size(sent)), adapter::data_type(), op, info);
+    using send_adapter    = container_adapter<sent_type>;
+    using receive_adapter = container_adapter<received_type>;
+    return persistent_reduce_scatter_block(send_adapter::data(sent), receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received)), send_adapter::data_type(), op, info);
   }
   template <typename type> [[nodiscard]]                           
-  request                                   persistent_reduce_scatter_block(      type& data,                                                                      const op& op = ops::sum, const mpi::information& info = mpi::information()) const
+  request                                   persistent_reduce_scatter_block(      type&      data,                                                                                              const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
     return persistent_reduce_scatter_block(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op, info);
