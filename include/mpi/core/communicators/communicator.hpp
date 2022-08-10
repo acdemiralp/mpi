@@ -1474,92 +1474,48 @@ public:
                                                                                  received_type& received, const std::vector<std::int32_t>& received_sizes,
                                                                            const std::int32_t   root = 0, const bool resize = false) const
   {
-    using send_adapter    = container_adapter<sent_type>;
-    using receive_adapter = container_adapter<received_type>;
-
-    if (resize && rank() == root)
-      receive_adapter::resize(received, std::reduce(received_sizes.begin(), received_sizes.end()));
-
     std::vector<std::int32_t> displacements(received_sizes.size());
     std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
 
-    gather_varying(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
-      receive_adapter::data(received), received_sizes, displacements                      , receive_adapter::data_type(), root);
+    gather_varying(sent, received, received_sizes, displacements, root, resize);
   }
   template <typename sent_type, typename received_type>                            
   void                                      gather_varying                (const sent_type&     sent    , 
                                                                                  received_type& received,
                                                                            const std::int32_t   root = 0, const bool resize = false) const
   {
-    using send_adapter    = container_adapter<sent_type>;
-    using receive_adapter = container_adapter<received_type>;
-
-    const auto                local_size    (static_cast<std::int32_t>(send_adapter::size(sent)));
+    const auto                local_size    (static_cast<std::int32_t>(container_adapter<sent_type>::size(sent)));
     std::vector<std::int32_t> received_sizes(size());
     gather(local_size, received_sizes, root);
 
-    if (resize && rank() == root)
-      receive_adapter::resize(received, std::reduce(received_sizes.begin(), received_sizes.end()));
-
-    std::vector<std::int32_t> displacements(received_sizes.size());
-    std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
-
-    gather_varying(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
-      receive_adapter::data(received), received_sizes, displacements                      , receive_adapter::data_type(), root);
+    gather_varying(sent, received, received_sizes, root, resize);
   }
   template <typename type>                            
   void                                      gather_varying                (      type&          data    , const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, 
-                                                                           const std::int32_t   root = 0, const bool resize = false) const
+                                                                           const std::int32_t   root = 0) const
   {
     using adapter = container_adapter<type>;
     
-    if (resize && rank() == root)
-    {
-      adapter::resize(data, std::reduce(received_sizes.begin(), received_sizes.end()));
-      std::rotate(data.rbegin(), data.rbegin() + std::reduce(received_sizes.begin(), received_sizes.begin() + root), data.rend());
-    }
-
     gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), adapter::data(data), received_sizes, displacements, adapter::data_type(), root);
   }
   template <typename type>                            
   void                                      gather_varying                (      type&          data    , const std::vector<std::int32_t>& received_sizes,                                                 
-                                                                           const std::int32_t   root = 0, const bool resize = false) const
+                                                                           const std::int32_t   root = 0) const
   {
-    using adapter = container_adapter<type>;
-    
-    if (resize && rank() == root)
-    {
-      adapter::resize(data, std::reduce(received_sizes.begin(), received_sizes.end()));
-      std::rotate(data.rbegin(), data.rbegin() + std::reduce(received_sizes.begin(), received_sizes.begin() + root), data.rend());
-    }
-
     std::vector<std::int32_t> displacements(received_sizes.size());
     std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
 
-    gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), adapter::data(data), received_sizes, displacements, adapter::data_type(), root);
+    gather_varying(data, received_sizes, displacements, root);
   }
   template <typename type>                            
   void                                      gather_varying                (      type&          data    , 
-                                                                           const std::int32_t   root = 0, const bool resize = false) const
+                                                                           const std::int32_t   root = 0) const
   {
-    using adapter = container_adapter<type>;
-    
-    std::int32_t              local_size    (adapter::size(data));
+    const auto                local_size    (static_cast<std::int32_t>(container_adapter<type>::size(data)));
     std::vector<std::int32_t> received_sizes(size());
     gather(local_size, received_sizes, root);
 
-    if (resize && rank() == root)
-    {
-      adapter::resize(data, std::reduce(received_sizes.begin(), received_sizes.end()));
-      std::rotate(data.rbegin(), data.rbegin() + std::reduce(received_sizes.begin(), received_sizes.begin() + root), data.rend());
-    }
-
-    std::vector<std::int32_t> displacements(received_sizes.size());
-    std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
-
-    gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), adapter::data(data), received_sizes, displacements, adapter::data_type(), root);
+    gather_varying(data, received_sizes, root);
   }
   [[nodiscard]]
   request                                   immediate_gather_varying      (const void*          sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
@@ -1587,19 +1543,13 @@ public:
   }
   template <typename type> [[nodiscard]]                           
   request                                   immediate_gather_varying      (      type&          data    , const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, 
-                                                                           const std::int32_t   root = 0, const bool resize = false) const
+                                                                           const std::int32_t   root = 0) const
   {
     using adapter = container_adapter<type>;
     
-    if (resize && rank() == root)
-    {
-      adapter::resize(data, std::reduce(received_sizes.begin(), received_sizes.end()));
-      std::rotate(data.rbegin(), data.rbegin() + std::reduce(received_sizes.begin(), received_sizes.begin() + root), data.rend());
-    }
-
     return immediate_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), adapter::data(data), received_sizes, displacements, adapter::data_type(), root);
   }
-//#ifdef MPI_USE_LATEST
+#ifdef MPI_USE_LATEST
   [[nodiscard]]
   request                                   persistent_gather_varying     (const void*          sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
                                                                                  void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, 
@@ -1626,19 +1576,13 @@ public:
   }
   template <typename type> [[nodiscard]]                           
   request                                   persistent_gather_varying     (      type&          data    , const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,
-                                                                           const std::int32_t   root = 0, const mpi::information& info = mpi::information(), const bool resize = false) const
+                                                                           const std::int32_t   root = 0, const mpi::information& info = mpi::information()) const
   {
     using adapter = container_adapter<type>;
     
-    if (resize && rank() == root)
-    {
-      adapter::resize(data, std::reduce(received_sizes.begin(), received_sizes.end()));
-      std::rotate(data.rbegin(), data.rbegin() + std::reduce(received_sizes.begin(), received_sizes.begin() + root), data.rend());
-    }
-
     return persistent_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), adapter::data(data), received_sizes, displacements, adapter::data_type(), root, info);
   }
-//#endif
+#endif
 
   void                                      reduce_local                  (const void*      sent, void*          received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum) const
   {
