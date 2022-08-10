@@ -133,6 +133,7 @@ public:
 protected:
   friend class communicator;
   friend class message;
+  friend class topological_communicator;
   friend class window;
   friend class io::file;
   friend std::optional<std::vector<status>>               test_all (std::vector<request>& requests);

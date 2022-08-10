@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vector>
 
-#include <mpi/core/communicators/communicator.hpp>
+#include <mpi/core/communicators/topological_communicator.hpp>
 #include <mpi/core/structs/neighbor_information.hpp>
 #include <mpi/core/structs/distributed_graph.hpp>
 #include <mpi/core/structs/neighbor_counts.hpp>
@@ -13,16 +13,16 @@
 
 namespace mpi
 {
-class distributed_graph_communicator : public communicator
+class distributed_graph_communicator : public topological_communicator
 {
 public:
   explicit distributed_graph_communicator   (const MPI_Comm native, const bool managed = false)
-  : communicator(native, managed)
+  : topological_communicator(native, managed)
   {
 
   }
   explicit distributed_graph_communicator   (const communicator& that, const distributed_graph&    graph, const mpi::information& info = mpi::information(), const bool reorder = true)
-  : communicator(MPI_COMM_NULL, true)
+  : topological_communicator(MPI_COMM_NULL, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Dist_graph_create, (
       that.native(), 
@@ -36,7 +36,7 @@ public:
       &native_))
   }
   explicit distributed_graph_communicator   (const communicator& that, const neighbor_information& graph, const mpi::information& info = mpi::information(), const bool reorder = true)
-  : communicator(MPI_COMM_NULL, true)
+  : topological_communicator(MPI_COMM_NULL, true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Dist_graph_create_adjacent, (
       that.native(),
@@ -55,21 +55,32 @@ public:
  ~distributed_graph_communicator            ()                                            override = default;
   distributed_graph_communicator& operator= (const distributed_graph_communicator&  that)          = default;
   distributed_graph_communicator& operator= (      distributed_graph_communicator&& temp) noexcept = default;
-  
+
   bool                            operator==(const distributed_graph_communicator&  that) const
   {
     return compare(that) == comparison::identical;
   }
 
   [[nodiscard]]
-  neighbor_counts      neighbor_counts() const
+  std::int32_t         incoming_neighbor_count() const override
+  {
+    return neighbor_counts().source_count;
+  }
+  [[nodiscard]]
+  std::int32_t         outgoing_neighbor_count() const override
+  {
+    return neighbor_counts().destination_count;
+  }
+
+  [[nodiscard]]
+  neighbor_counts      neighbor_counts        () const
   {
     mpi::neighbor_counts result {};
     MPI_CHECK_ERROR_CODE(MPI_Dist_graph_neighbors_count, (native_, &result.source_count, &result.destination_count, reinterpret_cast<std::int32_t*>(&result.weighted)))
     return result;
   }
   [[nodiscard]]
-  neighbor_information neighbors      () const
+  neighbor_information neighbors              () const
   {
     const auto info = neighbor_counts();
 
