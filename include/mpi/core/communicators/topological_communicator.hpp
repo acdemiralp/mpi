@@ -122,7 +122,7 @@ public:
     std::exclusive_scan(sent_sizes    .begin(), sent_sizes    .end(), sent_displacements    .begin(), 0);
     std::exclusive_scan(received_sizes.begin(), received_sizes.end(), received_displacements.begin(), 0);
 
-    neighbor_all_to_all_varying(sent, sent_sizes, sent_displacements, received, received_sizes, received_displacements);
+    neighbor_all_to_all_varying(sent, sent_sizes, sent_displacements, received, received_sizes, received_displacements, resize);
   }
   template <typename sent_type, typename received_type>                            
   void    neighbor_all_to_all_varying           (const sent_type&     sent    , const std::vector<std::int32_t>& sent_sizes    , 
