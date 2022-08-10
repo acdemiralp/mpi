@@ -117,29 +117,18 @@ public:
                                                        received_type& received, const std::vector<std::int32_t>& received_sizes, 
                                                  const bool resize = false) const
   {
-    using send_adapter    = container_adapter<sent_type>;
-    using receive_adapter = container_adapter<received_type>;
-
-    if (resize)
-      receive_adapter::resize(received, std::reduce(received_sizes.begin(), received_sizes.end()));
-
     std::vector<std::int32_t> sent_displacements    (sent_sizes    .size());
     std::vector<std::int32_t> received_displacements(received_sizes.size());
     std::exclusive_scan(sent_sizes    .begin(), sent_sizes    .end(), sent_displacements    .begin(), 0);
     std::exclusive_scan(received_sizes.begin(), received_sizes.end(), received_displacements.begin(), 0);
 
-    neighbor_all_to_all_varying(
-      send_adapter   ::data(sent    ), sent_sizes    , sent_displacements    , send_adapter   ::data_type(), 
-      receive_adapter::data(received), received_sizes, received_displacements, receive_adapter::data_type());
+    neighbor_all_to_all_varying(sent, sent_sizes, sent_displacements, received, received_sizes, received_displacements);
   }
   template <typename sent_type, typename received_type>                            
   void    neighbor_all_to_all_varying           (const sent_type&     sent    , const std::vector<std::int32_t>& sent_sizes    , 
                                                        received_type& received, 
                                                  const bool resize = false) const
   {
-    using send_adapter    = container_adapter<sent_type>;
-    using receive_adapter = container_adapter<received_type>;
-
     std::vector<std::int32_t> received_sizes(incoming_neighbor_count());
     neighbor_all_to_all(sent_sizes, received_sizes);
 
@@ -307,28 +296,17 @@ public:
                                                        received_type& received, const std::vector<std::int32_t>& received_sizes, 
                                                  const bool resize = false) const
   {
-    using send_adapter    = container_adapter<sent_type>;
-    using receive_adapter = container_adapter<received_type>;
-
-    if (resize)
-      receive_adapter::resize(received, std::reduce(received_sizes.begin(), received_sizes.end()));
-
     std::vector<std::int32_t> displacements(received_sizes.size());
     std::exclusive_scan(received_sizes.begin(), received_sizes.end(), displacements.begin(), 0);
 
-    neighbor_all_gather_varying(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
-      receive_adapter::data(received), received_sizes, displacements                      , receive_adapter::data_type());
+    neighbor_all_gather_varying(sent, received, received_sizes, displacements, resize);
   }
   template <typename sent_type, typename received_type>
   void    neighbor_all_gather_varying           (const sent_type&     sent    , 
                                                        received_type& received, 
                                                  const bool resize = false) const
   {
-    using send_adapter    = container_adapter<sent_type>;
-    using receive_adapter = container_adapter<received_type>;
-
-    std::int32_t              local_size    (send_adapter::size(sent));
+    std::int32_t              local_size    (container_adapter<sent_type>::size(sent));
     std::vector<std::int32_t> received_sizes(incoming_neighbor_count());
     neighbor_all_gather(local_size, received_sizes);
 
