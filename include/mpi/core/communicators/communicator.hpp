@@ -234,7 +234,7 @@ public:
     return result;
   }
   [[nodiscard]]                                                           
-  topology                                  topology                      () const
+  mpi::topology                             topology                      () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Topo_test, (native_, &result))
@@ -286,7 +286,7 @@ public:
   }
                                                                           
   [[nodiscard]]                                                           
-  information                               information                   () const
+  mpi::information                          information                   () const
   {
     mpi::information result(MPI_INFO_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Comm_get_info, (native_, &result.native_))

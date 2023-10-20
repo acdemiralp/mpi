@@ -59,17 +59,17 @@ struct control_variable
   control_variable& operator=(const control_variable&  that) = delete ;
   control_variable& operator=(      control_variable&& temp) = default;
 
-  std::int32_t               index      ;
+  std::int32_t                          index      ;
 
-  std::string                name       ;
-  std::string                description;
+  std::string                           name       ;
+  std::string                           description;
 
-  mpi::tool::bind_type       bind_type  ;
-  mpi::tool::scope           scope      ;
-  mpi::tool::verbosity       verbosity  ;
+  mpi::tool::bind_type                  bind_type  ;
+  mpi::tool::scope                      scope      ;
+  mpi::tool::verbosity                  verbosity  ;
 
-  std::optional<data_type>   data_type  ; // Abusing optional for delayed construction of a stack variable.
-  std::optional<enumeration> enumeration;
+  std::optional<mpi::data_type>         data_type  ; // Abusing optional for delayed construction of a stack variable.
+  std::optional<mpi::tool::enumeration> enumeration;
 };
 
 inline std::int32_t                  control_variable_index(const std::string& name)
