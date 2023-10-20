@@ -553,7 +553,7 @@ public:
   request                                   partitioned_send              (const std::int32_t partitions, const void* data, const count size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
-    MPI_CHECK_ERROR_CODE(MPI_Psend_init, (data, partitions, size, data_type.native(), destination, tag, native_, info.native(), &result.native_))
+    MPI_CHECK_ERROR_CODE(MPI_Psend_init, (const_cast<void*>(data), partitions, size, data_type.native(), destination, tag, native_, info.native(), &result.native_)) // Note: Several implementations require the const_cast.
     return result;
   }
   template <typename type> [[nodiscard]]                                                           
