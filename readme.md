@@ -136,7 +136,9 @@ Modern C++20 message passing interface wrapper.
     - `MPI_BOTTOM`         : Prefer nullptr instead.
     - `MPI_ROOT`           : Unused in default arguments as intercommunicators are rarer than intracommunicators. Can nevertheless be passed to functions.
     - `MPI_PROC_NULL`      : Unused in default arguments as intercommunicators are rarer than intracommunicators. Can nevertheless be passed to functions.
-      
+- Versioning:
+  - The major and minor version numbers correspond to the supported MPI version, whereas the patch number is specific to the wrapper.
+
 ### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
 - [x] Constants              
 - [x] MPI_Abort                      
