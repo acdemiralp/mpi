@@ -107,14 +107,14 @@ public:
   : managed_(temp.managed_), native_(temp.native_), object_(std::move(temp.object_)), callback_map_(std::move(temp.callback_map_)), copy_buffer_size_(temp.copy_buffer_size_)
   {
     temp.managed_          = false;
-    temp.native_           = MPI_T_EVENT_HANDLE_NULL;
+    temp.native_           = {};
     temp.object_           = std::nullopt;
     temp.callback_map_     .clear();
     temp.copy_buffer_size_ = 0;
   }
   virtual ~event_handle  () noexcept(false)
   {
-    if (managed_ && native_ != MPI_T_EVENT_HANDLE_NULL)
+    if (managed_ && native_ != MPI_T_event_registration {})
       MPI_CHECK_ERROR_CODE(MPI_T_event_handle_free, (native_, nullptr, nullptr)) // Destructor cannot have parameters, hence pass nullptr to the callback and user data.
   }
   event_handle& operator=(const event_handle&  that) = delete;
@@ -122,7 +122,7 @@ public:
   {
     if (this != &temp)
     {
-      if (managed_ && native_ != MPI_T_EVENT_HANDLE_NULL)
+      if (managed_ && native_ != MPI_T_event_registration {})
         MPI_CHECK_ERROR_CODE(MPI_T_event_handle_free, (native_, nullptr, nullptr))
 
       managed_               = temp.managed_;
@@ -132,7 +132,7 @@ public:
       copy_buffer_size_      = temp.copy_buffer_size_;
                         
       temp.managed_          = false;
-      temp.native_           = MPI_T_EVENT_HANDLE_NULL;
+      temp.native_           = {};
       temp.object_           = std::nullopt;
       temp.callback_map_     .clear();
       temp.copy_buffer_size_ = 0;
@@ -211,7 +211,7 @@ public:
 
 protected:
   bool                          managed_          = false;
-  MPI_T_event_registration      native_           = MPI_T_EVENT_HANDLE_NULL;
+  MPI_T_event_registration      native_           = {};
   std::optional<object_variant> object_           = std::nullopt;
   callback_map_type             callback_map_     = {};
   std::size_t                   copy_buffer_size_ = 0; // Auxiliary for event interface antics.
