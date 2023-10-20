@@ -71,6 +71,7 @@ Modern C++20 message passing interface wrapper.
 ### Usage Notes
 - Define `MPI_USE_EXCEPTIONS` to check the return values of all viable functions against `MPI_SUCCESS` and throw an exception otherwise.
 - Define `MPI_USE_RELAXED_TRAITS` to prevent the library from checking the types of aggregate elements and triggering static asserts for non-aggregates (useful for e.g. testing).
+- Define `MPI_USE_UNSUPPORTED` to enable features that are within the standard but currently not supported by major implementations (e.g. `MPI_T_BIND_MPI_SESSION`).
 - Compliant types (satisfying `mpi::is_compliant`) are types whose corresponding `mpi::data_type` can be automatically generated:
   - Arithmetic types (satisfying `std::is_arithmetic`), enumerations (satisfying `std::is_enum`), specializations of `std::complex` are compliant types.
   - C-style arrays, `std::array`, `std::pair`, `std::tuple`, and aggregate types (satisfying `std::is_aggregate`) consisting of other compliant types are also compliant types.
