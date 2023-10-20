@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wchanges-meaning"
+
 #include <mpi/core/mpi.hpp>
 #include <mpi/core/communicators/cartesian_communicator.hpp>
 #include <mpi/core/communicators/communicator.hpp>
@@ -98,3 +101,5 @@
 #include <mpi/tool/event_instance.hpp>
 #include <mpi/tool/performance_variable_handle.hpp>
 #include <mpi/tool/session.hpp>
+
+#pragma GCC diagnostic pop
