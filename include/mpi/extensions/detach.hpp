@@ -31,16 +31,16 @@ public:
 
   struct detach_state
   {
-    detach_state(request& req, detach_function func)
+    detach_state(mpi::request& req, detach_function func)
     : request (req.persistent() ? mpi::request(req.native(), false, true) : std::move(req)) // If persistent create an unmanaged copy, else move.
     , function(std::move(func))
     {
 
     }
   
-    request         request ;
+    mpi::request    request ;
     detach_function function;
-    status          status  ;
+    mpi::status     status  ;
   };
   struct detach_all_state
   {

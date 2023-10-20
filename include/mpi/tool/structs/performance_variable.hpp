@@ -65,20 +65,20 @@ struct performance_variable
   performance_variable& operator=(const performance_variable&  that) = delete ;
   performance_variable& operator=(      performance_variable&& temp) = default;
 
-  std::int32_t               index      ;
+  std::int32_t                          index      ;
 
-  std::string                name       ;
-  std::string                description;
+  std::string                           name       ;
+  std::string                           description;
 
-  bind_type                  bind_type  ;
-  performance_variable_type  type       ;
-  verbosity                  verbosity  ;
-  bool                       read_only  ;
-  bool                       continuous ;
-  bool                       atomic     ;
+  mpi::tool::bind_type                  bind_type  ;
+  mpi::tool::performance_variable_type  type       ;
+  mpi::tool::verbosity                  verbosity  ;
+  bool                                  read_only  ;
+  bool                                  continuous ;
+  bool                                  atomic     ;
 
-  std::optional<data_type>   data_type  ; // Abusing optional for delayed construction of a stack variable.
-  std::optional<enumeration> enumeration;
+  std::optional<data_type>              data_type  ; // Abusing optional for delayed construction of a stack variable.
+  std::optional<mpi::tool::enumeration> enumeration;
 };
 
 inline std::int32_t                      performance_variable_index(const std::string& name, const performance_variable_type type)

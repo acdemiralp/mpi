@@ -64,9 +64,9 @@ struct control_variable
   std::string                name       ;
   std::string                description;
 
-  bind_type                  bind_type  ;
-  scope                      scope      ;
-  verbosity                  verbosity  ;
+  mpi::tool::bind_type       bind_type  ;
+  mpi::tool::scope           scope      ;
+  mpi::tool::verbosity       verbosity  ;
 
   std::optional<data_type>   data_type  ; // Abusing optional for delayed construction of a stack variable.
   std::optional<enumeration> enumeration;

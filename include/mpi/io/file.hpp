@@ -62,7 +62,7 @@ public:
   }
 
   [[nodiscard]]
-  access_mode                          access_mode           () const
+  io::access_mode                      access_mode           () const
   {
     io::access_mode result;
     MPI_CHECK_ERROR_CODE(MPI_File_get_amode, (native_, reinterpret_cast<std::int32_t*>(&result)))
@@ -83,7 +83,7 @@ public:
     return result;
   }
   [[nodiscard]]                                              
-  group                                group                 () const
+  mpi::group                           group                 () const
   {
     mpi::group result(MPI_GROUP_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_get_group, (native_, &result.native_))
@@ -105,7 +105,7 @@ public:
   }
                                                              
   [[nodiscard]]                                              
-  information                          information           () const
+  mpi::information                     information           () const
   {
     mpi::information result(MPI_INFO_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_get_info, (native_, &result.native_))
