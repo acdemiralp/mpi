@@ -36,15 +36,15 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Register_datarep, (
       name_.c_str(),
-      [ ] (void* buffer, MPI_Datatype data_type, std::int32_t count  , void* file_buffer, offset position, void* extra_state)
+      [ ] (void* buffer, const MPI_Datatype data_type, const std::int32_t count  , void* file_buffer, const offset position, void* extra_state)
       {
         return static_cast<data_representation*>(extra_state)->read_function_ (buffer, mpi::data_type(data_type), count, file_buffer, position);
       }, 
-      [ ] (void* buffer, MPI_Datatype data_type, std::int32_t count  , void* file_buffer, offset position, void* extra_state)
+      [ ] (void* buffer, const MPI_Datatype data_type, const std::int32_t count  , void* file_buffer, const offset position, void* extra_state)
       {
         return static_cast<data_representation*>(extra_state)->write_function_(buffer, mpi::data_type(data_type), count, file_buffer, position);
       }, 
-      [ ] (              MPI_Datatype data_type, aint*        extent  ,                                    void* extra_state)
+      [ ] (              const MPI_Datatype data_type, aint*              extent  ,                                          void* extra_state)
       {
         return static_cast<data_representation*>(extra_state)->extent_function_(       mpi::data_type(data_type), extent);
       },

@@ -18,8 +18,8 @@ struct performance_variable
   explicit performance_variable  (const std::int32_t index) : index(index)
   {
     auto         name_size(0), description_size(0);
+    auto         enum_type    (MPI_T_ENUM_NULL  );
     MPI_Datatype raw_data_type(MPI_DATATYPE_NULL);
-    MPI_T_enum   enum_type    (MPI_T_ENUM_NULL  );
 
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_get_info, (
       index                                       ,

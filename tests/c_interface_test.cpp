@@ -50,9 +50,9 @@ TEST_CASE("C Interface")
     MPI_Type_commit    (&position_data_type);
 
     MPI_Datatype particle_data_type;
-    std::array<std::int32_t, 2> block_lengths {1, 1};
-    std::array<MPI_Aint    , 2> displacements {0, sizeof (std::uint64_t)};
-    std::array<MPI_Datatype, 2> data_types    {MPI_UINT64_T, position_data_type};
+    std::array              block_lengths {1, 1};
+    std::array<MPI_Aint, 2> displacements {0, sizeof (std::uint64_t)};
+    std::array              data_types    {MPI_UINT64_T, position_data_type};
     MPI_Type_struct    (2, block_lengths.data(), displacements.data(), data_types.data(), &particle_data_type);
     MPI_Type_commit    (&particle_data_type);
 
