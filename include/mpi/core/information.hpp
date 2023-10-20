@@ -158,7 +158,7 @@ public:
       return {std::nullopt};
 
     std::string result(size, '\n');
-    MPI_CHECK_ERROR_CODE(MPI_Info_get, (native_, key.c_str(), size, &result[0], &exists))
+    MPI_CHECK_ERROR_CODE(MPI_Info_get, (native_, key.c_str(), size, result.data(), &exists))
 
     return result;
   }
@@ -167,7 +167,7 @@ public:
   std::string                key_at  (const std::int32_t index) const
   {
     std::string result(MPI_MAX_INFO_KEY, '\n');
-    MPI_CHECK_ERROR_CODE(MPI_Info_get_nthkey, (native_, index, &result[0]))
+    MPI_CHECK_ERROR_CODE(MPI_Info_get_nthkey, (native_, index, result.data()))
     return result;
   }
   [[nodiscard]]

@@ -166,7 +166,7 @@ public:
     return object_;
   }
   [[nodiscard]]
-  const session&                       session   () const
+  const tool::session&                 session   () const
   {
     return session_;
   }

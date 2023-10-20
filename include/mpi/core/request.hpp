@@ -104,7 +104,7 @@ public:
   }
   void                  set_partition_ready(const std::vector<std::int32_t>& partitions) const
   {
-    MPI_CHECK_ERROR_CODE(MPI_Pready_list , (static_cast<std::int32_t>(partitions.size()), partitions.data(), native_))
+    MPI_CHECK_ERROR_CODE(MPI_Pready_list , (static_cast<std::int32_t>(partitions.size()), const_cast<std::int32_t*>(partitions.data()), native_)) // Note: Several implementations require the const_cast.
   }
   void                  set_partition_ready(const std::int32_t lower, const std::int32_t upper) const
   {
