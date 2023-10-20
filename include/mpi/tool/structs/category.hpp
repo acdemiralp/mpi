@@ -27,7 +27,7 @@ struct category
   std::string                       description          ;
   std::vector<control_variable>     control_variables    ;
   std::vector<performance_variable> performance_variables;
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   std::vector<event>                events               ;
 #endif
   std::vector<category>             subcategories        ;
@@ -122,7 +122,7 @@ inline category::category(const std::int32_t index) : index(index)
   performance_variables = tool::performance_variables(performance_variable_indices);
   subcategories         = categories                 (subcategory_indices         );
 
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   std::int32_t event_count(0);
   MPI_CHECK_ERROR_CODE(MPI_T_category_get_num_events, (index, &event_count))
 

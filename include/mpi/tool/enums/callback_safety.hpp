@@ -6,7 +6,7 @@
 
 namespace mpi::tool
 {
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
 enum class callback_safety : std::int32_t
 {
   none              = MPI_T_CB_REQUIRE_NONE             ,

@@ -17,6 +17,7 @@ endif                 ()
 option(MPI_BUILD_TESTS "Build tests." OFF)
 option(MPI_USE_EXCEPTIONS "Use exceptions." OFF)
 option(MPI_USE_RELAXED_TRAITS "Use relaxed traits." OFF)
+option(MPI_USE_UNSUPPORTED "Use features that are within the standard but currently not supported by major implementations (e.g. MPI_T_BIND_MPI_SESSION)." OFF)
 
 if    (MPI_USE_EXCEPTIONS)
   list(APPEND PROJECT_COMPILE_DEFINITIONS -DMPI_USE_EXCEPTIONS)
@@ -24,6 +25,10 @@ endif ()
 
 if    (MPI_USE_RELAXED_TRAITS)
   list(APPEND PROJECT_COMPILE_DEFINITIONS -DMPI_USE_RELAXED_TRAITS)
+endif ()
+
+if    (MPI_USE_UNSUPPORTED)
+  list(APPEND PROJECT_COMPILE_DEFINITIONS -DMPI_USE_UNSUPPORTED)
 endif ()
 
 ##################################################    Sources     ##################################################

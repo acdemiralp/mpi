@@ -11,7 +11,7 @@
 
 namespace mpi::tool
 {
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
 class event_instance
 {
 public:

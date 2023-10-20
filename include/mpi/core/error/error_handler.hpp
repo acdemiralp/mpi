@@ -137,7 +137,7 @@ public:
   friend class window;
 };
 
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
 class session_error_handler : public error_handler
 {
 public:
@@ -165,7 +165,7 @@ public:
 
 inline const error_handler error_handler_fatal (MPI_ERRORS_ARE_FATAL);
 inline const error_handler error_handler_return(MPI_ERRORS_RETURN   );
-#ifdef MPI_USE_LATEST
+#ifdef MPI_ERRORS_ABORT
 inline const error_handler error_handler_abort (MPI_ERRORS_ABORT    );
 #endif
 }

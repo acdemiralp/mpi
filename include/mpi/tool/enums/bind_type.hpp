@@ -19,10 +19,9 @@ enum class bind_type : std::int32_t
   window        = MPI_T_BIND_MPI_WIN       ,
   message       = MPI_T_BIND_MPI_MESSAGE   ,
   information   = MPI_T_BIND_MPI_INFO
-#ifdef MPI_USE_LATEST
+#ifdef MPI_USE_UNSUPPORTED
                                            , 
   session       = MPI_T_BIND_MPI_SESSION
 #endif
 };
 }
-

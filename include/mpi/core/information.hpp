@@ -32,7 +32,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Info_create, (&native_))
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   information            (std::int32_t argc, char** argv)
   : managed_(true)
   {
@@ -116,7 +116,7 @@ public:
     return size() == 0;
   }
   
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                
   bool                       contains(const std::string& key  ) const
   {
