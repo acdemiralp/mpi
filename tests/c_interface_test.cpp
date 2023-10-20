@@ -21,9 +21,9 @@ TEST_CASE("C Interface")
       value = 42;
 
     if (communicator_rank == 0)
-      MPI_Send(&value, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+      MPI_Send(&value, 1, MPI_INT32_T, 1, 0, MPI_COMM_WORLD);
     if (communicator_rank == 1)
-      MPI_Recv(&value, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      MPI_Recv(&value, 1, MPI_INT32_T, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
 
   {
@@ -31,7 +31,7 @@ TEST_CASE("C Interface")
     if (communicator_rank == 0)
       value = 42;
 
-    MPI_Bcast(&value, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&value, 1, MPI_INT32_T, 0, MPI_COMM_WORLD);
   }
 
   {
@@ -71,7 +71,7 @@ TEST_CASE("C Interface")
 
     const auto                local_size    (static_cast<std::int32_t>(local_values.size()));
     std::vector<std::int32_t> gathered_sizes(communicator_size);
-    MPI_Gather(&local_size, 1, MPI_INT, gathered_sizes.data(), communicator_size, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Gather(&local_size, 1, MPI_INT32_T, gathered_sizes.data(), communicator_size, MPI_INT32_T, 0, MPI_COMM_WORLD);
     
     std::vector<float> gathered_values;
     if (communicator_rank == 0)
@@ -91,11 +91,11 @@ TEST_CASE("C Interface")
     std::int32_t local_value(0);
 
     MPI_Request request;
-    MPI_Iscatter    (values.data(), 1, MPI_INT, &local_value, 1, MPI_INT, 0, MPI_COMM_WORLD, &request);
+    MPI_Iscatter    (values.data(), 1, MPI_INT32_T, &local_value, 1, MPI_INT32_T, 0, MPI_COMM_WORLD, &request);
     MPI_Wait        (&request, MPI_STATUS_IGNORE);
     MPI_Request_free(&request);
     local_value *= communicator_rank;
-    MPI_Igather     (&local_value, 1, MPI_INT, values.data(), 1, MPI_INT, 0, MPI_COMM_WORLD, &request);
+    MPI_Igather     (&local_value, 1, MPI_INT32_T, values.data(), 1, MPI_INT32_T, 0, MPI_COMM_WORLD, &request);
     MPI_Wait        (&request, MPI_STATUS_IGNORE);
     MPI_Request_free(&request);
   }
@@ -106,7 +106,7 @@ TEST_CASE("C Interface")
 
     MPI_File file;
     MPI_File_open     (MPI_COMM_WORLD, "test.txt", MPI_MODE_CREATE | MPI_MODE_RDWR, information, &file);
-    MPI_File_write_all(file, &communicator_rank, 1, MPI_INT, MPI_STATUS_IGNORE);
+    MPI_File_write_all(file, &communicator_rank, 1, MPI_INT32_T, MPI_STATUS_IGNORE);
     MPI_File_close    (&file);
 
     MPI_Info_free(&information);

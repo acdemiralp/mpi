@@ -120,7 +120,7 @@ public:
   {
     std::string  result(MPI_MAX_OBJECT_NAME, '\n');
     std::int32_t length(0);
-    MPI_CHECK_ERROR_CODE(MPI_Win_get_name, (native_, &result[0], &length))
+    MPI_CHECK_ERROR_CODE(MPI_Win_get_name, (native_, result.data(), &length))
     result.resize(static_cast<std::size_t>(length));
     return result;
   }

@@ -26,8 +26,8 @@ struct enumeration_item
   enumeration_item& operator=(const enumeration_item&  that) = default;
   enumeration_item& operator=(      enumeration_item&& temp) = default;
 
-  std::int32_t index;
-  std::string  name ;
-  std::int32_t value;
+  std::int32_t index   ;
+  std::string  name    ;
+  std::int32_t value {};
 };
 }

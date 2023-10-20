@@ -48,7 +48,7 @@ TEST_CASE("MPI Test")
     std::array<float, 3> position;
   };
 
-  user_type user_object;
+  user_type user_object {};
   if (communicator.rank() == 0)
   {
     user_object = {42, {0.0f, 1.0f, 2.0f}};

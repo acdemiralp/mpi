@@ -25,7 +25,7 @@ public:
     void*                          user_data      )
   : name_(std::move(name))
   {
-    MPI_CHECK_ERROR_CODE(MPI_Register_datarep, (name.c_str(), read_function, write_function, extent_function, user_data))
+    MPI_CHECK_ERROR_CODE(MPI_Register_datarep, (name_.c_str(), read_function, write_function, extent_function, user_data))
   }
   data_representation           (
     std::string                                                                       name           ,
@@ -35,7 +35,7 @@ public:
   : name_(std::move(name)), read_function_(std::move(read_function)), write_function_(std::move(write_function)), extent_function_(std::move(extent_function))
   {
     MPI_CHECK_ERROR_CODE(MPI_Register_datarep, (
-      name.c_str(), 
+      name_.c_str(),
       [ ] (void* buffer, MPI_Datatype data_type, std::int32_t count  , void* file_buffer, offset position, void* extra_state)
       {
         return static_cast<data_representation*>(extra_state)->read_function_ (buffer, mpi::data_type(data_type), count, file_buffer, position);

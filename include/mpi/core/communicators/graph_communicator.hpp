@@ -50,7 +50,7 @@ public:
   std::array<std::int32_t, 2> counts                 () const
   {
     std::array<std::int32_t, 2> result {};
-    MPI_CHECK_ERROR_CODE(MPI_Graphdims_get, (native_, &result[0], &result[1]))
+    MPI_CHECK_ERROR_CODE(MPI_Graphdims_get, (native_, result.data(), &result[1]))
     return result;
   }
   [[nodiscard]]               

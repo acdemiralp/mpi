@@ -23,23 +23,23 @@
 
 struct aggregate
 {
-  std::int32_t                x;
-  std::array<std::int32_t, 3> y;
+  std::int32_t                x {};
+  std::array<std::int32_t, 3> y {};
 };
 struct non_aggregate : aggregate
 {
-  std::string z;
+  std::string z {};
 };
 
 struct nested_aggregate
 {
-  std::int32_t x;
-  aggregate    y;
+  std::int32_t  x {};
+  aggregate     y {};
 };
 struct nested_non_aggregate
 {
-  std::int32_t  x;
-  non_aggregate y;
+  std::int32_t  x {};
+  non_aggregate y {};
 };
 
 enum class enum_type { x, y, z };
