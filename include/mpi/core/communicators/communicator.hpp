@@ -1083,7 +1083,7 @@ public:
                                                                                  received_type& received, 
                                                                            const bool           resize  = false) const
   {
-    std::int32_t              local_size    (container_adapter<sent_type>::size(sent));
+    const std::int32_t        local_size    (container_adapter<sent_type>::size(sent));
     std::vector<std::int32_t> received_sizes(size());
     all_gather(local_size, received_sizes);
 
@@ -1108,7 +1108,7 @@ public:
   {
     using adapter = container_adapter<type>;
 
-    std::int32_t              local_size    (adapter::size(data));
+    const std::int32_t        local_size    (adapter::size(data));
     std::vector<std::int32_t> received_sizes(size());
     all_gather(local_size, received_sizes);
 

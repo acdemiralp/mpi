@@ -22,9 +22,9 @@ public:
   manual_shared_variable                   (const manual_shared_variable&  that) = delete ;
   manual_shared_variable                   (      manual_shared_variable&& temp) = default;
   virtual ~manual_shared_variable          ()                                    = default;
-  manual_shared_variable& operator=(const manual_shared_variable&  that) = delete ;
-  manual_shared_variable& operator=(      manual_shared_variable&& temp) = default;
-  manual_shared_variable& operator=(const type& value)
+  manual_shared_variable& operator=        (const manual_shared_variable&  that) = delete ;
+  manual_shared_variable& operator=        (      manual_shared_variable&& temp) = default;
+  manual_shared_variable& operator=        (const type& value)
   {
     set(value);
     return *this;

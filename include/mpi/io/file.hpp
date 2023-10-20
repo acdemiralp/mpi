@@ -27,7 +27,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_File_open, (communicator.native(), filepath.c_str(), static_cast<std::int32_t>(access_mode), information.native(), &native_))
   }
-  explicit file  (MPI_File native, const bool managed = false)
+  explicit file  (const MPI_File native, const bool managed = false)
   : managed_(managed), native_(native)
   {
 

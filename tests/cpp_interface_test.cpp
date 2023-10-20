@@ -105,7 +105,7 @@ TEST_CASE("C++ Interface")
 
 
 
-    mpi::io::file file(mpi::world_communicator, "test.txt", mpi::io::access_mode::create | mpi::io::access_mode::read_write);
+    const mpi::io::file file(mpi::world_communicator, "test.txt", mpi::io::access_mode::create | mpi::io::access_mode::read_write);
     file.write_all(communicator_rank);
     // File is freed at scope exit.
 
