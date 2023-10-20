@@ -100,7 +100,7 @@ public:
   }
 
   [[nodiscard]]
-  information              information            () const
+  mpi::information         information            () const
   {
     mpi::information result(MPI_INFO_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Session_get_info, (native_, &result.native_))
