@@ -68,7 +68,7 @@ public:
       send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent    ) / outgoing_neighbor_count()), send_adapter   ::data_type(), 
       receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
   request persistent_neighbor_all_to_all        (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                 sent_data_type     ,
                                                        void*          received, const std::int32_t               received_size ,                                                          const data_type&                 received_data_type , 
@@ -158,7 +158,7 @@ public:
       send_adapter   ::data(sent    ), sent_sizes    , sent_displacements    , send_adapter   ::data_type(), 
       receive_adapter::data(received), received_sizes, received_displacements, receive_adapter::data_type());
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request persistent_neighbor_all_to_all_varying(const void*          sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int32_t>& sent_displacements    , const data_type&                 sent_data_type     ,
                                                        void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& received_displacements, const data_type&                 received_data_type , 
@@ -202,7 +202,7 @@ public:
                                                        received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_,                &result.native_))
     return result;
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request persistent_neighbor_all_to_all_general(const void*          sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<aint>&         sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
                                                        void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<aint>&         received_displacements, const std::vector<MPI_Datatype>& received_data_types, 
@@ -248,7 +248,7 @@ public:
       send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent)                                ), send_adapter   ::data_type(), 
       receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
   request persistent_neighbor_all_gather        (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                 sent_data_type     ,
                                                        void*          received, const std::int32_t               received_size ,                                                          const data_type&                 received_data_type , 
@@ -335,7 +335,7 @@ public:
       send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
       receive_adapter::data(received), received_sizes, displacements                      , receive_adapter::data_type());
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request persistent_neighbor_all_gather_varying(const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                sent_data_type      ,
                                                        void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,          const data_type&                received_data_type  , 

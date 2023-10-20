@@ -91,7 +91,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Cancel, (&native_))
   }
 
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   bool                  partition_arrived  (const std::int32_t               partition ) const
   {
     std::int32_t result;

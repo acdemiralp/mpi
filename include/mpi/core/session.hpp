@@ -12,7 +12,7 @@
 
 namespace mpi
 {
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
 class session
 {
 public:
@@ -110,7 +110,7 @@ public:
   [[nodiscard]]
   session_error_handler    error_handler          () const
   {
-    session_error_handler result;
+    session_error_handler result(MPI_ERRHANDLER_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Session_get_errhandler , (native_, &result.native_))
     return result;
   }

@@ -27,7 +27,7 @@ using object_variant = std::variant<
   window       ,
   message      ,
   information
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
                ,
   session
 #endif

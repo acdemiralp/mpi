@@ -15,7 +15,7 @@
 
 namespace mpi::tool
 {
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
 struct event
 {
   explicit event  (const std::int32_t index) : index(index)

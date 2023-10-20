@@ -37,7 +37,7 @@ public:
   {
     
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   explicit group    (const session& session, const std::string& process_set_name)
   : managed_(true)
   {

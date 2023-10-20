@@ -47,7 +47,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_create_group , (that.native_, group      .native(), tag, &native_))
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   communicator            (                            const group&                          group        , const std::string&  tag      , const information& information, const communicator_error_handler& error_handler)
   : managed_(true)
   {
@@ -128,7 +128,7 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Intercomm_create, (local.native_, local_leader, peer.native_, peer_leader, tag, &native_))
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   communicator            (const group&         local, const std::int32_t                    local_leader , const group&        peer     , const std::int32_t peer_leader, const std::string& tag, const information& information, const communicator_error_handler& error_handler)
   : managed_(true)
   {
@@ -348,7 +348,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Comm_idup, (native_, &result.first.native_, &result.second.native_))
     return result;
   }
-#ifdef MPI_USE_LATEST                                                                 
+#ifdef MPI_GEQ_4_0                                                                 
   [[nodiscard]]                                                       
   std::pair<communicator, request>          immediate_duplicate           (const mpi::information& info) const
   {
@@ -548,7 +548,7 @@ public:
     return persistent_ready_send(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, tag);
   }
 
-#ifdef MPI_USE_LATEST 
+#ifdef MPI_GEQ_4_0 
   [[nodiscard]]                                                           
   request                                   partitioned_send              (const std::int32_t partitions, const void* data, const count size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
   {
@@ -602,7 +602,7 @@ public:
     using adapter = container_adapter<type>;
     return persistent_receive(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), source, tag);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   partitioned_receive           (const std::int32_t partitions, void* data, const count size, const data_type& data_type, const std::int32_t source = MPI_ANY_SOURCE, const std::int32_t tag = MPI_ANY_TAG, const mpi::information& info = mpi::information()) const
   {
@@ -650,7 +650,7 @@ public:
     using adapter = container_adapter<type>;
     return send_receive_replace(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), destination, send_tag, source, receive_tag);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   immediate_send_receive        (const void*          sent       , const std::int32_t sent_size    , const data_type&   sent_data_type    , const std::int32_t destination                 , const std::int32_t send_tag    , 
                                                                                  void*          received   , const std::int32_t received_size, const data_type&   received_data_type, const std::int32_t source      = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
@@ -733,7 +733,7 @@ public:
     MPI_CHECK_ERROR_CODE(MPI_Ibarrier, (native_, &request.native_))
     return request;
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
   request                                   persistent_barrier            (const mpi::information& info = mpi::information()) const
   {
@@ -790,7 +790,7 @@ public:
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type());
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
   request                                   persistent_all_to_all         (const void*      sent    , const std::int32_t sent_size    , const data_type& sent_data_type    ,
                                                                                  void*      received, const std::int32_t received_size, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
@@ -907,7 +907,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_all_to_all_varying(MPI_IN_PLACE, std::vector<std::int32_t>(), std::vector<std::int32_t>(), data_type(MPI_DATATYPE_NULL), adapter::data(data), sizes, displacements, adapter::data_type());
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_all_to_all_varying (const void*          sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int32_t>& sent_displacements    , const data_type& sent_data_type    ,
                                                                                  void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& received_displacements, const data_type& received_data_type, 
@@ -958,7 +958,7 @@ public:
                                               received, received_sizes.data(), received_displacements.data(), received_data_types.data(), native_, &result.native_))
     return result;
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_all_to_all_general (const void* sent    , const std::vector<std::int32_t>& sent_sizes    , const std::vector<std::int32_t>& sent_displacements    , const std::vector<MPI_Datatype>& sent_data_types    ,
                                                                                  void* received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& received_displacements, const std::vector<MPI_Datatype>& received_data_types, const mpi::information& info = mpi::information()) const
@@ -1019,7 +1019,7 @@ public:
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type());
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
   request                                   persistent_all_gather         (const void*          sent     , const std::int32_t sent_size    , const data_type& sent_data_type    ,
                                                                                  void*          received , const std::int32_t received_size, const data_type& received_data_type, const mpi::information& info = mpi::information()) const
@@ -1144,7 +1144,7 @@ public:
 
     return immediate_all_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), adapter::data(data), received_sizes, displacements, adapter::data_type());
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_all_gather_varying (const void*          sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
                                                                                  void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, 
@@ -1216,7 +1216,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_all_reduce(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_all_reduce          (const void*      sent, void*          received, const std::int32_t               size , const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
@@ -1276,7 +1276,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_reduce_scatter(MPI_IN_PLACE, adapter::data(data), sizes, adapter::data_type(), op);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_reduce_scatter      (const void*      sent, void*          received, const std::vector<std::int32_t>& sizes, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
@@ -1336,7 +1336,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_reduce_scatter_block(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_reduce_scatter_block(const void*      sent, void*          received, const std::int32_t               size , const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
@@ -1416,7 +1416,7 @@ public:
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL),
       adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type(), root);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
   request                                   persistent_gather             (const void*          sent    , const std::int32_t      sent_size    , const data_type& sent_data_type    ,
                                                                                  void*          received, const std::int32_t      received_size, const data_type& received_data_type,  
@@ -1549,7 +1549,7 @@ public:
     
     return immediate_gather_varying(MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), adapter::data(data), received_sizes, displacements, adapter::data_type(), root);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_gather_varying     (const void*          sent    , const std::int32_t               sent_size     ,                                                 const data_type& sent_data_type    ,
                                                                                  void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements, const data_type& received_data_type, 
@@ -1639,7 +1639,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_reduce(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op, root);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_reduce             (const void*      sent, void*          received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
   {
@@ -1687,7 +1687,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_broadcast(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), root);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
   request                                   persistent_broadcast          (void* data, const std::int32_t count, const data_type& data_type, const std::int32_t root = 0, const mpi::information& info = mpi::information()) const
   {
@@ -1758,7 +1758,7 @@ public:
       adapter::data(data), static_cast<std::int32_t>(adapter::size(data) / size()), adapter::data_type(), 
       MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
   request                                   persistent_scatter            (const void*          sent    , const std::int32_t      sent_size     , const data_type& sent_data_type    ,
                                                                                  void*          received, const std::int32_t      received_size , const data_type& received_data_type, 
@@ -1877,7 +1877,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_scatter_varying(adapter::data(data), sent_sizes, displacements, adapter::data_type(), MPI_IN_PLACE, 0, data_type(MPI_DATATYPE_NULL), root);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
   request                                   persistent_scatter_varying    (const void*          sent    , const std::vector<std::int32_t>& sent_sizes   , const std::vector<std::int32_t>& displacements, const data_type& sent_data_type    ,
                                                                                  void*          received, const std::int32_t               received_size,                                                 const data_type& received_data_type, 
@@ -1946,7 +1946,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_inclusive_scan(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_inclusive_scan     (const  void*     sent, void*          received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {
@@ -2006,7 +2006,7 @@ public:
     using adapter = container_adapter<type>;
     return immediate_exclusive_scan(MPI_IN_PLACE, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type(), op);
   }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
   [[nodiscard]]
   request                                   persistent_exclusive_scan     (const void*      sent, void*          received, const std::int32_t size, const data_type& data_type, const op& op = ops::sum, const mpi::information& info = mpi::information()) const
   {

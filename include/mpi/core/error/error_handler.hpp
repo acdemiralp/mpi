@@ -137,7 +137,7 @@ public:
   friend class window;
 };
 
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_0
 class session_error_handler : public error_handler
 {
 public:

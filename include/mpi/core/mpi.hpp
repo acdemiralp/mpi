@@ -2,8 +2,12 @@
 
 #include <mpi.h>
 
-#if MPI_VERSION == 4 && MPI_SUBVERSION >= 0
-#define MPI_USE_LATEST
+#if MPI_VERSION >= 4 && MPI_SUBVERSION >= 0
+#define MPI_GEQ_4_0
+#endif
+
+#if MPI_VERSION >= 4 && MPI_SUBVERSION >= 1
+#define MPI_GEQ_4_1
 #endif
 
 namespace mpi

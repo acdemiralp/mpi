@@ -79,7 +79,7 @@ public:
       MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_alloc, (session_.native(), variable.index, &handle, &native_, &count_))
       object_ = window(handle);
     }
-#ifdef MPI_USE_LATEST
+#ifdef MPI_GEQ_4_1
     else if (variable.bind_type == bind_type::session)
     {
       MPI_Session handle;
