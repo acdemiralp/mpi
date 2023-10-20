@@ -350,10 +350,10 @@ public:
   }
 #ifdef MPI_USE_LATEST                                                                 
   [[nodiscard]]                                                       
-  std::pair<communicator, request>          immediate_duplicate           (const std::information& information) const
+  std::pair<communicator, request>          immediate_duplicate           (const mpi::information& info) const
   {
     std::pair result { communicator(MPI_COMM_NULL, true), request(MPI_REQUEST_NULL, true) };
-    MPI_CHECK_ERROR_CODE(MPI_Comm_idup_with_info, (native_, information.native(), &result.first.native_, &result.second.native_))
+    MPI_CHECK_ERROR_CODE(MPI_Comm_idup_with_info, (native_, info.native(), &result.first.native_, &result.second.native_))
     return result;
   }
 #endif
@@ -655,7 +655,7 @@ public:
   request                                   immediate_send_receive        (const void*          sent       , const std::int32_t sent_size    , const data_type&   sent_data_type    , const std::int32_t destination                 , const std::int32_t send_tag    , 
                                                                                  void*          received   , const std::int32_t received_size, const data_type&   received_data_type, const std::int32_t source      = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
-    request result;
+    request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Isendrecv, (sent    , sent_size    , sent_data_type    .native(), destination, send_tag   ,
                                          received, received_size, received_data_type.native(), source     , receive_tag, native_, &result.native_))
     return result;
@@ -674,7 +674,7 @@ public:
   request                                   immediate_send_receive_replace(      void*         data        , const std::int32_t size         , const data_type&   data_type,          const std::int32_t destination                 , const std::int32_t send_tag    , 
                                                                                                                                                                                       const std::int32_t source      = MPI_ANY_SOURCE, const std::int32_t receive_tag = MPI_ANY_TAG) const
   {
-    request result;
+    request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Isendrecv_replace, (data, size, data_type.native(), destination, send_tag, source, receive_tag, native_, &result.native_))
     return result;
   }
@@ -1884,7 +1884,7 @@ public:
                                                                            const std::int32_t   root = 0, const mpi::information&          info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
-    MPI_CHECK_ERROR_CODE(MPI_Scatterv_init, (sent, sent_sizes.data(), displacements.data(), sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, info, &result.native_))
+    MPI_CHECK_ERROR_CODE(MPI_Scatterv_init, (sent, sent_sizes.data(), displacements.data(), sent_data_type.native(), received, received_size, received_data_type.native(), root, native_, info.native(), &result.native_))
     return  result;
   }
   template <typename sent_type, typename received_type> [[nodiscard]]                                                           
