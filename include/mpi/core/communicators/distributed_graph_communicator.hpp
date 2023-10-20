@@ -73,7 +73,7 @@ public:
   }
 
   [[nodiscard]]
-  neighbor_counts      neighbor_counts        () const
+  mpi::neighbor_counts neighbor_counts        () const
   {
     mpi::neighbor_counts result {};
     MPI_CHECK_ERROR_CODE(MPI_Dist_graph_neighbors_count, (native_, &result.source_count, &result.destination_count, reinterpret_cast<std::int32_t*>(&result.weighted)))

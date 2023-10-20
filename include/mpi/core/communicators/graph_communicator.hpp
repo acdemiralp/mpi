@@ -54,7 +54,7 @@ public:
     return result;
   }
   [[nodiscard]]               
-  graph                       graph                  () const
+  mpi::graph                  graph                  () const
   {
     const auto count = counts();
 
