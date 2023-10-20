@@ -27,30 +27,71 @@ public:
   explicit event_handle  (const event& event, const information& information = mpi::information())
   : managed_(true), copy_buffer_size_(event.displacements.back() + event.data_types.back().size())
   {
-    if (event.bind_type == bind_type::file)
+    if      (variable.bind_type == bind_type::communicator)
+    {
+      MPI_Comm handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
+      object_ = communicator(handle); // Unmanaged construction.
+    }
+    else if (variable.bind_type == bind_type::data_type)
+    {
+      MPI_Datatype handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
+      object_ = data_type(handle);
+    }
+    else if (variable.bind_type == bind_type::error_handler)
+    {
+      MPI_Errhandler handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
+      object_ = error_handler(handle);
+    }
+    else if (variable.bind_type == bind_type::file)
     {
       MPI_File handle;
       MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
-
-      // Unmanaged construction.
       object_ = io::file(handle);
     }
-    else
+    else if (variable.bind_type == bind_type::group)
     {
-      std::int32_t handle; // Abusing the fact that all native MPI object handles are std::int32_ts.
+      MPI_Group handle;
       MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
-
-      // Unmanaged construction.
-      if      (event.bind_type == bind_type::communicator ) object_ = communicator    (handle);
-      else if (event.bind_type == bind_type::data_type    ) object_ = data_type       (handle);
-      else if (event.bind_type == bind_type::error_handler) object_ = error_handler   (handle);
-      else if (event.bind_type == bind_type::group        ) object_ = group           (handle);
-      else if (event.bind_type == bind_type::information  ) object_ = mpi::information(handle);
-      else if (event.bind_type == bind_type::message      ) object_ = message         (handle);
-      else if (event.bind_type == bind_type::op           ) object_ = op              (handle);
-      else if (event.bind_type == bind_type::request      ) object_ = request         (handle);
-      else if (event.bind_type == bind_type::window       ) object_ = window          (handle);
-      else if (event.bind_type == bind_type::session      ) object_ = session         (handle);
+      object_ = group(handle);
+    }
+    else if (variable.bind_type == bind_type::information)
+    {
+      MPI_Info handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
+      object_ = information(handle);
+    }
+    else if (variable.bind_type == bind_type::message)
+    {
+      MPI_Message handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
+      object_ = message(handle);
+    }
+    else if (variable.bind_type == bind_type::op)
+    {
+      MPI_Op handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
+      object_ = op(handle);
+    }
+    else if (variable.bind_type == bind_type::request)
+    {
+      MPI_Request handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
+      object_ = request(handle);
+    }
+    else if (variable.bind_type == bind_type::window)
+    {
+      MPI_Win handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
+      object_ = window(handle);
+    }
+    else if (variable.bind_type == bind_type::session)
+    {
+      MPI_Session handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_event_handle_alloc, (event.index, &handle, information.native(), &native_))
+      object_ = session(handle);
     }
   }
   explicit event_handle  (const MPI_T_event_registration native, const bool managed = false, std::optional<object_variant> object = std::nullopt)

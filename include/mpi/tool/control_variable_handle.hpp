@@ -19,33 +19,74 @@ public:
   explicit control_variable_handle  (const control_variable& variable)
   : managed_(true)
   {
-    if (variable.bind_type == bind_type::file)
+    if      (variable.bind_type == bind_type::communicator)
+    {
+      MPI_Comm handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
+      object_ = communicator(handle); // Unmanaged construction.
+    }
+    else if (variable.bind_type == bind_type::data_type)
+    {
+      MPI_Datatype handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
+      object_ = data_type(handle);
+    }
+    else if (variable.bind_type == bind_type::error_handler)
+    {
+      MPI_Errhandler handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
+      object_ = error_handler(handle);
+    }
+    else if (variable.bind_type == bind_type::file)
     {
       MPI_File handle;
       MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
-
-      // Unmanaged construction.
       object_ = io::file(handle);
     }
-    else
+    else if (variable.bind_type == bind_type::group)
     {
-      std::int32_t handle; // Abusing the fact that all native MPI object handles are std::int32_ts.
+      MPI_Group handle;
       MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
-
-      // Unmanaged construction.
-      if      (variable.bind_type == bind_type::communicator ) object_ = communicator (handle);
-      else if (variable.bind_type == bind_type::data_type    ) object_ = data_type    (handle);
-      else if (variable.bind_type == bind_type::error_handler) object_ = error_handler(handle);
-      else if (variable.bind_type == bind_type::group        ) object_ = group        (handle);
-      else if (variable.bind_type == bind_type::information  ) object_ = information  (handle);
-      else if (variable.bind_type == bind_type::message      ) object_ = message      (handle);
-      else if (variable.bind_type == bind_type::op           ) object_ = op           (handle);
-      else if (variable.bind_type == bind_type::request      ) object_ = request      (handle);
-      else if (variable.bind_type == bind_type::window       ) object_ = window       (handle);
-#ifdef MPI_USE_LATEST
-      else if (variable.bind_type == bind_type::session      ) object_ = session      (handle);
-#endif
+      object_ = group(handle);
     }
+    else if (variable.bind_type == bind_type::information)
+    {
+      MPI_Info handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
+      object_ = information(handle);
+    }
+    else if (variable.bind_type == bind_type::message)
+    {
+      MPI_Message handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
+      object_ = message(handle);
+    }
+    else if (variable.bind_type == bind_type::op)
+    {
+      MPI_Op handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
+      object_ = op(handle);
+    }
+    else if (variable.bind_type == bind_type::request)
+    {
+      MPI_Request handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
+      object_ = request(handle);
+    }
+    else if (variable.bind_type == bind_type::window)
+    {
+      MPI_Win handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
+      object_ = window(handle);
+    }
+#ifdef MPI_USE_LATEST
+    else if (variable.bind_type == bind_type::session)
+    {
+      MPI_Session handle;
+      MPI_CHECK_ERROR_CODE(MPI_T_cvar_handle_alloc, (variable.index, &handle, &native_, &count_))
+      object_ = session(handle);
+    }
+#endif
   }
   explicit control_variable_handle  (const MPI_T_cvar_handle& native, const bool managed = false, const std::int32_t count = 1, std::optional<object_variant> object = std::nullopt)
   : managed_(managed), native_(native), count_(count), object_(std::move(object))
