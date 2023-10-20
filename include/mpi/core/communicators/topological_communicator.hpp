@@ -306,7 +306,7 @@ public:
                                                        received_type& received, 
                                                  const bool resize = false) const
   {
-    std::int32_t              local_size    (container_adapter<sent_type>::size(sent));
+    const std::int32_t        local_size    (container_adapter<sent_type>::size(sent));
     std::vector<std::int32_t> received_sizes(incoming_neighbor_count());
     neighbor_all_gather(local_size, received_sizes);
 

@@ -18,8 +18,8 @@ struct performance_variable
   explicit performance_variable  (const std::int32_t index) : index(index)
   {
     auto         name_size(0), description_size(0);
+    auto         enum_type    (MPI_T_ENUM_NULL  );
     MPI_Datatype raw_data_type(MPI_DATATYPE_NULL);
-    MPI_T_enum   enum_type    (MPI_T_ENUM_NULL  );
 
     MPI_CHECK_ERROR_CODE(MPI_T_pvar_get_info, (
       index                                       ,
@@ -65,20 +65,20 @@ struct performance_variable
   performance_variable& operator=(const performance_variable&  that) = delete ;
   performance_variable& operator=(      performance_variable&& temp) = default;
 
-  std::int32_t               index      ;
+  std::int32_t                          index        ;
 
-  std::string                name       ;
-  std::string                description;
+  std::string                           name         ;
+  std::string                           description  ;
 
-  bind_type                  bind_type  ;
-  performance_variable_type  type       ;
-  verbosity                  verbosity  ;
-  bool                       read_only  ;
-  bool                       continuous ;
-  bool                       atomic     ;
+  mpi::tool::bind_type                  bind_type  {};
+  mpi::tool::performance_variable_type  type       {};
+  mpi::tool::verbosity                  verbosity  {};
+  bool                                  read_only  {};
+  bool                                  continuous {};
+  bool                                  atomic     {};
 
-  std::optional<data_type>   data_type  ; // Abusing optional for delayed construction of a stack variable.
-  std::optional<enumeration> enumeration;
+  std::optional<mpi::data_type>         data_type    ; // Abusing optional for delayed construction of a stack variable.
+  std::optional<mpi::tool::enumeration> enumeration  ;
 };
 
 inline std::int32_t                      performance_variable_index(const std::string& name, const performance_variable_type type)

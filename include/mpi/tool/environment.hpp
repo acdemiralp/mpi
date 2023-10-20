@@ -31,6 +31,6 @@ public:
   }
 
 protected:
-  thread_support provided_thread_support_;
+  thread_support provided_thread_support_ {};
 };
 }

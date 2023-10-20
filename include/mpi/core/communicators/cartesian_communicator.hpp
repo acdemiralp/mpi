@@ -142,7 +142,7 @@ public:
   std::array<std::int32_t, 2> shift                  (const std::int32_t dimension, const std::int32_t displacement = 1) const
   {
     std::array<std::int32_t, 2> result {};
-    MPI_CHECK_ERROR_CODE(MPI_Cart_shift, (native_, dimension, displacement, &result[0], &result[1]))
+    MPI_CHECK_ERROR_CODE(MPI_Cart_shift, (native_, dimension, displacement, result.data(), &result[1]))
     return result;
   }
 };

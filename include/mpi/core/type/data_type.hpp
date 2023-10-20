@@ -175,7 +175,7 @@ public:
   std::array<aint , 2>  extent          () const
   {
     std::array<aint, 2> result {};
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_extent, (native_, &result[0], &result[1]))
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_extent, (native_, result.data(), &result[1]))
     MPI_CHECK_UNDEFINED (MPI_Type_get_extent, result[0])
     MPI_CHECK_UNDEFINED (MPI_Type_get_extent, result[1])
     return result;
@@ -184,7 +184,7 @@ public:
   std::array<count, 2>  extent_x        () const
   {
     std::array<count, 2> result {};
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_extent_x, (native_, &result[0], &result[1]))
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_extent_x, (native_, result.data(), &result[1]))
     MPI_CHECK_UNDEFINED (MPI_Type_get_extent_x, result[0])
     MPI_CHECK_UNDEFINED (MPI_Type_get_extent_x, result[1])
     return result;
@@ -193,7 +193,7 @@ public:
   std::array<aint , 2>  true_extent     () const
   {
     std::array<aint, 2> result {};
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent, (native_, &result[0], &result[1]))
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent, (native_, result.data(), &result[1]))
     MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent, result[0])
     MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent, result[1])
     return result;
@@ -202,7 +202,7 @@ public:
   std::array<count, 2>  true_extent_x   () const
   {
     std::array<count, 2> result {};
-    MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent_x, (native_, &result[0], &result[1]))
+    MPI_CHECK_ERROR_CODE(MPI_Type_get_true_extent_x, (native_, result.data(), &result[1]))
     MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent_x, result[0])
     MPI_CHECK_UNDEFINED (MPI_Type_get_true_extent_x, result[1])
     return result;

@@ -16,14 +16,14 @@ constexpr std::int32_t sub_version = MPI_SUBVERSION;
 inline std::array<std::int32_t, 2> get_version        ()
 {
   std::array<std::int32_t, 2> result {};
-  MPI_CHECK_ERROR_CODE(MPI_Get_version, (&result[0], &result[1]))
+  MPI_CHECK_ERROR_CODE(MPI_Get_version, (result.data(), &result[1]))
   return result;
 }
 inline std::string                 get_library_version()
 {
   std::string  result(MPI_MAX_LIBRARY_VERSION_STRING, '\n');
   std::int32_t size  (0);
-  MPI_CHECK_ERROR_CODE(MPI_Get_library_version, (&result[0], &size))
+  MPI_CHECK_ERROR_CODE(MPI_Get_library_version, (result.data(), &size))
   result.resize(static_cast<std::size_t>(size));
   return result;
 }

@@ -227,14 +227,14 @@ public:
   }
                                                                           
   [[nodiscard]]                                                           
-  group                                     group                         () const
+  mpi::group                                group                         () const
   {
     mpi::group result(MPI_GROUP_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Comm_group, (native_, &result.native_))
     return result;
   }
   [[nodiscard]]                                                           
-  topology                                  topology                      () const
+  mpi::topology                             topology                      () const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Topo_test, (native_, &result))
@@ -276,7 +276,7 @@ public:
   {
     std::string  result(MPI_MAX_OBJECT_NAME, '\n');
     std::int32_t length(0);
-    MPI_CHECK_ERROR_CODE(MPI_Comm_get_name, (native_, &result[0], &length))
+    MPI_CHECK_ERROR_CODE(MPI_Comm_get_name, (native_, result.data(), &length))
     result.resize(static_cast<std::size_t>(length));
     return result;
   }
@@ -286,7 +286,7 @@ public:
   }
                                                                           
   [[nodiscard]]                                                           
-  information                               information                   () const
+  mpi::information                          information                   () const
   {
     mpi::information result(MPI_INFO_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Comm_get_info, (native_, &result.native_))
@@ -553,7 +553,7 @@ public:
   request                                   partitioned_send              (const std::int32_t partitions, const void* data, const count size, const data_type& data_type, const std::int32_t destination, const std::int32_t tag = 0, const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
-    MPI_CHECK_ERROR_CODE(MPI_Psend_init, (data, partitions, size, data_type.native(), destination, tag, native_, info.native(), &result.native_))
+    MPI_CHECK_ERROR_CODE(MPI_Psend_init, (const_cast<void*>(data), partitions, size, data_type.native(), destination, tag, native_, info.native(), &result.native_)) // Note: Several implementations require the const_cast.
     return result;
   }
   template <typename type> [[nodiscard]]                                                           
@@ -1083,7 +1083,7 @@ public:
                                                                                  received_type& received, 
                                                                            const bool           resize  = false) const
   {
-    std::int32_t              local_size    (container_adapter<sent_type>::size(sent));
+    const std::int32_t        local_size    (container_adapter<sent_type>::size(sent));
     std::vector<std::int32_t> received_sizes(size());
     all_gather(local_size, received_sizes);
 
@@ -1108,7 +1108,7 @@ public:
   {
     using adapter = container_adapter<type>;
 
-    std::int32_t              local_size    (adapter::size(data));
+    const std::int32_t        local_size    (adapter::size(data));
     std::vector<std::int32_t> received_sizes(size());
     all_gather(local_size, received_sizes);
 

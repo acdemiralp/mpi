@@ -18,8 +18,8 @@ struct control_variable
   explicit control_variable  (const std::int32_t index) : index(index)
   {
     auto         name_size(0), description_size(0);
+    auto         enum_type    (MPI_T_ENUM_NULL  );
     MPI_Datatype raw_data_type(MPI_DATATYPE_NULL);
-    MPI_T_enum   enum_type    (MPI_T_ENUM_NULL  );
 
     MPI_CHECK_ERROR_CODE(MPI_T_cvar_get_info, (
       index                                      ,
@@ -59,17 +59,17 @@ struct control_variable
   control_variable& operator=(const control_variable&  that) = delete ;
   control_variable& operator=(      control_variable&& temp) = default;
 
-  std::int32_t               index      ;
+  std::int32_t                          index        ;
 
-  std::string                name       ;
-  std::string                description;
+  std::string                           name         ;
+  std::string                           description  ;
 
-  bind_type                  bind_type  ;
-  scope                      scope      ;
-  verbosity                  verbosity  ;
+  mpi::tool::bind_type                  bind_type  {};
+  mpi::tool::scope                      scope      {};
+  mpi::tool::verbosity                  verbosity  {};
 
-  std::optional<data_type>   data_type  ; // Abusing optional for delayed construction of a stack variable.
-  std::optional<enumeration> enumeration;
+  std::optional<mpi::data_type>         data_type    ; // Abusing optional for delayed construction of a stack variable.
+  std::optional<mpi::tool::enumeration> enumeration  ;
 };
 
 inline std::int32_t                  control_variable_index(const std::string& name)
