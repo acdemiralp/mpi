@@ -72,19 +72,19 @@ struct event
   event& operator=(const event&  that) = delete ;
   event& operator=(      event&& temp) = default;
 
-  std::int32_t               index        ;
+  std::int32_t                          index        ;
 
-  std::string                name         ;
-  std::string                description  ;
+  std::string                           name         ;
+  std::string                           description  ;
 
-  bind_type                  bind_type    ;
-  verbosity                  verbosity    ;
+  mpi::tool::bind_type                  bind_type    ;
+  mpi::tool::verbosity                  verbosity    ;
 
-  std::vector<data_type>     data_types   ;
-  std::vector<aint>          displacements;
+  std::vector<data_type>                data_types   ;
+  std::vector<aint>                     displacements;
 
-  std::optional<information> information  ;
-  std::optional<enumeration> enumeration  ;
+  std::optional<mpi::information>       information  ;
+  std::optional<mpi::tool::enumeration> enumeration  ;
 };
 
 inline std::int32_t       event_index(const std::string& name)

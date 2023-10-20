@@ -77,7 +77,7 @@ struct performance_variable
   bool                                  continuous ;
   bool                                  atomic     ;
 
-  std::optional<data_type>              data_type  ; // Abusing optional for delayed construction of a stack variable.
+  std::optional<mpi::data_type>         data_type  ; // Abusing optional for delayed construction of a stack variable.
   std::optional<mpi::tool::enumeration> enumeration;
 };
 

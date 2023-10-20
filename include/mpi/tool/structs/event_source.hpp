@@ -63,16 +63,16 @@ struct event_source
     return result;
   }
 
-  std::int32_t               index           ;
+  std::int32_t                    index           ;
                              
-  std::string                name            ;
-  std::string                description     ;
+  std::string                     name            ;
+  std::string                     description     ;
                              
-  bool                       ordered         ;
-  count                      ticks_per_second;
-  count                      maximum_ticks   ;
+  bool                            ordered         ;
+  count                           ticks_per_second;
+  count                           maximum_ticks   ;
 
-  std::optional<information> information     ;
+  std::optional<mpi::information> information     ;
 };
 
 inline std::int32_t              event_source_count()
