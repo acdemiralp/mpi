@@ -13,6 +13,6 @@ struct spawn_information
   std::string              command      ;
   std::vector<std::string> arguments    ;
   std::int32_t             process_count;
-  information              information  ;
+  mpi::information         information  ;
 };
 }
