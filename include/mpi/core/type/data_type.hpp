@@ -64,7 +64,7 @@ public:
   data_type           (const data_type&  that, const std::int32_t count, const std::int32_t block_length, const aint         stride)
   : managed_(true)
   {
-    MPI_CHECK_ERROR_CODE(MPI_Type_hvector, (count, block_length, stride, that.native_, &native_))
+    MPI_CHECK_ERROR_CODE(MPI_Type_create_hvector, (count, block_length, stride, that.native_, &native_))
   }
   data_type           (const data_type&  that, const std::int32_t               block_length , const std::vector<std::int32_t>& displacements)
   : managed_(true)
