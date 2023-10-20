@@ -80,11 +80,23 @@ inline const error_class tool_performance_variable_no_start_stop { MPI_T_ERR_PVA
 inline const error_class tool_performance_variable_no_atomic     { MPI_T_ERR_PVAR_NO_ATOMIC     };
 inline const error_class last_code                               { MPI_ERR_LASTCODE             };
 
-#ifdef MPI_USE_LATEST
+#ifdef MPI_ERR_PROC_ABORTED
 inline const error_class process_aborted                         { MPI_ERR_PROC_ABORTED         };
+#endif
+
+#ifdef MPI_ERR_SESSION
 inline const error_class session                                 { MPI_ERR_SESSION              };
+#endif
+
+#ifdef MPI_ERR_VALUE_TOO_LARGE
 inline const error_class value_too_large                         { MPI_ERR_VALUE_TOO_LARGE      };
+#endif
+
+#ifdef MPI_T_ERR_NOT_ACCESSIBLE
 inline const error_class tool_not_accessible                     { MPI_T_ERR_NOT_ACCESSIBLE     };
+#endif
+
+#ifdef MPI_T_ERR_NOT_SUPPORTED
 inline const error_class tool_not_supported                      { MPI_T_ERR_NOT_SUPPORTED      };
 #endif
 }
