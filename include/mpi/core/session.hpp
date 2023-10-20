@@ -16,7 +16,7 @@ namespace mpi
 class session
 {
 public:
-  session           (const information& information, const session_error_handler& error_handler)
+  session           (const mpi::information& information, const session_error_handler& error_handler)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Session_init, (information.native(), error_handler.native(), &native_))
@@ -56,14 +56,14 @@ public:
   }
 
   [[nodiscard]]
-  std::int32_t             process_set_count      (                          const information& information = mpi::information()) const
+  std::int32_t             process_set_count      (                          const mpi::information& information = mpi::information()) const
   {
     std::int32_t result;
     MPI_CHECK_ERROR_CODE(MPI_Session_get_num_psets, (native_, information.native(), &result))
     return result;
   }
   [[nodiscard]]
-  std::string              process_set_name       (const std::int32_t index, const information& information = mpi::information()) const
+  std::string              process_set_name       (const std::int32_t index, const mpi::information& information = mpi::information()) const
   {
     std::int32_t size  (0);
     MPI_CHECK_ERROR_CODE(MPI_Session_get_nth_pset, (native_, information.native(), index, &size, nullptr   ))
@@ -73,7 +73,7 @@ public:
     return result;
   }
   [[nodiscard]]
-  information              process_set_information(const std::string& name) const
+  mpi::information         process_set_information(const std::string& name) const
   {
     mpi::information result(MPI_INFO_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Session_get_pset_info, (native_, name.c_str(), &result.native_))
@@ -88,7 +88,7 @@ public:
     return std::stoi(*info["mpi_size"]);
   }
   [[nodiscard]]
-  std::vector<process_set> process_sets           (const information& information = mpi::information()) const
+  std::vector<process_set> process_sets           (const mpi::information& information = mpi::information()) const
   {
     std::vector<process_set> result(process_set_count(information));
     for (std::size_t i = 0; i < result.size(); ++i)

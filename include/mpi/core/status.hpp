@@ -12,7 +12,10 @@ namespace mpi
 class communicator;
 class message;
 class request;
-class io::file;
+namespace io
+{
+class file;
+}
 
 class status
 {
