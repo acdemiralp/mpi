@@ -84,7 +84,7 @@ public:
     {
       MPI_Session handle;
       MPI_CHECK_ERROR_CODE(MPI_T_pvar_handle_alloc, (session_.native(), variable.index, &handle, &native_, &count_))
-      object_ = session(handle);
+      object_ = mpi::session(handle);
     }
 #endif
   }
