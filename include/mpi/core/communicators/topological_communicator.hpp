@@ -35,8 +35,8 @@ public:
   virtual std::int32_t outgoing_neighbor_count() const = 0;
 
   // All to all neighborhood collective operations.
-  void    neighbor_all_to_all                   (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                 sent_data_type     ,
-                                                       void*          received, const std::int32_t               received_size ,                                                          const data_type&                 received_data_type ) const
+  void    neighbor_all_to_all                   (const void*          sent    , const count                      sent_size     ,                                                          const data_type&                 sent_data_type     ,
+                                                       void*          received, const count                      received_size ,                                                          const data_type&                 received_data_type ) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_alltoall, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_))
   }
@@ -47,12 +47,12 @@ public:
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     neighbor_all_to_all(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent    ) / outgoing_neighbor_count()), send_adapter   ::data_type(), 
-      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
+      send_adapter   ::data(sent    ), static_cast<count>(send_adapter   ::size(sent    ) / outgoing_neighbor_count()), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<count>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
   }
   [[nodiscard]]                                                           
-  request immediate_neighbor_all_to_all         (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                 sent_data_type     ,
-                                                       void*          received, const std::int32_t               received_size ,                                                          const data_type&                 received_data_type ) const
+  request immediate_neighbor_all_to_all         (const void*          sent    , const count                      sent_size     ,                                                          const data_type&                 sent_data_type     ,
+                                                       void*          received, const count                      received_size ,                                                          const data_type&                 received_data_type ) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Ineighbor_alltoall, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, &result.native_))
@@ -65,13 +65,13 @@ public:
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     return immediate_neighbor_all_to_all(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent    ) / outgoing_neighbor_count()), send_adapter   ::data_type(), 
-      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
+      send_adapter   ::data(sent    ), static_cast<count>(send_adapter   ::size(sent    ) / outgoing_neighbor_count()), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<count>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
   }
 #ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
-  request persistent_neighbor_all_to_all        (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                 sent_data_type     ,
-                                                       void*          received, const std::int32_t               received_size ,                                                          const data_type&                 received_data_type , 
+  request persistent_neighbor_all_to_all        (const void*          sent    , const count                      sent_size     ,                                                          const data_type&                 sent_data_type     ,
+                                                       void*          received, const count                      received_size ,                                                          const data_type&                 received_data_type , 
                                                  const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
@@ -86,8 +86,8 @@ public:
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     return persistent_neighbor_all_to_all(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent    ) / outgoing_neighbor_count()), send_adapter   ::data_type(), 
-      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type(), info);
+      send_adapter   ::data(sent    ), static_cast<count>(send_adapter   ::size(sent    ) / outgoing_neighbor_count()), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<count>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type(), info);
   }
 #endif
 
@@ -215,8 +215,8 @@ public:
   }
 #endif
 
-  void    neighbor_all_gather                   (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                 sent_data_type     ,
-                                                       void*          received, const std::int32_t               received_size ,                                                          const data_type&                 received_data_type ) const
+  void    neighbor_all_gather                   (const void*          sent    , const count                      sent_size     ,                                                          const data_type&                 sent_data_type     ,
+                                                       void*          received, const count                      received_size ,                                                          const data_type&                 received_data_type ) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_allgather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_))
   }
@@ -227,12 +227,12 @@ public:
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     neighbor_all_gather(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent)                                ), send_adapter   ::data_type(), 
-      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
+      send_adapter   ::data(sent    ), static_cast<count>(send_adapter   ::size(sent)                                ), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<count>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
   }
   [[nodiscard]]                                                           
-  request immediate_neighbor_all_gather         (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                 sent_data_type     ,
-                                                       void*          received, const std::int32_t               received_size ,                                                          const data_type&                 received_data_type ) const
+  request immediate_neighbor_all_gather         (const void*          sent    , const count                      sent_size     ,                                                          const data_type&                 sent_data_type     ,
+                                                       void*          received, const count                      received_size ,                                                          const data_type&                 received_data_type ) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_Ineighbor_allgather, (sent, sent_size, sent_data_type.native(), received, received_size, received_data_type.native(), native_, &result.native_))
@@ -245,13 +245,13 @@ public:
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     return immediate_neighbor_all_gather(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent)                                ), send_adapter   ::data_type(), 
-      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
+      send_adapter   ::data(sent    ), static_cast<count>(send_adapter   ::size(sent)                                ), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<count>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type());
   }
 #ifdef MPI_GEQ_4_0
   [[nodiscard]]                                                           
-  request persistent_neighbor_all_gather        (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                 sent_data_type     ,
-                                                       void*          received, const std::int32_t               received_size ,                                                          const data_type&                 received_data_type , 
+  request persistent_neighbor_all_gather        (const void*          sent    , const count                      sent_size     ,                                                          const data_type&                 sent_data_type     ,
+                                                       void*          received, const count                      received_size ,                                                          const data_type&                 received_data_type , 
                                                  const mpi::information& info = mpi::information()) const
   {
     request result(MPI_REQUEST_NULL, true, true);
@@ -266,12 +266,12 @@ public:
     using send_adapter    = container_adapter<sent_type>;
     using receive_adapter = container_adapter<received_type>;
     return persistent_neighbor_all_gather(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter   ::size(sent)                                ), send_adapter   ::data_type(), 
-      receive_adapter::data(received), static_cast<std::int32_t>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type(), info);
+      send_adapter   ::data(sent    ), static_cast<count>(send_adapter   ::size(sent)                                ), send_adapter   ::data_type(), 
+      receive_adapter::data(received), static_cast<count>(receive_adapter::size(received) / incoming_neighbor_count()), receive_adapter::data_type(), info);
   }
 #endif
 
-  void    neighbor_all_gather_varying           (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                 sent_data_type     ,
+  void    neighbor_all_gather_varying           (const void*          sent    , const count                      sent_size     ,                                                          const data_type&                 sent_data_type     ,
                                                        void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,          const data_type&                 received_data_type ) const
   {
     MPI_CHECK_ERROR_CODE(MPI_Neighbor_allgatherv, (sent, sent_size, sent_data_type.native(), received, received_sizes.data(), displacements.data(), received_data_type.native(), native_))
@@ -288,7 +288,7 @@ public:
       receive_adapter::resize(received, std::reduce(received_sizes.begin(), received_sizes.end()));
 
     neighbor_all_gather_varying(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      send_adapter   ::data(sent    ), static_cast<count>(send_adapter::size(sent)), send_adapter   ::data_type(), 
       receive_adapter::data(received), received_sizes, displacements                      , receive_adapter::data_type());
   }
   template <typename sent_type, typename received_type>
@@ -313,7 +313,7 @@ public:
     neighbor_all_gather_varying(sent, received, received_sizes, resize);
   }
   [[nodiscard]]
-  request immediate_neighbor_all_gather_varying (const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                sent_data_type      ,
+  request immediate_neighbor_all_gather_varying (const void*          sent    , const count                      sent_size     ,                                                          const data_type&                sent_data_type      ,
                                                        void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,          const data_type&                received_data_type  ) const
   {
     request result(MPI_REQUEST_NULL, true);
@@ -332,12 +332,12 @@ public:
       receive_adapter::resize(received, std::reduce(received_sizes.begin(), received_sizes.end()));
 
     return immediate_neighbor_all_gather_varying(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      send_adapter   ::data(sent    ), static_cast<count>(send_adapter::size(sent)), send_adapter   ::data_type(), 
       receive_adapter::data(received), received_sizes, displacements                      , receive_adapter::data_type());
   }
 #ifdef MPI_GEQ_4_0
   [[nodiscard]]
-  request persistent_neighbor_all_gather_varying(const void*          sent    , const std::int32_t               sent_size     ,                                                          const data_type&                sent_data_type      ,
+  request persistent_neighbor_all_gather_varying(const void*          sent    , const count                      sent_size     ,                                                          const data_type&                sent_data_type      ,
                                                        void*          received, const std::vector<std::int32_t>& received_sizes, const std::vector<std::int32_t>& displacements,          const data_type&                received_data_type  , 
                                                  const mpi::information& info = mpi::information()) const
   {
@@ -357,7 +357,7 @@ public:
       receive_adapter::resize(received, std::reduce(received_sizes.begin(), received_sizes.end()));
 
     return persistent_neighbor_all_gather_varying(
-      send_adapter   ::data(sent    ), static_cast<std::int32_t>(send_adapter::size(sent)), send_adapter   ::data_type(), 
+      send_adapter   ::data(sent    ), static_cast<count>(send_adapter::size(sent)), send_adapter   ::data_type(), 
       receive_adapter::data(received), received_sizes, displacements                      , receive_adapter::data_type(), info);
   }
 #endif
