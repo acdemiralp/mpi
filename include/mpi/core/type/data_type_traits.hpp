@@ -9,7 +9,7 @@
 namespace mpi
 {
 // Maps C++ types to their corresponding MPI_Datatype values at runtime.
-// This is the inverse of type_traits (which maps types to MPI datatypes).
+// Similar to type_traits but returns raw MPI_Datatype instead of data_type wrapper.
 // Note: Since MPI constants are not compile-time constants in all MPI implementations,
 // we cannot use them as non-type template parameters.
 template <typename type>
