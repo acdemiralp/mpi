@@ -368,16 +368,19 @@ public:
   [[nodiscard]]
   bool                                      agree                         (const bool flag) const
   {
+    std::int32_t input_flag = static_cast<std::int32_t>(flag);
     std::int32_t result;
-    MPI_CHECK_ERROR_CODE(MPI_Comm_agree, (native_, &flag, &result))
+    MPI_CHECK_ERROR_CODE(MPI_Comm_agree, (native_, &input_flag, &result))
     return static_cast<bool>(result);
   }
   [[nodiscard]]
   std::pair<bool, request>                  immediate_agree               (const bool flag) const
   {
-    std::pair result { false, request(MPI_REQUEST_NULL, true) };
-    MPI_CHECK_ERROR_CODE(MPI_Comm_iagree, (native_, &flag, &result.first, &result.second.native_))
-    return result;
+    std::int32_t input_flag = static_cast<std::int32_t>(flag);
+    std::int32_t output_flag;
+    request result_request(MPI_REQUEST_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Comm_iagree, (native_, &input_flag, &output_flag, &result_request.native_))
+    return { static_cast<bool>(output_flag), std::move(result_request) };
   }
 #endif
                                                                           

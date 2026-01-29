@@ -10,7 +10,7 @@
 #define MPI_GEQ_4_1
 #endif
 
-#if MPI_VERSION >= 5
+#if (MPI_VERSION > 5) || (MPI_VERSION == 5 && MPI_SUBVERSION >= 0)
 #define MPI_GEQ_5_0
 #endif
 
