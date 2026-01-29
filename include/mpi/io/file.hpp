@@ -189,7 +189,7 @@ public:
   }
 
   // Read operations.
-  status                               read                  (void* data, const std::int32_t count, const data_type& data_type) const
+  status                               read                  (void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read, (native_, data, count, data_type.native(), &result.native_))
@@ -199,10 +199,10 @@ public:
   status                               read                  (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_n                (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
+  std::pair<type, status>              read_n                (const count count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -210,7 +210,7 @@ public:
     return result;
   }
   
-  status                               read_all              (void* data, const std::int32_t count, const data_type& data_type) const
+  status                               read_all              (void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_all, (native_, data, count, data_type.native(), &result.native_))
@@ -220,10 +220,10 @@ public:
   status                               read_all              (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_all(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_all(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_all_n            (const std::int32_t count = 1) const
+  std::pair<type, status>              read_all_n            (const count count = 1) const
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -231,7 +231,7 @@ public:
     return result;
   }
 
-  void                                 read_all_begin        (void* data, const std::int32_t count, const data_type& data_type) const
+  void                                 read_all_begin        (void* data, const count count, const data_type& data_type) const
   {
     MPI_CHECK_ERROR_CODE(MPI_File_read_all_begin, (native_, data, count, data_type.native()))
   }
@@ -239,7 +239,7 @@ public:
   void                                 read_all_begin        (type& data) const
   {
     using adapter = container_adapter<type>;
-    read_all_begin(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    read_all_begin(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   
   status                               read_all_end          (void* data) const
@@ -255,7 +255,7 @@ public:
     return read_all_end(adapter::data(data));
   }
 
-  status                               read_at               (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
+  status                               read_at               (const offset offset, void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_at, (native_, offset, data, count, data_type.native(), &result.native_))
@@ -265,10 +265,10 @@ public:
   status                               read_at               (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_at(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_at(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_at_n             (const offset offset, const std::int32_t count = 1) const
+  std::pair<type, status>              read_at_n             (const offset offset, const count count = 1) const
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -276,7 +276,7 @@ public:
     return result;
   }
   
-  status                               read_at_all           (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
+  status                               read_at_all           (const offset offset, void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_at_all, (native_, offset, data, count, data_type.native(), &result.native_))
@@ -286,10 +286,10 @@ public:
   status                               read_at_all           (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_at_all(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_at_all(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_at_all_n         (const offset offset, const std::int32_t count = 1) const
+  std::pair<type, status>              read_at_all_n         (const offset offset, const count count = 1) const
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -297,7 +297,7 @@ public:
     return result;
   }
 
-  void                                 read_at_all_begin     (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
+  void                                 read_at_all_begin     (const offset offset, void* data, const count count, const data_type& data_type) const
   {
     MPI_CHECK_ERROR_CODE(MPI_File_read_at_all_begin, (native_, offset, data, count, data_type.native()))
   }
@@ -305,7 +305,7 @@ public:
   void                                 read_at_all_begin     (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    read_at_all_begin(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    read_at_all_begin(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   
   status                               read_at_all_end       (void* data) const
@@ -321,7 +321,7 @@ public:
     return read_at_all_end(adapter::data(data));
   }
   
-  status                               read_ordered          (void* data, const std::int32_t count, const data_type& data_type) const
+  status                               read_ordered          (void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_ordered, (native_, data, count, data_type.native(), &result.native_))
@@ -331,10 +331,10 @@ public:
   status                               read_ordered          (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_ordered(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_ordered(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_ordered_n        (const std::int32_t count = 1) const
+  std::pair<type, status>              read_ordered_n        (const count count = 1) const
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -342,7 +342,7 @@ public:
     return result;
   }
 
-  void                                 read_ordered_begin    (void* data, const std::int32_t count, const data_type& data_type) const
+  void                                 read_ordered_begin    (void* data, const count count, const data_type& data_type) const
   {
     MPI_CHECK_ERROR_CODE(MPI_File_read_ordered_begin, (native_, data, count, data_type.native()))
   }
@@ -350,7 +350,7 @@ public:
   void                                 read_ordered_begin    (type& data) const
   {
     using adapter = container_adapter<type>;
-    read_ordered_begin(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    read_ordered_begin(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   
   status                               read_ordered_end      (void* data) const
@@ -366,7 +366,7 @@ public:
     return read_ordered_end(adapter::data(data));
   }
   
-  status                               read_shared           (void* data, const std::int32_t count, const data_type& data_type) const
+  status                               read_shared           (void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_read_shared, (native_, data, count, data_type.native(), &result.native_))
@@ -376,10 +376,10 @@ public:
   status                               read_shared           (type& data) const
   {
     using adapter = container_adapter<type>;
-    return read_shared(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return read_shared(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   template <typename type>
-  std::pair<type, status>              read_shared_n         (const std::int32_t count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
+  std::pair<type, status>              read_shared_n         (const count count = 1) const // Named differently to avoid conflict with the type& override where type is std::int32_t.
   {
     std::pair<type, status> result;
     container_adapter<type>::resize(result.first, count);
@@ -389,7 +389,7 @@ public:
   
   // Immediate read operations.
   [[nodiscard]]
-  request                              immediate_read        (void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_read        (void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iread, (native_, data, count, data_type.native(), &result.native_))
@@ -399,10 +399,10 @@ public:
   request                              immediate_read        (type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
-  request                              immediate_read_all    (void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_read_all    (void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iread_all, (native_, data, count, data_type.native(), &result.native_))
@@ -412,10 +412,10 @@ public:
   request                              immediate_read_all    (type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read_all(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read_all(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
-  request                              immediate_read_at     (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_read_at     (const offset offset, void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iread_at, (native_, offset, data, count, data_type.native(), &result.native_))
@@ -425,10 +425,10 @@ public:
   request                              immediate_read_at     (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read_at(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read_at(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
-  request                              immediate_read_at_all (const offset offset, void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_read_at_all (const offset offset, void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iread_at_all, (native_, offset, data, count, data_type.native(), &result.native_))
@@ -438,10 +438,10 @@ public:
   request                              immediate_read_at_all (const offset offset, type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read_at_all(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read_at_all(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
-  request                              immediate_read_shared (void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_read_shared (void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iread_shared, (native_, data, count, data_type.native(), &result.native_))
@@ -451,11 +451,11 @@ public:
   request                              immediate_read_shared (type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_read_shared(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_read_shared(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
 
   // Write operations.
-  status                               write                 (const void* data, const std::int32_t count, const data_type& data_type) const
+  status                               write                 (const void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write    , (native_, data, count, data_type.native(), &result.native_))
@@ -465,10 +465,10 @@ public:
   status                               write                 (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write    (adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write    (adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }                                           
   
-  status                               write_all             (const void* data, const std::int32_t count, const data_type& data_type) const
+  status                               write_all             (const void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_all, (native_, data, count, data_type.native(), &result.native_))
@@ -478,10 +478,10 @@ public:
   status                               write_all             (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_all(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_all(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
                                                              
-  void                                 write_all_begin       (const void* data, const std::int32_t count, const data_type& data_type) const
+  void                                 write_all_begin       (const void* data, const count count, const data_type& data_type) const
   {
     MPI_CHECK_ERROR_CODE(MPI_File_write_all_begin, (native_, data, count, data_type.native()))
   }
@@ -489,7 +489,7 @@ public:
   void                                 write_all_begin       (const type& data) const
   {
     using adapter = container_adapter<type>;
-    write_all_begin(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    write_all_begin(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }                                       
   
   status                               write_all_end         (const void* data) const
@@ -505,7 +505,7 @@ public:
     return write_all_end(adapter::data(data));
   }                                          
   
-  status                               write_at              (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
+  status                               write_at              (const offset offset, const void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_at, (native_, offset, data, count, data_type.native(), &result.native_))
@@ -515,10 +515,10 @@ public:
   status                               write_at              (const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_at(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_at(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   
-  status                               write_at_all          (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
+  status                               write_at_all          (const offset offset, const void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_at_all, (native_, offset, data, count, data_type.native(), &result.native_))
@@ -528,10 +528,10 @@ public:
   status                               write_at_all          (const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_at_all(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_at_all(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
                                                              
-  void                                 write_at_all_begin    (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
+  void                                 write_at_all_begin    (const offset offset, const void* data, const count count, const data_type& data_type) const
   {
     MPI_CHECK_ERROR_CODE(MPI_File_write_at_all_begin, (native_, offset, data, count, data_type.native()))
   }
@@ -539,7 +539,7 @@ public:
   void                                 write_at_all_begin    (const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    write_at_all_begin(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    write_at_all_begin(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }                                             
   
   status                               write_at_all_end      (const void* data) const
@@ -555,7 +555,7 @@ public:
     return write_at_all_end(adapter::data(data));
   }                                    
   
-  status                               write_ordered         (const void* data, const std::int32_t count, const data_type& data_type) const
+  status                               write_ordered         (const void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_ordered, (native_, data, count, data_type.native(), &result.native_))
@@ -565,10 +565,10 @@ public:
   status                               write_ordered         (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_ordered(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_ordered(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
                                                              
-  void                                 write_ordered_begin   (const void* data, const std::int32_t count, const data_type& data_type) const
+  void                                 write_ordered_begin   (const void* data, const count count, const data_type& data_type) const
   {
     MPI_CHECK_ERROR_CODE(MPI_File_write_ordered_begin, (native_, data, count, data_type.native()))
   }
@@ -576,7 +576,7 @@ public:
   void                                 write_ordered_begin   (const type& data) const
   {
     using adapter = container_adapter<type>;
-    write_ordered_begin(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    write_ordered_begin(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }                                            
   
   status                               write_ordered_end     (const void* data) const
@@ -592,7 +592,7 @@ public:
     return write_ordered_end(adapter::data(data));
   }
 
-  status                               write_shared          (const void* data, const std::int32_t count, const data_type& data_type) const
+  status                               write_shared          (const void* data, const count count, const data_type& data_type) const
   {
     status result;
     MPI_CHECK_ERROR_CODE(MPI_File_write_shared, (native_, data, count, data_type.native(), &result.native_))
@@ -602,12 +602,12 @@ public:
   status                               write_shared          (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return write_shared(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return write_shared(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
 
   // Immediate write operations.
   [[nodiscard]]
-  request                              immediate_write       (const void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_write       (const void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iwrite, (native_, data, count, data_type.native(), &result.native_))
@@ -617,10 +617,10 @@ public:
   request                              immediate_write       (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]                                              
-  request                              immediate_write_all   (const void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_write_all   (const void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iwrite_all, (native_, data, count, data_type.native(), &result.native_))
@@ -630,10 +630,10 @@ public:
   request                              immediate_write_all   (const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write_all(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write_all(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]                                              
-  request                              immediate_write_at    (const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_write_at    (const offset offset, const void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iwrite_at, (native_, offset, data, count, data_type.native(), &result.native_))
@@ -643,10 +643,10 @@ public:
   request                              immediate_write_at    (const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write_at(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write_at(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
-  request                              immediate_write_at_all(const offset offset, const void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_write_at_all(const offset offset, const void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iwrite_at_all, (native_, offset, data, count, data_type.native(), &result.native_))
@@ -656,10 +656,10 @@ public:
   request                              immediate_write_at_all(const offset offset, const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write_at_all(offset, adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write_at_all(offset, adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
   [[nodiscard]]
-  request                              immediate_write_shared(const void* data, const std::int32_t count, const data_type& data_type) const
+  request                              immediate_write_shared(const void* data, const count count, const data_type& data_type) const
   {
     request result(MPI_REQUEST_NULL, true);
     MPI_CHECK_ERROR_CODE(MPI_File_iwrite_shared, (native_, data, count, data_type.native(), &result.native_))
@@ -669,7 +669,7 @@ public:
   request                              immediate_write_shared(const type& data) const
   {
     using adapter = container_adapter<type>;
-    return immediate_write_shared(adapter::data(data), static_cast<std::int32_t>(adapter::size(data)), adapter::data_type());
+    return immediate_write_shared(adapter::data(data), static_cast<count>(adapter::size(data)), adapter::data_type());
   }
 
   [[nodiscard]]

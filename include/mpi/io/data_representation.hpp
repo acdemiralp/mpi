@@ -62,7 +62,7 @@ public:
   data_representation& operator=(      data_representation&& temp) = default;
 
   [[nodiscard]]
-  aint               pack_size(const std::int32_t size, const data_type& data_type) const
+  aint               pack_size(const count size, const data_type& data_type) const
   {
     aint result;
     MPI_CHECK_ERROR_CODE(MPI_Pack_external_size, (name_.c_str(), size, data_type.native(), &result))
@@ -70,7 +70,7 @@ public:
   }
   
   [[nodiscard]]
-  aint               pack     (const void*       input , const std::int32_t input_size , const data_type& input_data_type ,
+  aint               pack     (const void*       input , const count input_size , const data_type& input_data_type ,
                                      void*       output, const aint         output_size, const aint       output_position = 0) const
   {
     aint result(output_position);
@@ -86,12 +86,12 @@ public:
     if (resize)
       output_adapter::resize(output, pack_size(input_adapter::size(input), input_adapter::data_type()) / sizeof(typename output_adapter::value_type));
 
-    return pack(input_adapter::data(input), static_cast<std::int32_t>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<aint>(output_adapter::size(output) * sizeof(typename output_adapter::value_type)), output_position);
+    return pack(input_adapter::data(input), static_cast<count>(input_adapter::size(input)), input_adapter::data_type(), output_adapter::data(output), static_cast<aint>(output_adapter::size(output) * sizeof(typename output_adapter::value_type)), output_position);
   }
   
   [[nodiscard]]
   aint               unpack   (const void*       input , const aint         input_size , const aint       input_position  ,
-                                     void*       output, const std::int32_t output_size, const data_type& output_data_type) const
+                                     void*       output, const count output_size, const data_type& output_data_type) const
   {
     aint result(input_position);
     MPI_CHECK_ERROR_CODE(MPI_Unpack_external   , (name_.c_str(), input, input_size, &result, output, output_size, output_data_type.native()))
@@ -103,7 +103,7 @@ public:
     using input_adapter  = container_adapter<input_type >;
     using output_adapter = container_adapter<output_type>;
 
-    return unpack(input_adapter::data(input), static_cast<aint>(input_adapter::size(input) * sizeof(typename input_adapter::value_type)), input_position, output_adapter::data(output), static_cast<std::int32_t>(output_adapter::size(output)), output_adapter::data_type());
+    return unpack(input_adapter::data(input), static_cast<aint>(input_adapter::size(input) * sizeof(typename input_adapter::value_type)), input_position, output_adapter::data(output), static_cast<count>(output_adapter::size(output)), output_adapter::data_type());
   }
 
   [[nodiscard]]
