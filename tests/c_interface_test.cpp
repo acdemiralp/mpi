@@ -53,8 +53,8 @@ TEST_CASE("C Interface")
     std::array              block_lengths {1, 1};
     std::array<MPI_Aint, 2> displacements {0, sizeof (std::uint64_t)};
     std::array              data_types    {MPI_UINT64_T, position_data_type};
-    MPI_Type_struct    (2, block_lengths.data(), displacements.data(), data_types.data(), &particle_data_type);
-    MPI_Type_commit    (&particle_data_type);
+    MPI_Type_create_struct(2, block_lengths.data(), displacements.data(), data_types.data(), &particle_data_type);
+    MPI_Type_commit       (&particle_data_type);
 
     MPI_Bcast          (&value, 1, particle_data_type, 0, MPI_COMM_WORLD);
 
