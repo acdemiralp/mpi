@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmpi_.a
+/usr/bin/ranlib libmpi_.a
