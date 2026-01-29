@@ -46,7 +46,7 @@ public:
 
     MPI_CHECK_ERROR_CODE(MPI_Type_create_struct  , (static_cast<std::int32_t>(block_lengths.size()), block_lengths.data(), displacements.data(), raw_data_types.data(), &native_))
   }
-  data_type           (const data_type&  that, const std::int32_t count)
+  data_type           (const data_type&  that, const count count)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_contiguous, (count, that.native_, &native_)) 
@@ -56,22 +56,22 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_resized, (that.native_, lower_bound, extent, &native_)) 
   }
-  data_type           (const data_type&  that, const std::int32_t count, const std::int32_t block_length, const std::int32_t stride)
+  data_type           (const data_type&  that, const count count, const count block_length, const std::int32_t stride)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_vector , (count, block_length, stride, that.native_, &native_)) 
   }
-  data_type           (const data_type&  that, const std::int32_t count, const std::int32_t block_length, const aint         stride)
+  data_type           (const data_type&  that, const count count, const count block_length, const aint         stride)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_hvector, (count, block_length, stride, that.native_, &native_))
   }
-  data_type           (const data_type&  that, const std::int32_t               block_length , const std::vector<std::int32_t>& displacements)
+  data_type           (const data_type&  that, const count               block_length , const std::vector<std::int32_t>& displacements)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_indexed_block , (static_cast<std::int32_t>(displacements.size()), block_length, displacements.data(), that.native_, &native_))
   }
-  data_type           (const data_type&  that, const std::int32_t               block_length , const std::vector<aint>&         displacements)
+  data_type           (const data_type&  that, const count               block_length , const std::vector<aint>&         displacements)
   : managed_(true)
   {
     MPI_CHECK_ERROR_CODE(MPI_Type_create_hindexed_block, (static_cast<std::int32_t>(displacements.size()), block_length, displacements.data(), that.native_, &native_))
@@ -156,9 +156,9 @@ public:
   }
 
   [[nodiscard]]
-  std::int32_t          size            () const
+  count                 size            () const
   {
-    std::int32_t result;
+    count result;
     MPI_CHECK_ERROR_CODE(MPI_Type_size, (native_, &result))
     MPI_CHECK_UNDEFINED (MPI_Type_size, result)
     return result;
