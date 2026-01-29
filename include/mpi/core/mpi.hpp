@@ -10,6 +10,10 @@
 #define MPI_GEQ_4_1
 #endif
 
+#if MPI_VERSION >= 5
+#define MPI_GEQ_5_0
+#endif
+
 namespace mpi
 {
 using aint   = MPI_Aint  ;

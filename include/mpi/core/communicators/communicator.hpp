@@ -340,6 +340,46 @@ public:
   {
     MPI_CHECK_ERROR_CODE(MPI_Comm_disconnect, (&native_))
   }
+
+#ifdef MPI_GEQ_5_0
+  // ULFM (User Level Failure Mitigation) functions for fault tolerance.
+  void                                      revoke                        ()
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Comm_revoke, (native_))
+  }
+  [[nodiscard]]
+  communicator                              shrink                        () const
+  {
+    communicator result(MPI_COMM_NULL, true);
+    MPI_CHECK_ERROR_CODE(MPI_Comm_shrink, (native_, &result.native_))
+    return result;
+  }
+  [[nodiscard]]
+  std::pair<communicator, request>          immediate_shrink              () const
+  {
+    std::pair result { communicator(MPI_COMM_NULL, true), request(MPI_REQUEST_NULL, true) };
+    MPI_CHECK_ERROR_CODE(MPI_Comm_ishrink, (native_, &result.first.native_, &result.second.native_))
+    return result;
+  }
+  void                                      acknowledge_failed            (const mpi::group& failed_group)
+  {
+    MPI_CHECK_ERROR_CODE(MPI_Comm_ack_failed, (native_, failed_group.native()))
+  }
+  [[nodiscard]]
+  bool                                      agree                         (const bool flag) const
+  {
+    std::int32_t result;
+    MPI_CHECK_ERROR_CODE(MPI_Comm_agree, (native_, &flag, &result))
+    return static_cast<bool>(result);
+  }
+  [[nodiscard]]
+  std::pair<bool, request>                  immediate_agree               (const bool flag) const
+  {
+    std::pair result { false, request(MPI_REQUEST_NULL, true) };
+    MPI_CHECK_ERROR_CODE(MPI_Comm_iagree, (native_, &flag, &result.first, &result.second.native_))
+    return result;
+  }
+#endif
                                                                           
   [[nodiscard]]                                                           
   std::pair<communicator, request>          immediate_duplicate           () const

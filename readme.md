@@ -140,7 +140,7 @@ Modern C++20 message passing interface wrapper.
 - Versioning:
   - The major and minor version numbers correspond to the supported MPI version, whereas the patch number is specific to the wrapper.
 
-### Coverage (list from https://www.open-mpi.org/doc/v4.1/)
+### Coverage (list from https://www.open-mpi.org/doc/v5.0/)
 - [x] Constants              
 - [x] MPI_Abort                      
 - [x] MPI_Accumulate                 
@@ -177,6 +177,8 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Cartdim_get                
 - [x] MPI_Close_port                 
 - [x] MPI_Comm_accept                
+- [x] MPI_Comm_ack_failed            
+- [x] MPI_Comm_agree                 
 - [x] ~~MPI_Comm_c2f~~                   
 - [x] MPI_Comm_call_errhandler       
 - [x] MPI_Comm_compare               
@@ -198,15 +200,19 @@ Modern C++20 message passing interface wrapper.
 - [x] MPI_Comm_get_name              
 - [x] MPI_Comm_get_parent            
 - [x] MPI_Comm_group                 
+- [x] MPI_Comm_iagree                
 - [x] MPI_Comm_idup                  
+- [x] MPI_Comm_ishrink               
 - [x] MPI_Comm_join                  
 - [x] MPI_Comm_rank                  
 - [x] MPI_Comm_remote_group          
 - [x] MPI_Comm_remote_size           
+- [x] MPI_Comm_revoke                
 - [x] MPI_Comm_set_attr              
 - [x] MPI_Comm_set_errhandler        
 - [x] MPI_Comm_set_info              
 - [x] MPI_Comm_set_name              
+- [x] MPI_Comm_shrink                
 - [x] MPI_Comm_size                  
 - [x] MPI_Comm_spawn                 
 - [x] MPI_Comm_spawn_multiple        
