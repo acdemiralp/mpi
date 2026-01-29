@@ -8,43 +8,43 @@
 
 namespace mpi
 {
-template <MPI_Datatype data_type>
-struct data_type_traits {};
+// Maps C++ types to their corresponding MPI_Datatype values at runtime.
+// This is the inverse of type_traits (which maps types to MPI datatypes).
+// Note: Since MPI constants are not compile-time constants in all MPI implementations,
+// we cannot use them as non-type template parameters.
+template <typename type>
+struct data_type_traits;
 
-template <> struct data_type_traits<MPI_CHAR                   > { using type = char                     ; };
-template <> struct data_type_traits<MPI_SHORT                  > { using type = short                    ; };
-template <> struct data_type_traits<MPI_INT                    > { using type = int                      ; };
-template <> struct data_type_traits<MPI_LONG                   > { using type = long                     ; };
-template <> struct data_type_traits<MPI_LONG_LONG              > { using type = long long                ; };
-template <> struct data_type_traits<MPI_SIGNED_CHAR            > { using type = signed char              ; };
-template <> struct data_type_traits<MPI_UNSIGNED_CHAR          > { using type = unsigned char            ; };
-template <> struct data_type_traits<MPI_UNSIGNED_SHORT         > { using type = unsigned short           ; };
-template <> struct data_type_traits<MPI_UNSIGNED               > { using type = unsigned                 ; };
-template <> struct data_type_traits<MPI_UNSIGNED_LONG          > { using type = unsigned long            ; };
-template <> struct data_type_traits<MPI_UNSIGNED_LONG_LONG     > { using type = unsigned long long       ; };
-template <> struct data_type_traits<MPI_FLOAT                  > { using type = float                    ; };
-template <> struct data_type_traits<MPI_DOUBLE                 > { using type = double                   ; };
-template <> struct data_type_traits<MPI_LONG_DOUBLE            > { using type = long double              ; };
-template <> struct data_type_traits<MPI_WCHAR                  > { using type = wchar_t                  ; };
-template <> struct data_type_traits<MPI_INT8_T                 > { using type = std::int8_t              ; };
-template <> struct data_type_traits<MPI_INT16_T                > { using type = std::int16_t             ; };
-template <> struct data_type_traits<MPI_INT32_T                > { using type = std::int32_t             ; };
-template <> struct data_type_traits<MPI_INT64_T                > { using type = std::int64_t             ; };
-template <> struct data_type_traits<MPI_UINT8_T                > { using type = std::uint8_t             ; };
-template <> struct data_type_traits<MPI_UINT16_T               > { using type = std::uint16_t            ; };
-template <> struct data_type_traits<MPI_UINT32_T               > { using type = std::uint32_t            ; };
-template <> struct data_type_traits<MPI_UINT64_T               > { using type = std::uint64_t            ; };
-template <> struct data_type_traits<MPI_AINT                   > { using type = aint                     ; };
-template <> struct data_type_traits<MPI_COUNT                  > { using type = count                    ; };
-template <> struct data_type_traits<MPI_OFFSET                 > { using type = offset                   ; };
-template <> struct data_type_traits<MPI_BYTE                   > { using type = std::byte                ; };
-template <> struct data_type_traits<MPI_CXX_BOOL               > { using type = bool                     ; };
-template <> struct data_type_traits<MPI_CXX_FLOAT_COMPLEX      > { using type = std::complex<float      >; };
-template <> struct data_type_traits<MPI_CXX_DOUBLE_COMPLEX     > { using type = std::complex<double     >; };
-template <> struct data_type_traits<MPI_CXX_LONG_DOUBLE_COMPLEX> { using type = std::complex<long double>; };
-//template <> struct data_type_traits<MPI_C_BOOL               > { using type = _Bool                    ; };
-//template <> struct data_type_traits<MPI_C_FLOAT_COMPLEX      > { using type = float       _Complex     ; };
-//template <> struct data_type_traits<MPI_C_DOUBLE_COMPLEX     > { using type = double      _Complex     ; };
-//template <> struct data_type_traits<MPI_C_LONG_DOUBLE_COMPLEX> { using type = long double _Complex     ; };
-//template <> struct data_type_traits<MPI_PACKED               > { using type = _Packed                  ; };
+template <> struct data_type_traits<char                     > { static MPI_Datatype mpi_type() { return MPI_CHAR                   ; } };
+template <> struct data_type_traits<short                    > { static MPI_Datatype mpi_type() { return MPI_SHORT                  ; } };
+template <> struct data_type_traits<int                      > { static MPI_Datatype mpi_type() { return MPI_INT                    ; } };
+template <> struct data_type_traits<long                     > { static MPI_Datatype mpi_type() { return MPI_LONG                   ; } };
+template <> struct data_type_traits<long long                > { static MPI_Datatype mpi_type() { return MPI_LONG_LONG              ; } };
+template <> struct data_type_traits<signed char              > { static MPI_Datatype mpi_type() { return MPI_SIGNED_CHAR            ; } };
+template <> struct data_type_traits<unsigned char            > { static MPI_Datatype mpi_type() { return MPI_UNSIGNED_CHAR          ; } };
+template <> struct data_type_traits<unsigned short           > { static MPI_Datatype mpi_type() { return MPI_UNSIGNED_SHORT         ; } };
+template <> struct data_type_traits<unsigned                 > { static MPI_Datatype mpi_type() { return MPI_UNSIGNED               ; } };
+template <> struct data_type_traits<unsigned long            > { static MPI_Datatype mpi_type() { return MPI_UNSIGNED_LONG          ; } };
+template <> struct data_type_traits<unsigned long long       > { static MPI_Datatype mpi_type() { return MPI_UNSIGNED_LONG_LONG     ; } };
+template <> struct data_type_traits<float                    > { static MPI_Datatype mpi_type() { return MPI_FLOAT                  ; } };
+template <> struct data_type_traits<double                   > { static MPI_Datatype mpi_type() { return MPI_DOUBLE                 ; } };
+template <> struct data_type_traits<long double              > { static MPI_Datatype mpi_type() { return MPI_LONG_DOUBLE            ; } };
+template <> struct data_type_traits<wchar_t                  > { static MPI_Datatype mpi_type() { return MPI_WCHAR                  ; } };
+template <> struct data_type_traits<std::byte                > { static MPI_Datatype mpi_type() { return MPI_BYTE                   ; } };
+template <> struct data_type_traits<bool                     > { static MPI_Datatype mpi_type() { return MPI_CXX_BOOL               ; } };
+template <> struct data_type_traits<std::complex<float      >> { static MPI_Datatype mpi_type() { return MPI_CXX_FLOAT_COMPLEX      ; } };
+template <> struct data_type_traits<std::complex<double     >> { static MPI_Datatype mpi_type() { return MPI_CXX_DOUBLE_COMPLEX     ; } };
+template <> struct data_type_traits<std::complex<long double>> { static MPI_Datatype mpi_type() { return MPI_CXX_LONG_DOUBLE_COMPLEX; } };
+
+// Note: We don't provide specializations for std::int8_t, std::int16_t, std::int32_t, std::int64_t, 
+// std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t, aint, count, or offset here because these
+// types are typically aliases (typedefs) for the fundamental types above on most platforms.
+// Users should use the fundamental types directly with this traits class, or use type_traits instead
+// which handles these cases properly at runtime.
+
+//template <> struct data_type_traits<_Bool                    > { static MPI_Datatype mpi_type() { return MPI_C_BOOL                 ; } };
+//template <> struct data_type_traits<float       _Complex     > { static MPI_Datatype mpi_type() { return MPI_C_FLOAT_COMPLEX        ; } };
+//template <> struct data_type_traits<double      _Complex     > { static MPI_Datatype mpi_type() { return MPI_C_DOUBLE_COMPLEX       ; } };
+//template <> struct data_type_traits<long double _Complex     > { static MPI_Datatype mpi_type() { return MPI_C_LONG_DOUBLE_COMPLEX  ; } };
+//template <> struct data_type_traits<_Packed                  > { static MPI_Datatype mpi_type() { return MPI_PACKED                 ; } };
 }
