@@ -31,23 +31,23 @@ public:
   status& operator=(      status&& temp) = default;
 
   [[nodiscard]]
-  std::int32_t      count              (const data_type& type) const
+  count             count              (const data_type& type) const
   {
-    std::int32_t result;
+    mpi::count result;
     MPI_CHECK_ERROR_CODE(MPI_Get_count, (&native_, type.native(), &result))
     MPI_CHECK_UNDEFINED (MPI_Get_count, result)
     return result;
   }
 
   [[nodiscard]]
-  std::int32_t      element_count      (const data_type& type) const
+  count             element_count      (const data_type& type) const
   {
-    std::int32_t result;
+    mpi::count result;
     MPI_CHECK_ERROR_CODE(MPI_Get_elements, (&native_, type.native(), &result))
     MPI_CHECK_UNDEFINED (MPI_Get_elements, result)
     return result;
   }
-  void              set_element_count  (const data_type& type, const std::int32_t count)
+  void              set_element_count  (const data_type& type, const count count)
   {
     MPI_CHECK_ERROR_CODE(MPI_Status_set_elements, (&native_, type.native(), count))
   }
